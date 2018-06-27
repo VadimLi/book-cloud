@@ -11,19 +11,16 @@ import android.widget.TextView;
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.model.Material;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MaterialAdapter extends BaseAdapter {
 
-    private final Context context;
-
-    private ArrayList<Material> materials;
+    private List<Material> materials;
 
     private final LayoutInflater layoutInflater;
 
     public MaterialAdapter(final Context context,
-                           final ArrayList<Material> materials) {
-        this.context = context;
+                           final List<Material> materials) {
         this.materials = materials;
         layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -1,33 +1,36 @@
 package com.example.vadim.books_sync.presenters.utils;
 
 
+import android.app.Application;
 import android.os.Environment;
 import android.util.Log;
 
+import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 
 import java.io.File;
-import java.util.List;
 
-public class Finder {
+import javax.inject.Inject;
 
-    private final List<Material> materials;
+public class Finder extends Application {
 
-    public Finder(final List<Material> materials) {
-        this.materials = materials;
+    private MaterialDao materialDao;
+
+    @Inject
+    public Finder(MaterialDao materialDao) {
+        this.materialDao = materialDao;
     }
 
-    public List<Material> findFiles() {
+    public Finder() {}
+
+    public void findFiles() {
         File rootFile = Environment.getExternalStorageDirectory();
         Log.d("root dir : ", rootFile.getAbsolutePath());
         searchFiles(rootFile);
-        return materials;
     }
 
     private void searchFiles(File root) {
-
         final File[] list = root.listFiles();
-
         if (list != null) {
             for (File f : list) {
                 if (f.isDirectory()) {
@@ -35,21 +38,37 @@ public class Finder {
                     searchFiles(f);
                 }
                 else {
-                    final String format = getFileExtension(f);
-                    final String filePath = f.getAbsolutePath();
-                    if (format.equals("pdf") || format.equals("docx")) {
-                        final Material material = new Material();
-                        material.setName(f.getName());
-                        material.setFormat(format);
-                        material.setPath(filePath);
-                        materials.add(material);
-                        Log.i("", "File: " + filePath);
-                    }
+                    insertData(f);
                 }
             }
         } else {
             Log.e("", "list null");
         }
+    }
+
+    private void insertData(File file) {
+        final String format = getFileExtension(file);
+        final String filePath = file.getAbsolutePath();
+        if (checkFormat(format)) {
+            if (materialDao.findAllByPath(file.getAbsolutePath()).isEmpty() ||
+                    materialDao.findAllByPath(file.getAbsolutePath()) == null) {
+                final Material material = new Material();
+                material.setName(file.getName());
+                material.setFormat(getFileExtension(file));
+                material.setPath(file.getAbsolutePath());
+                materialDao.insert(material);
+            }
+            Log.i("", "File: " + filePath);
+        }
+    }
+
+    private boolean checkFormat(String format) {
+        for (Format f : Format.values()) {
+            if (format.equals(f.getFormat())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static String getFileExtension(File file) {

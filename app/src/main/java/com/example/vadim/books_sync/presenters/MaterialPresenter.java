@@ -1,24 +1,22 @@
 package com.example.vadim.books_sync.presenters;
 
 
-import com.example.vadim.books_sync.model.Material;
+import android.app.Application;
+
 import com.example.vadim.books_sync.presenters.utils.Finder;
 import com.example.vadim.books_sync.views.MainActivity;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Inject;
 
-public class MaterialPresenter {
+public class MaterialPresenter extends Application {
 
     private MainActivity mainActivity;
 
-    private ArrayList<Material> materials = new ArrayList<>();
-
     private Finder finder;
 
-    public MaterialPresenter(final MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
-        finder = new Finder(materials);
+    @Inject
+    public MaterialPresenter(Finder finder) {
+        this.finder = finder;
     }
 
     public void attachView(MainActivity usersActivity) {
@@ -30,8 +28,8 @@ public class MaterialPresenter {
     }
 
     public void addMaterialFiles() {
-       List<Material> materialList = finder.findFiles();
-       mainActivity.fillData(materialList);
+        finder.findFiles();
+        mainActivity.showListView();
     }
 
 }
