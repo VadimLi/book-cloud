@@ -22,10 +22,10 @@ public interface AppComponent {
 
     AppDatabase appDatabase();
 
-    MaterialPresenter getMaterialPresenter();
-
     Application application();
 
     Finder getFinder();
+
+    MaterialPresenter getMaterialPresenter();
 
 }

@@ -1,8 +1,11 @@
 package com.example.vadim.books_sync.model;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.graphics.drawable.Drawable;
+
 
 @Entity(indices = {@Index(value = "path",
         unique = true)})
@@ -16,6 +19,11 @@ public class Material {
     private String format;
 
     private String path;
+
+    @Ignore
+    private Drawable imageUrl;
+
+    public Material() {}
 
     public long getId() {
         return id;

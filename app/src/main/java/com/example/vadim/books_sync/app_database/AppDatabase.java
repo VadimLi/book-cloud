@@ -11,7 +11,7 @@ import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 
 /* singleton */
-@Database(entities = { Material.class }, version = AppDatabase.VERSION)
+@Database(entities = { Material.class }, version = AppDatabase.VERSION, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;

@@ -1,4 +1,4 @@
-package com.example.vadim.books_sync.presenters.utils;
+package com.example.vadim.books_sync.presenters;
 
 
 public enum Format {
