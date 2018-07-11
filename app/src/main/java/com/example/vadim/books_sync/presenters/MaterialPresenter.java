@@ -1,61 +1,44 @@
 package com.example.vadim.books_sync.presenters;
 
 
-import android.databinding.BaseObservable;
-import android.databinding.ObservableArrayList;
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
-import com.example.vadim.books_sync.databinding.ActivityMainBinding;
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.utils.Finder;
-import com.example.vadim.books_sync.views.MainActivity;
+import com.example.vadim.books_sync.mvp.MaterialsMvpView;
+import com.example.vadim.books_sync.presenters.services.FinderService;
 
-import java.util.List;
+import java.util.LinkedList;
 
 import javax.inject.Inject;
 
-public class MaterialPresenter extends BaseObservable {
+public class MaterialPresenter implements MaterialsMvpView {
 
-    private Finder finder;
+    private FinderService finderService;
 
-    private MainActivity mainActivity;
-
-    public ObservableArrayList<String> name;
-
-    public ObservableArrayList<String> format;
-
-    public ObservableArrayList<String> path;
-
-    private List<Material> materials;
+    private MaterialsMvpView materialsMvpView;
 
     @Inject
-    public MaterialPresenter(Finder finder) {
-        this.finder = finder;
+    public MaterialPresenter(FinderService finderService) {
+        this.finderService = finderService;
     }
 
-    public MaterialPresenter() {
-        name = new ObservableArrayList<>();
-        format = new ObservableArrayList<>();
-        path = new ObservableArrayList<>();
-    }
-
-    public void attachView(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
+    public void attachView(MaterialsMvpView materialsMvpView) {
+        this.materialsMvpView = materialsMvpView;
     }
 
     public void detachView() {
-        mainActivity = null;
+        materialsMvpView = null;
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void addMaterialFiles(ActivityMainBinding binding) {
-        finder.findFiles();
-        mainActivity.showListView(binding);
-    }
-
-    public List<Material> getMaterials() {
-        return materials;
+    @Override
+    public void addMaterialFiles(LinkedList<Material> materials) {
+        final LinkedList<Material> newMaterials = finderService.getMaterials();
+        newMaterials.forEach(materials::addFirst);
+        materialsMvpView.addMaterialFiles(materials);
     }
 
 }

@@ -5,7 +5,7 @@ import android.app.Application;
 import com.example.vadim.books_sync.app_database.AppDatabase;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
-import com.example.vadim.books_sync.presenters.utils.Finder;
+import com.example.vadim.books_sync.presenters.services.FinderService;
 import com.example.vadim.books_sync.views.MainActivity;
 
 import javax.inject.Singleton;
@@ -24,7 +24,7 @@ public interface AppComponent {
 
     Application application();
 
-    Finder getFinder();
+    FinderService getFinderService();
 
     MaterialPresenter getMaterialPresenter();
 

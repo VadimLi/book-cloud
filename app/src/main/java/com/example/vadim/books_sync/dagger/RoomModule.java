@@ -6,7 +6,7 @@ import android.app.Application;
 import com.example.vadim.books_sync.app_database.AppDatabase;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
-import com.example.vadim.books_sync.presenters.utils.Finder;
+import com.example.vadim.books_sync.presenters.services.FinderService;
 
 import javax.inject.Singleton;
 
@@ -36,14 +36,14 @@ public class RoomModule {
 
     @Provides
     @Singleton
-    Finder providesFinder(MaterialDao materialDao) {
-        return new Finder(materialDao);
+    FinderService providesFinderService(MaterialDao materialDao) {
+        return new FinderService(materialDao);
     }
 
     @Provides
     @Singleton
-    MaterialPresenter providesMaterialPresenter(Finder finder) {
-        return new MaterialPresenter(finder);
+    MaterialPresenter providesMaterialPresenter(FinderService finderService) {
+        return new MaterialPresenter(finderService);
     }
 
 }

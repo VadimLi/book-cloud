@@ -1,30 +1,27 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <FrameLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.vadim.books_sync.views.MainActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.example.vadim.books_sync.views.MainActivity">
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:gravity="top"
+        android:orientation="vertical">
+        <ImageButton
+            android:id="@+id/btnSync"
+            android:layout_width="90dp"
+            android:layout_height="86dp"
+            android:layout_gravity="left"
+            android:src="@mipmap/ic_refresh_foreground"
+            android:textSize="20sp" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/material_list"
+            android:layout_gravity="end"
             android:layout_height="match_parent"
-            android:gravity="top"
-            android:orientation="vertical">
-            <ImageButton
-                android:id="@+id/btnSync"
-                android:layout_width="90dp"
-                android:layout_height="86dp"
-                android:layout_gravity="left"
-                android:src="@mipmap/ic_refresh_foreground"
-                android:textSize="20sp" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/material_list"
-                android:layout_gravity="end"
-                android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager"
-                android:layout_width="match_parent">
-            </android.support.v7.widget.RecyclerView>
-        </LinearLayout>
-    </FrameLayout>
-</layout>
+            app:layoutManager="LinearLayoutManager"
+            android:layout_width="match_parent">
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+</FrameLayout>

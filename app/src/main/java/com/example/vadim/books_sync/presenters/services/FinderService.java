@@ -1,33 +1,37 @@
-package com.example.vadim.books_sync.presenters.utils;
+package com.example.vadim.books_sync.presenters.services;
 
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Environment;
 import android.util.Log;
 
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.Format;
 
 import java.io.File;
+import java.util.LinkedList;
 
 import javax.inject.Inject;
 
-public class Finder extends Application {
+@SuppressLint("Registered")
+public class FinderService extends Application {
 
     private MaterialDao materialDao;
 
+    private LinkedList<Material> materials = new LinkedList<>();
+
     @Inject
-    public Finder(MaterialDao materialDao) {
+    public FinderService(MaterialDao materialDao) {
         this.materialDao = materialDao;
     }
 
-    public Finder() {}
-
-    public void findFiles() {
-        File rootFile = Environment.getExternalStorageDirectory();
+    public LinkedList<Material> getMaterials() {
+        final File rootFile = Environment.getExternalStorageDirectory();
         Log.d("root dir : ", rootFile.getAbsolutePath());
+        materials.clear();
         searchFiles(rootFile);
+        return materials;
     }
 
     private void searchFiles(File root) {
@@ -58,6 +62,7 @@ public class Finder extends Application {
                 material.setFormat(getFileExtension(file));
                 material.setPath(file.getAbsolutePath());
                 materialDao.insert(material);
+                materials.addFirst(material);
             }
             Log.i("", "File: " + filePath);
         }
