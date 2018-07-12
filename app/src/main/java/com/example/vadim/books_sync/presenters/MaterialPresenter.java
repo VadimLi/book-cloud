@@ -4,6 +4,9 @@ package com.example.vadim.books_sync.presenters;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.mvp.MaterialsMvpView;
@@ -40,6 +43,19 @@ public class MaterialPresenter implements MaterialsMvpView {
         newMaterials.forEach(materials::addFirst);
         finderService.deleteMaterialFiles(materials);
         materialsMvpView.loadMaterialFiles(materials);
+    }
+
+    private void rotateImage() {
+        RotateAnimation anim =
+                new RotateAnimation(0f,
+                        360f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f);
+        anim.setInterpolator(new LinearInterpolator());
+        anim.setRepeatCount(Animation.INFINITE);
+        anim.setDuration(500);
     }
 
 }

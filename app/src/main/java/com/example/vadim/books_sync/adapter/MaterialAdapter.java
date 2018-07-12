@@ -12,10 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.services.Format;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,7 +54,12 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final Material material = materials.get(position);
         holder.nameMaterial.setText(material.getName());
-        holder.formatMaterial.setText(material.getFormat());
+        final String pdfFormat = Format.PDF.getFormat();
+        if (material.getFormat().equals(pdfFormat)) {
+            holder.formatMaterial.setImageResource(R.mipmap.ic_pdf_foreground);
+        } else {
+            holder.formatMaterial.setImageResource(R.mipmap.ic_word_foreground);
+        }
     }
 
     public void setListContent(List<Material> materials){
@@ -73,11 +80,11 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @BindView(R.id.formatMaterial)
+        ImageView formatMaterial;
+
         @BindView(R.id.nameMaterial)
         TextView nameMaterial;
-
-        @BindView(R.id.formatMaterial)
-        TextView formatMaterial;
 
         MyViewHolder(View itemView) {
             super(itemView);

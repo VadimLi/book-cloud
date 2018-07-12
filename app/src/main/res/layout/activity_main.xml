@@ -11,8 +11,8 @@
         android:orientation="vertical">
         <ImageButton
             android:id="@+id/btnSync"
-            android:layout_width="90dp"
-            android:layout_height="86dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="left"
             android:src="@mipmap/ic_refresh_foreground"
             android:textSize="20sp" />
