@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsMvpView 
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this,
-                new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
                 REQUEST_WRITE_EXTERNAL_STORAGE);
 
         ButterKnife.bind(this);
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsMvpView 
         materialPresenter.attachView(this);
 
         final List<Material> materials = materialDao.findAll();
-        setRecyclerViewAdapter(materials);
+        createMaterialAdapter();
         final LinkedList<Material> materialLinkedList =
                 convertToLinkedMaterialList(materials);
 
@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements MaterialsMvpView 
     public void loadMaterialFiles(LinkedList<Material> materials) {
         materialAdapter.setListContent(materials);
         recyclerView.setAdapter(materialAdapter);
-        materialAdapter.notifyDataSetChanged();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -92,11 +91,10 @@ public class MainActivity extends AppCompatActivity implements MaterialsMvpView 
         return newMaterialList;
     }
 
-    private void setRecyclerViewAdapter(List<Material> materials) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    private void createMaterialAdapter() {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this));
         materialAdapter = new MaterialAdapter(this);
-        materialAdapter.setListContent(materials);
-        recyclerView.setAdapter(materialAdapter);
     }
 
 }

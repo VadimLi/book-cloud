@@ -36,8 +36,6 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
 
     private View view;
 
-    private MyViewHolder holder;
-
     public MaterialAdapter(Context context) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
@@ -47,8 +45,7 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         view = layoutInflater.inflate(R.layout.material, parent, false);
-        holder = new MyViewHolder(view);
-        return holder;
+        return new MyViewHolder(view);
     }
 
     @Override
@@ -82,7 +79,7 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
         @BindView(R.id.formatMaterial)
         TextView formatMaterial;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             ButterKnife.bind(this, view);
