@@ -21,9 +21,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyViewHolder> {
 
-    private static final int START_POISTION_OF_MATERIALS  = 0;
+    private static final int START_POSITION_OF_MATERIALS = 0;
 
     private List<Material> materials = new ArrayList<>();
 
@@ -57,13 +60,13 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
 
     public void setListContent(List<Material> materials){
         this.materials = materials;
-        notifyItemRangeChanged(START_POISTION_OF_MATERIALS, materials.size());
+        notifyItemRangeChanged(START_POSITION_OF_MATERIALS, materials.size());
     }
 
     public void removeAt(int position) {
         materials.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(START_POISTION_OF_MATERIALS, materials.size());
+        notifyItemRangeChanged(START_POSITION_OF_MATERIALS, materials.size());
     }
 
     @Override
@@ -71,17 +74,18 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
         return materials.size();
     }
 
-    protected class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private TextView nameMaterial;
+        @BindView(R.id.nameMaterial)
+        TextView nameMaterial;
 
-        private TextView formatMaterial;
+        @BindView(R.id.formatMaterial)
+        TextView formatMaterial;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            nameMaterial = itemView.findViewById(R.id.nameMaterial);
-            formatMaterial = itemView.findViewById(R.id.formatMaterial);
+            ButterKnife.bind(this, view);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)

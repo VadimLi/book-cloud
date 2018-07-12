@@ -26,17 +26,24 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements MaterialsMvpView {
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
+
+    @BindView(R.id.btnSync)
+    ImageButton syncButton;
+
+    @BindView(R.id.material_list)
+    RecyclerView recyclerView;
 
     @Inject
     MaterialDao materialDao;
 
     @Inject
     MaterialPresenter materialPresenter;
-
-    private RecyclerView recyclerView;
 
     private MaterialAdapter materialAdapter;
 
@@ -51,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsMvpView 
                 new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
                 REQUEST_WRITE_EXTERNAL_STORAGE);
 
+        ButterKnife.bind(this);
         DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
                 .roomModule(new RoomModule(getApplication()))
@@ -58,27 +66,37 @@ public class MainActivity extends AppCompatActivity implements MaterialsMvpView 
                 .inject(this);
         materialPresenter.attachView(this);
 
-        recyclerView = findViewById(R.id.material_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        materialAdapter = new MaterialAdapter(this);
         final List<Material> materials = materialDao.findAll();
-        materialAdapter.setListContent(materials);
-        recyclerView.setAdapter(materialAdapter);
+        setRecyclerViewAdapter(materials);
+        final LinkedList<Material> materialLinkedList =
+                convertToLinkedMaterialList(materials);
 
-        final ImageButton syncButton = findViewById(R.id.btnSync);
-        final LinkedList<Material> newMaterialList = new LinkedList<>();
-        materials.forEach(newMaterialList::addLast);
+        materialPresenter.loadMaterialFiles(materialLinkedList);
         syncButton.setOnClickListener(e ->
-                materialPresenter.addMaterialFiles(newMaterialList));
+                materialPresenter.loadMaterialFiles(materialLinkedList));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    public void addMaterialFiles(LinkedList<Material> materials) {
+    public void loadMaterialFiles(LinkedList<Material> materials) {
         materialAdapter.setListContent(materials);
         recyclerView.setAdapter(materialAdapter);
         materialAdapter.notifyDataSetChanged();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private LinkedList<Material> convertToLinkedMaterialList(
+            List<Material> materials) {
+        final LinkedList<Material> newMaterialList = new LinkedList<>();
+        materials.forEach(newMaterialList::addLast);
+        return newMaterialList;
+    }
+
+    private void setRecyclerViewAdapter(List<Material> materials) {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        materialAdapter = new MaterialAdapter(this);
+        materialAdapter.setListContent(materials);
+        recyclerView.setAdapter(materialAdapter);
     }
 
 }

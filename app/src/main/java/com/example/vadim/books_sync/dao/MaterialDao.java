@@ -16,7 +16,10 @@ public interface MaterialDao {
     List<Material> findAll();
 
     @Query("SELECT *FROM material WHERE path = :path")
-    List<Material> findAllByPath(String path);
+    List<Material> findByPath(String path);
+
+    @Query("DELETE FROM material WHERE path IN (:path)")
+    void deleteByPath(String path);
 
     @Query("DELETE FROM material")
     void deleteAll();

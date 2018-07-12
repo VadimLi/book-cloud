@@ -17,7 +17,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
 
     // started version with 1
-    static final int VERSION = 4;
+    static final int VERSION = 5;
 
     public abstract MaterialDao getMaterialDao();
 
@@ -25,7 +25,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if (instance == null) {
             instance = Room
                     .databaseBuilder(context, AppDatabase.class, "doc_db")
-                    .addMigrations(FROM_1_TO_2, FROM_2_TO_3, FROM_3_TO_4)
+                    .addMigrations(FROM_1_TO_2, FROM_2_TO_3, FROM_3_TO_4, FROM_4_TO_5)
                     .allowMainThreadQueries()
                     .build();
         }
@@ -52,6 +52,13 @@ public abstract class AppDatabase extends RoomDatabase {
     };
 
     private static final Migration FROM_3_TO_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("DELETE FROM material");
+        }
+    };
+
+    private static final Migration FROM_4_TO_5 = new Migration(4, 5) {
         @Override
         public void migrate(final SupportSQLiteDatabase database) {
             database.execSQL("DELETE FROM material");

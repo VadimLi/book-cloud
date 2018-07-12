@@ -6,5 +6,5 @@ import com.example.vadim.books_sync.model.Material;
 import java.util.LinkedList;
 
 public interface MaterialsMvpView {
-    void addMaterialFiles(LinkedList<Material> materials);
+    void loadMaterialFiles(LinkedList<Material> materials);
 }

@@ -35,10 +35,11 @@ public class MaterialPresenter implements MaterialsMvpView {
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    public void addMaterialFiles(LinkedList<Material> materials) {
+    public void loadMaterialFiles(LinkedList<Material> materials) {
         final LinkedList<Material> newMaterials = finderService.getMaterials();
         newMaterials.forEach(materials::addFirst);
-        materialsMvpView.addMaterialFiles(materials);
+        finderService.deleteMaterialFiles(materials);
+        materialsMvpView.loadMaterialFiles(materials);
     }
 
 }
