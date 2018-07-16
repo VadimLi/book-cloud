@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,11 +28,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyViewHolder> {
+public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyViewHolder>
+        implements Filterable {
 
     private static final int START_POSITION_OF_MATERIALS = 0;
 
     private List<Material> materials = new ArrayList<>();
+
+    private List<Material> filterMaterials = new ArrayList<>();
 
     private final LayoutInflater layoutInflater;
 
@@ -64,6 +69,7 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
 
     public void setListContent(List<Material> materials){
         this.materials = materials;
+        this.filterMaterials = materials;
         notifyItemRangeChanged(START_POSITION_OF_MATERIALS, materials.size());
     }
 
@@ -78,7 +84,39 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
         return materials.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+                if (constraint != null && constraint.length() > 0) {
+                    constraint = constraint.toString().toLowerCase();
+                    final List<Material> filters = new ArrayList<>();
+                    for (Material material : filterMaterials) {
+                        if (material.getName().toLowerCase()
+                                .contains(constraint)) {
+                            filters.add(material);
+                        }
+                    }
+                    results.count = filters.size();
+                    results.values = filters;
+                } else {
+                    results.count = filterMaterials.size();
+                    results.values = filterMaterials;
+                }
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                materials = (List<Material>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         @BindView(R.id.formatMaterial)
         ImageView formatMaterial;
@@ -98,6 +136,11 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
             int position = getAdapterPosition();
             final Material material = materials.get(position);
             MaterialAdapter.this.openDocumentByPath(material.getPath());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            return false;
         }
 
     }
