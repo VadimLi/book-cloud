@@ -1,5 +1,7 @@
 package com.example.vadim.books_sync.adapter;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,12 +20,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
+import com.example.vadim.books_sync.adapter.properties_dialog.PropertiesDialog;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.services.Format;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,13 +42,20 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
 
     private List<Material> filterMaterials = new ArrayList<>();
 
-    private final LayoutInflater layoutInflater;
+    private LayoutInflater layoutInflater;
 
-    private final Context context;
+    private Context context;
 
     private View view;
 
-    public MaterialAdapter(Context context) {
+    private PropertiesDialog propertiesDialog;
+
+    @Inject
+    public MaterialAdapter(PropertiesDialog propertiesDialog) {
+        this.propertiesDialog = propertiesDialog;
+    }
+
+    public void setMaterialAdapter(Context context) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
     }
@@ -127,6 +139,7 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
         MyViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
             ButterKnife.bind(this, view);
         }
 
@@ -134,13 +147,22 @@ public class MaterialAdapter extends RecyclerView.Adapter<MaterialAdapter.MyView
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            final Material material = materials.get(position);
+            final Material material = findMaterialByPosition(position);
             MaterialAdapter.this.openDocumentByPath(material.getPath());
         }
 
         @Override
-        public boolean onLongClick(View v) {
-            return false;
+        public boolean onLongClick(View view) {
+            int position = getAdapterPosition();
+            final Material material = findMaterialByPosition(position);
+            propertiesDialog.setMaterial(material);
+            final FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
+            propertiesDialog.show(fragmentManager, "property dialog");
+            return true;
+        }
+
+        private Material findMaterialByPosition(int position) {
+            return materials.get(position);
         }
 
     }

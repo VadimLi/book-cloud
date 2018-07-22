@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
     @Inject
     MaterialPresenter materialPresenter;
 
-    private MaterialAdapter materialAdapter;
+    @Inject
+    MaterialAdapter materialAdapter;
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
         createMaterialAdapter();
         final LinkedList<Material> materialLinkedList
                 = convertToLinkedMaterialList(materials);
+        materialPresenter.updateMaterials(materialLinkedList);
 
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
     private void createMaterialAdapter() {
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(this));
-        materialAdapter = new MaterialAdapter(this);
+        materialAdapter.setMaterialAdapter(this);
     }
 
 }

@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">books_sync</string>
     <bool name="atMostJellyBeanMR2">true</bool>
+    <string-array name="propertiesMaterial">
+        <item>Перенести</item>
+        <item>Переименовать</item>
+        <item>удалить</item>
+    </string-array>
 </resources>
