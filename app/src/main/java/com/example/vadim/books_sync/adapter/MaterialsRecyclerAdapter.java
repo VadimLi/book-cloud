@@ -1,0 +1,95 @@
+package com.example.vadim.books_sync.adapter;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
+
+import com.example.vadim.books_sync.R;
+import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.MaterialListPresenter;
+import com.example.vadim.books_sync.views.MaterialViewHolder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewHolder>
+        implements Filterable {
+
+    private static final int START_POSITION_OF_MATERIALS = 0;
+
+    private LayoutInflater layoutInflater;
+
+    private View view;
+
+    private final Context context;
+
+    private MaterialListPresenter materialListPresenter;
+
+    public MaterialsRecyclerAdapter(Context context) {
+        this.context = context;
+        layoutInflater = LayoutInflater.from(context);
+        this.materialListPresenter = new MaterialListPresenter();
+    }
+
+    @NonNull
+    @Override
+    public MaterialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        view = layoutInflater.inflate(R.layout.material, parent, false);
+        return new MaterialViewHolder(view, materialListPresenter);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MaterialViewHolder materialViewHolder, int position) {
+        materialListPresenter.onBindViewHolder(materialViewHolder, position);
+    }
+
+    public void setListContent(List<Material> materials) {
+        materialListPresenter.setListContent(materials);
+        notifyItemRangeChanged(START_POSITION_OF_MATERIALS, materials.size());
+    }
+
+    public void removeAt(int position) {
+        materialListPresenter.removeAt(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(START_POSITION_OF_MATERIALS,
+                materialListPresenter.getMaterialsSize());
+    }
+    
+    @Override
+    public int getItemCount() {
+        return materialListPresenter.getMaterialsSize();
+    }
+
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+                if (constraint != null && constraint.length() > 0) {
+                    constraint = constraint.toString().toLowerCase();
+                    final List<Material> filters = new ArrayList<>();
+                    materialListPresenter.addMaterialByFilter(constraint, filters);
+                    results.count = filters.size();
+                    results.values = filters;
+                } else {
+                    results.count = materialListPresenter.getFilterMaterialsSize();
+                    results.values = materialListPresenter.getFilterMaterials();
+                }
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                materialListPresenter.getMaterials().addAll((List<Material>) filterResults.values);
+            }
+        };
+    }
+
+}

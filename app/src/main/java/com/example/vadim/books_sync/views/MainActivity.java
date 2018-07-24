@@ -17,14 +17,14 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 
 import com.example.vadim.books_sync.R;
-import com.example.vadim.books_sync.adapter.MaterialAdapter;
+import com.example.vadim.books_sync.adapter.MaterialsRecyclerAdapter;
 import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.MaterialPresenter;
-import com.example.vadim.books_sync.viewPresenters.MaterialsViewPresenter;
+import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
+import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 import com.example.vadim.books_sync.views.animations.ImageButtonAnimation;
 
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MaterialsViewPresenter{
+public class MainActivity extends AppCompatActivity implements MaterialsView {
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
@@ -52,10 +52,9 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
     MaterialDao materialDao;
 
     @Inject
-    MaterialPresenter materialPresenter;
+    MaterialsUpdaterPresenter materialsUpdaterPresenter;
 
-    @Inject
-    MaterialAdapter materialAdapter;
+    private MaterialsRecyclerAdapter materialsRecyclerAdapter;
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -74,13 +73,13 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .inject(this);
-        materialPresenter.attachView(this);
+        materialsUpdaterPresenter.attachView(this);
 
         final List<Material> materials = materialDao.findAll();
         createMaterialAdapter();
         final LinkedList<Material> materialLinkedList
                 = convertToLinkedMaterialList(materials);
-        materialPresenter.updateMaterials(materialLinkedList);
+        materialsUpdaterPresenter.updateMaterials(materialLinkedList);
 
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                materialAdapter.getFilter().filter(newText);
+                materialsRecyclerAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {
-                    materialPresenter.updateMaterials(materialLinkedList);
+                    materialsUpdaterPresenter.updateMaterials(materialLinkedList);
                     rotateAnimation.setRepeatCount(Animation.ABSOLUTE);
                 }
             });
@@ -121,21 +120,21 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
     protected void onStart() {
         super.onStart();
         Log.d("state ", "start activity");
-        materialPresenter.attachView(this);
+        materialsUpdaterPresenter.attachView(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.d("state ", "stop activity");
-        materialPresenter.detachView();
+        materialsUpdaterPresenter.detachView();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void updateMaterials(LinkedList<Material> materials) {
-        materialAdapter.setListContent(materials);
-        recyclerView.setAdapter(materialAdapter);
+        materialsRecyclerAdapter.setListContent(materials);
+        recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -149,7 +148,8 @@ public class MainActivity extends AppCompatActivity implements MaterialsViewPres
     private void createMaterialAdapter() {
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(this));
-        materialAdapter.setMaterialAdapter(this);
+        materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
+        recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
 }

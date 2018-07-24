@@ -5,6 +5,6 @@ import com.example.vadim.books_sync.model.Material;
 
 import java.util.LinkedList;
 
-public interface MaterialsViewPresenter {
+public interface MaterialsView {
     void updateMaterials(LinkedList<Material> materials);
 }

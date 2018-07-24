@@ -2,11 +2,9 @@ package com.example.vadim.books_sync.dagger;
 
 import android.app.Application;
 
-import com.example.vadim.books_sync.adapter.MaterialAdapter;
-import com.example.vadim.books_sync.adapter.properties_dialog.PropertiesDialog;
 import com.example.vadim.books_sync.app_database.AppDatabase;
 import com.example.vadim.books_sync.dao.MaterialDao;
-import com.example.vadim.books_sync.presenters.MaterialPresenter;
+import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.presenters.services.FinderService;
 import com.example.vadim.books_sync.views.MainActivity;
 
@@ -26,12 +24,8 @@ public interface AppComponent {
 
     Application application();
 
+    MaterialsUpdaterPresenter getMaterialListPresenter();
+
     FinderService getFinderService();
-
-    MaterialPresenter getMaterialPresenter();
-
-    PropertiesDialog getPropertiesDialog();
-
-    MaterialAdapter getMaterialAdapter();
 
 }

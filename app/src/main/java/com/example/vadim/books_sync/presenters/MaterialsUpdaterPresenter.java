@@ -6,30 +6,30 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.viewPresenters.MaterialsViewPresenter;
+import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 import com.example.vadim.books_sync.presenters.services.FinderService;
 
 import java.util.LinkedList;
 
 import javax.inject.Inject;
 
-public class MaterialPresenter implements MaterialsViewPresenter {
+public class MaterialsUpdaterPresenter implements MaterialsView {
 
     private FinderService finderService;
 
-    private MaterialsViewPresenter materialsViewPresenter;
+    private MaterialsView materialsView;
 
     @Inject
-    public MaterialPresenter(FinderService finderService) {
+    public MaterialsUpdaterPresenter(FinderService finderService) {
         this.finderService = finderService;
     }
 
-    public void attachView(MaterialsViewPresenter materialsViewPresenter) {
-        this.materialsViewPresenter = materialsViewPresenter;
+    public void attachView(MaterialsView materialsView) {
+        this.materialsView = materialsView;
     }
-
+    
     public void detachView() {
-        materialsViewPresenter = null;
+        materialsView = null;
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -39,7 +39,7 @@ public class MaterialPresenter implements MaterialsViewPresenter {
         final LinkedList<Material> newMaterials = finderService.getMaterials();
         newMaterials.forEach(materials::addFirst);
         finderService.deleteMaterialFiles(materials);
-        materialsViewPresenter.updateMaterials(materials);
+        materialsView.updateMaterials(materials);
     }
 
 }
