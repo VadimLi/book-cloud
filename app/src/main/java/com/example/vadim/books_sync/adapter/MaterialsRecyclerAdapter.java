@@ -20,8 +20,6 @@ import java.util.List;
 public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewHolder>
         implements Filterable {
 
-    private static final int START_POSITION_OF_MATERIALS = 0;
-
     private LayoutInflater layoutInflater;
 
     private View view;
@@ -33,7 +31,8 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
     public MaterialsRecyclerAdapter(Context context) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
-        this.materialListPresenter = new MaterialListPresenter();
+        materialListPresenter = new MaterialListPresenter();
+        materialListPresenter.setMaterialViewHolderAdapter(this);
     }
 
     @NonNull
@@ -44,27 +43,19 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MaterialViewHolder materialViewHolder, int position) {
-        materialListPresenter.onBindViewHolder(materialViewHolder, position);
+    public void onBindViewHolder(@NonNull MaterialViewHolder holder, int position) {
+        materialListPresenter.onBindMaterialRowViewAtPosition(holder, position);
     }
 
     public void setListContent(List<Material> materials) {
         materialListPresenter.setListContent(materials);
-        notifyItemRangeChanged(START_POSITION_OF_MATERIALS, materials.size());
+        notifyItemRangeChanged(MaterialListPresenter.START_POSITION_OF_MATERIALS, materials.size());
     }
 
-    public void removeAt(int position) {
-        materialListPresenter.removeAt(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(START_POSITION_OF_MATERIALS,
-                materialListPresenter.getMaterialsSize());
-    }
-    
     @Override
     public int getItemCount() {
         return materialListPresenter.getMaterialsSize();
     }
-
 
     @Override
     public Filter getFilter() {

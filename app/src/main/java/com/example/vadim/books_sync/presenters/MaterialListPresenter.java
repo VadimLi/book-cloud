@@ -1,50 +1,50 @@
 package com.example.vadim.books_sync.presenters;
 
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.content.FileProvider;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.vadim.books_sync.R;
-import com.example.vadim.books_sync.adapter.properties_dialog.PropertiesDialog;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.services.DocumentService;
 import com.example.vadim.books_sync.presenters.services.Format;
 import com.example.vadim.books_sync.viewPresenters.MaterialRowView;
 import com.example.vadim.books_sync.views.MaterialViewHolder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaterialListPresenter implements MaterialRowView {
-
-    private final List<Material> materials = new ArrayList<>();
+public class MaterialListPresenter {
 
     private List<Material> filterMaterials = new ArrayList<>();
 
-    private PropertiesDialog propertiesDialog;
+    private DocumentService documentService;
 
-    public void attachDialog(PropertiesDialog propertiesDialog) {
-        this.propertiesDialog = propertiesDialog;
+    private List<MaterialPresenter> materialsPresenter = new ArrayList<>();
+
+    private List<Material> materials = new ArrayList<>();
+
+    private RecyclerView.Adapter<MaterialViewHolder> materialViewHolderAdapter;
+
+    public final static int START_POSITION_OF_MATERIALS = 0;
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void openDocumentByPath(View view, int position) {
+        final Material material = materials.get(position);
+        documentService.openDocumentByPath(view, material);
     }
 
-    public void detachDialog() {
-        propertiesDialog = null;
-    }
-
-    public void onBindViewHolder(@NonNull MaterialViewHolder materialViewHolder, int position) {
-        Material material = materials.get(position);
-        materialViewHolder.setNameMaterial(material.getName());
+    public void onBindMaterialRowViewAtPosition(@NonNull MaterialRowView materialRowView, int position) {
+        materialRowView.setName(materials.get(position).getName());
+        documentService = new DocumentService();
         final String pdfFormat = Format.PDF.getFormat();
-        if (material.getFormat().equals(pdfFormat)) {
-            materialViewHolder.setImageResource(R.mipmap.ic_pdf_foreground);
+        if (materials.get(position).getFormat().equals(pdfFormat)) {
+            materialRowView.setImageResource(R.mipmap.ic_pdf_foreground);
         } else {
-            materialViewHolder.setImageResource(R.mipmap.ic_word_foreground);
+            materialRowView.setImageResource(R.mipmap.ic_word_foreground);
         }
     }
 
@@ -58,32 +58,23 @@ public class MaterialListPresenter implements MaterialRowView {
 
     public void setListContent(List<Material> materials) {
         this.materials.clear();
+        materialsPresenter.clear();
         this.materials.addAll(materials);
+        for (Material material : this.materials) {
+            final MaterialPresenter materialPresenter = new MaterialPresenter();
+            materialPresenter.setMaterialListPresenter(this);
+            materialPresenter.setMaterial(material);
+            materialsPresenter.add(materialPresenter);
+        }
         this.filterMaterials = materials;
     }
 
     public void removeAt(int position) {
         materials.remove(position);
-    }
+        materialViewHolderAdapter.notifyItemRemoved(position);
+        materialViewHolderAdapter.notifyItemRangeChanged(START_POSITION_OF_MATERIALS,
+                materials.size());
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void openDocumentByPath(View view, int position) {
-        final Material material = materials.get(position);
-        final File file = new File(material.getPath());
-        if (file.exists()) {
-            final Intent formatIntent = new Intent(Intent.ACTION_VIEW);
-            formatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                    Intent.FLAG_ACTIVITY_NEW_TASK);
-            Uri uri = FileProvider.getUriForFile(view.getContext(),
-                    view.getContext().getApplicationContext()
-                            .getPackageName() +
-                            ".provider", file);
-            formatIntent.setData(uri);
-            formatIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            view.getContext().startActivity(formatIntent);
-        } else {
-            Log.e("File not exists : ", file.getAbsolutePath());
-        }
     }
 
     public void addMaterialByFilter(CharSequence constraint, List<Material> filters) {
@@ -101,6 +92,14 @@ public class MaterialListPresenter implements MaterialRowView {
 
     public List<Material> getFilterMaterials() {
         return filterMaterials;
+    }
+
+    public List<MaterialPresenter> getMaterialsPresenter() {
+        return materialsPresenter;
+    }
+
+    public void setMaterialViewHolderAdapter(RecyclerView.Adapter<MaterialViewHolder> materialViewHolderAdapter) {
+        this.materialViewHolderAdapter = materialViewHolderAdapter;
     }
 
 }
