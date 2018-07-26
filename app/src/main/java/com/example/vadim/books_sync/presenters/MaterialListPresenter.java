@@ -57,16 +57,15 @@ public class MaterialListPresenter {
     }
 
     public void setListContent(List<Material> materials) {
-        this.materials.clear();
+        this.materials = materials;
+        filterMaterials = materials;
         materialsPresenter.clear();
-        this.materials.addAll(materials);
         for (Material material : this.materials) {
             final MaterialPresenter materialPresenter = new MaterialPresenter();
             materialPresenter.setMaterialListPresenter(this);
             materialPresenter.setMaterial(material);
             materialsPresenter.add(materialPresenter);
         }
-        this.filterMaterials = materials;
     }
 
     public void removeAt(int position) {
@@ -77,17 +76,8 @@ public class MaterialListPresenter {
 
     }
 
-    public void addMaterialByFilter(CharSequence constraint, List<Material> filters) {
-        for (Material material : filterMaterials) {
-            if (material.getName().toLowerCase()
-                    .contains(constraint)) {
-                filters.add(material);
-            }
-        }
-    }
-
-    public List<Material> getMaterials() {
-        return materials;
+    public void setMaterials(List<Material> materials) {
+        this.materials = materials;
     }
 
     public List<Material> getFilterMaterials() {

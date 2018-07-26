@@ -6,8 +6,8 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 import com.example.vadim.books_sync.presenters.services.FinderService;
+import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 
 import java.util.LinkedList;
 
@@ -27,7 +27,7 @@ public class MaterialsUpdaterPresenter implements MaterialsView {
     public void attachView(MaterialsView materialsView) {
         this.materialsView = materialsView;
     }
-    
+
     public void detachView() {
         materialsView = null;
     }

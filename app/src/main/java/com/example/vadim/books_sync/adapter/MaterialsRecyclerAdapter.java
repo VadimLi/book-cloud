@@ -62,23 +62,31 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
+                final FilterResults results = new FilterResults();
+                final List<Material> filterMaterials = materialListPresenter.getFilterMaterials();
                 if (constraint != null && constraint.length() > 0) {
                     constraint = constraint.toString().toLowerCase();
                     final List<Material> filters = new ArrayList<>();
-                    materialListPresenter.addMaterialByFilter(constraint, filters);
+                    for (Material material : filterMaterials) {
+                        if (material.getName().toLowerCase()
+                                .contains(constraint)) {
+                            filters.add(material);
+                        }
+                    }
                     results.count = filters.size();
                     results.values = filters;
                 } else {
-                    results.count = materialListPresenter.getFilterMaterialsSize();
-                    results.values = materialListPresenter.getFilterMaterials();
+                    results.count = filterMaterials.size();
+                    results.values = filterMaterials;
                 }
                 return results;
             }
 
             @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                materialListPresenter.getMaterials().addAll((List<Material>) filterResults.values);
+            protected void publishResults(CharSequence charSequence,
+                                          FilterResults filterResults) {
+                materialListPresenter.setMaterials((List<Material>) filterResults.values);
+                notifyDataSetChanged();
             }
         };
     }

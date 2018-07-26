@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
         ActivityCompat.requestPermissions(this,
                 new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
                 REQUEST_WRITE_EXTERNAL_STORAGE);
-
+    
         ButterKnife.bind(this);
         DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
@@ -75,12 +75,12 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
                 .inject(this);
         materialsUpdaterPresenter.attachView(this);
 
-        final List<Material> materials = materialDao.findAll();
         createMaterialAdapter();
+        final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList
                 = convertToLinkedMaterialList(materials);
-        materialsUpdaterPresenter.updateMaterials(materialLinkedList);
 
+        materialsUpdaterPresenter.updateMaterials(materialLinkedList);
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override

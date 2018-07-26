@@ -63,10 +63,6 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
         return true;
     }
 
-//    private Material findMaterialByPosition(int position) {
-////        return materialListPresenter.getMaterials().get(position);
-//    }
-
     @Override
     public void setName(String name) {
         nameMaterial.setText(name);
