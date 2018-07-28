@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
-import com.example.vadim.books_sync.adapter.properties_dialog.PropertiesDialog;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.viewPresenters.MaterialRowView;

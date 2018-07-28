@@ -70,14 +70,17 @@ public class MaterialListPresenter {
 
     public void removeAt(int position) {
         materials.remove(position);
-        materialViewHolderAdapter.notifyItemRemoved(position);
-        materialViewHolderAdapter.notifyItemRangeChanged(START_POSITION_OF_MATERIALS,
-                materials.size());
-
+        materialViewHolderAdapter.notifyDataSetChanged();
+        materialViewHolderAdapter.notifyItemMoved(
+                START_POSITION_OF_MATERIALS, materials.size());
     }
 
     public void setMaterials(List<Material> materials) {
         this.materials = materials;
+    }
+
+    public List<Material> getMaterials() {
+        return materials;
     }
 
     public List<Material> getFilterMaterials() {
@@ -92,4 +95,7 @@ public class MaterialListPresenter {
         this.materialViewHolderAdapter = materialViewHolderAdapter;
     }
 
+    public RecyclerView.Adapter<MaterialViewHolder> getMaterialViewHolderAdapter() {
+        return materialViewHolderAdapter;
+    }
 }
