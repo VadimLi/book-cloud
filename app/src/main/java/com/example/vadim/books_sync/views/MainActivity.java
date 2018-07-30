@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
                 .appModule(new AppModule(getApplication()))
                 .roomModule(new RoomModule(getApplication()))
                 .build()
-                .inject(this);
+                .injectMainActivity(this);
         materialsUpdaterPresenter.attachView(this);
 
         createMaterialAdapter();
@@ -141,7 +141,9 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
     private LinkedList<Material> convertToLinkedMaterialList(
             List<Material> materials) {
         final LinkedList<Material> newMaterialList = new LinkedList<>();
-        materials.forEach(newMaterialList::addLast);
+        for (Material material : materials) {
+            newMaterialList.addLast(material);
+        }
         return newMaterialList;
     }
 

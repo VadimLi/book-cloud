@@ -28,7 +28,11 @@ public class MaterialPresenter {
     }
 
     public void removeDocument() {
-        materialListPresenter.removeAt(materialPosition);
+        materialListPresenter.removeAt(this);
+    }
+
+    public void update(String newName) {
+        materialListPresenter.updateAt(this, newName);
     }
 
     public long getId() {

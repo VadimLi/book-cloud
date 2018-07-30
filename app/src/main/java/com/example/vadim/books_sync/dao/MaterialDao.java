@@ -4,6 +4,7 @@ package com.example.vadim.books_sync.dao;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.example.vadim.books_sync.model.Material;
 
@@ -26,6 +27,9 @@ public interface MaterialDao {
     
     @Query("DELETE FROM material")
     void deleteAll();
+
+    @Update
+    void update(Material material);
 
     @Insert
     void insert(Material material);

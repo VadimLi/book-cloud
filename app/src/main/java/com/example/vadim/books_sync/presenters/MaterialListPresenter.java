@@ -57,19 +57,25 @@ public class MaterialListPresenter {
     }
 
     public void setListContent(List<Material> materials) {
+        materialsPresenter.clear();
         this.materials = materials;
         filterMaterials = materials;
-        materialsPresenter.clear();
-        for (Material material : this.materials) {
-            final MaterialPresenter materialPresenter = new MaterialPresenter();
-            materialPresenter.setMaterialListPresenter(this);
-            materialPresenter.setMaterial(material);
-            materialsPresenter.add(materialPresenter);
-        }
+        addToMaterialPresenters();
     }
 
-    public void removeAt(int position) {
+    public void removeAt(MaterialPresenter materialPresenter) {
+        int position = materialPresenter.getMaterialPosition();
         materials.remove(position);
+        materialViewHolderAdapter.notifyDataSetChanged();
+        materialViewHolderAdapter.notifyItemMoved(
+                START_POSITION_OF_MATERIALS, materials.size());
+    }
+
+    public void updateAt(MaterialPresenter materialPresenter, String newName) {
+        int position = materialPresenter.getMaterialPosition();
+        final Material material = materialPresenter.getMaterial();
+        material.setName(newName);
+        materials.set(position, material);
         materialViewHolderAdapter.notifyDataSetChanged();
         materialViewHolderAdapter.notifyItemMoved(
                 START_POSITION_OF_MATERIALS, materials.size());
@@ -98,4 +104,14 @@ public class MaterialListPresenter {
     public RecyclerView.Adapter<MaterialViewHolder> getMaterialViewHolderAdapter() {
         return materialViewHolderAdapter;
     }
+
+    private void addToMaterialPresenters() {
+        for (Material material : this.materials) {
+            final MaterialPresenter materialPresenter = new MaterialPresenter();
+            materialPresenter.setMaterialListPresenter(this);
+            materialPresenter.setMaterial(material);
+            materialsPresenter.add(materialPresenter);
+        }
+    }
+
 }

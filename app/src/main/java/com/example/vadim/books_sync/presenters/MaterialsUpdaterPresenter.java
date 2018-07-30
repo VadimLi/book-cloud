@@ -37,7 +37,9 @@ public class MaterialsUpdaterPresenter implements MaterialsView {
     @Override
     public void updateMaterials(LinkedList<Material> materials) {
         final LinkedList<Material> newMaterials = finderService.getMaterials();
-        newMaterials.forEach(materials::addFirst);
+        for (Material material : newMaterials) {
+            materials.addFirst(material);
+        }
         finderService.deleteMaterialFiles(materials);
         materialsView.updateMaterials(materials);
     }

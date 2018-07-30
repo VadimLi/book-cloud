@@ -13,8 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +24,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 
 import com.example.vadim.books_sync.R;
+import com.example.vadim.books_sync.dagger.AppModule;
+import com.example.vadim.books_sync.dagger.DaggerAppComponent;
+import com.example.vadim.books_sync.dagger.RoomModule;
+import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
+import com.example.vadim.books_sync.views.animations.TrashAnimationListener;
 
 import java.io.File;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +46,10 @@ public class PropertiesDialog extends DialogFragment {
     CustomEditText fileNameEditText;
 
     @BindView(R.id.applyName)
-    ImageButton editNameImageButton;
+    ImageButton applyNameImageButton;
+
+    @BindView(R.id.cancelName)
+    ImageButton cancelImageButton;
 
     @BindView(R.id.rename)
     ImageButton renameImageButton;
@@ -54,6 +63,9 @@ public class PropertiesDialog extends DialogFragment {
     @BindView(R.id.share)
     ImageButton shareImageButton;
 
+    @Inject
+    MaterialDao materialDao;
+
     private MaterialPresenter materialPresenter;
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -61,55 +73,31 @@ public class PropertiesDialog extends DialogFragment {
     @SuppressLint("InflateParams")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View viewProperties = inflater.inflate(R.layout.dialog_properties, null);
+        final View viewProperties = inflater.inflate(R.layout.dialog_properties, null);
+        final Context context = viewProperties.getContext();
         ButterKnife.bind(this, viewProperties);
+        DaggerAppComponent.builder()
+                .appModule(new AppModule(getActivity().getApplication()))
+                .roomModule(new RoomModule(getActivity().getApplication()))
+                .build()
+                .injectDialogFragment(this);
 
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        }
+        drawPropertiesDialog(viewProperties);
 
-        viewProperties.setBackground(ContextCompat.getDrawable(
-                viewProperties.getContext(), R.drawable.properties_dialog_bg));
         final InputMethodManager imm =
-                (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         final String nameMaterial = materialPresenter.getName();
-        final String format = materialPresenter.getFormat();
-        final int lengthName = nameMaterial.length() - (format.length() + 1);
-        final String nameWithoutFormat = nameMaterial.substring(0, lengthName);
+        final String nameWithoutFormat = getNameWithoutName(nameMaterial);
+        initFileNameEditText(nameMaterial);
 
-        fileNameEditText.setText(nameMaterial);
-        fileNameEditText.setEnabled(false);
+        applyNameImageButton.setVisibility(View.INVISIBLE);
+        cancelImageButton.setVisibility(View.INVISIBLE);
 
-        editNameImageButton.setVisibility(View.INVISIBLE);
-
-        fileNameEditText.setVisibleCloseButton(false);
         fileNameEditText.setOnClickListener(v -> {
             if (imm != null) {
                 imm.showSoftInput(fileNameEditText, InputMethodManager.SHOW_FORCED);
             }
-        });
-
-        fileNameEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                fileNameEditText.handleClearButton();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        editNameImageButton.setOnClickListener(v -> {
-            Log.d("state ", "click image button");
         });
 
         renameImageButton.setOnClickListener(v -> {
@@ -118,59 +106,51 @@ public class PropertiesDialog extends DialogFragment {
             fileNameEditText.setFocusableInTouchMode(true);
             fileNameEditText.setVisibleCloseButton(true);
             fileNameEditText.setText(nameWithoutFormat);
-            editNameImageButton.setVisibility(View.VISIBLE);
+            applyNameImageButton.setVisibility(View.VISIBLE);
+            cancelImageButton.setVisibility(View.VISIBLE);
             fileNameEditText.setSelection(nameWithoutFormat.length());
             if (imm != null) {
                 imm.showSoftInput(fileNameEditText, InputMethodManager.SHOW_FORCED);
             }
         });
 
-        editNameImageButton.setOnClickListener(v -> {
-            // update text of edit text
-            fileNameEditText.setEnabled(false);
-            editNameImageButton.setVisibility(View.INVISIBLE);
+        applyNameImageButton.setOnClickListener(v -> {
+            setInvisibleForEditTextIsFalse();
+            final Material material = materialPresenter.getMaterial();
+            material.setName(fileNameEditText.getText().toString());
+            materialDao.update(material);
+        });
+
+        cancelImageButton.setOnClickListener(v -> {
+            setInvisibleForEditTextIsFalse();
         });
 
         addToFolderImageButton.setOnClickListener(v ->
                 Log.d("state ", "add to folder"));
 
-        final Animation highTrashAnimation =
-                AnimationUtils.loadAnimation(getContext(), R.anim.high_shake_trash);
         final Animation lowTrashAnimation =
-                AnimationUtils.loadAnimation(getContext(), R.anim.low_shake_trash);
+                AnimationUtils.loadAnimation(context, R.anim.low_shake_trash);
 
-        highTrashAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                dismiss();
-                materialPresenter.removeDocument();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
+        final Animation highTrashAnimation =
+                AnimationUtils.loadAnimation(context, R.anim.high_shake_trash);
+        highTrashAnimation.setAnimationListener(new TrashAnimationListener(this));
 
         trashImageButton.setOnClickListener(v ->
                 trashImageButton.startAnimation(lowTrashAnimation));
 
         trashImageButton.setOnLongClickListener(v -> {
             trashImageButton.startAnimation(highTrashAnimation);
-            File file = new File(materialPresenter.getPath());
+            final String path = materialPresenter.getPath();
+            final File file = new File(path);
             if (file.exists()) {
+                materialDao.deleteByPath(path);
                 file.delete();
             }
-            return true;
+            return false;
         });
 
         shareImageButton.setOnClickListener(v -> {
-            File file = new File(materialPresenter.getPath());
+            final File file = new File(materialPresenter.getPath());
             if (file.exists()) {
                 final Uri uriToFile = Uri.fromFile(file);
                 final Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -185,6 +165,38 @@ public class PropertiesDialog extends DialogFragment {
 
     public void setMaterialPresenter(MaterialPresenter materialPresenter) {
         this.materialPresenter = materialPresenter;
+    }
+
+    public MaterialPresenter getMaterialPresenter() {
+        return materialPresenter;
+    }
+
+    private void drawPropertiesDialog(View viewProperties) {
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+        viewProperties.setBackground(ContextCompat.getDrawable(
+                viewProperties.getContext(), R.drawable.properties_dialog_bg));
+    }
+
+    private void setInvisibleForEditTextIsFalse() {
+        fileNameEditText.setVisibleCloseButton(false);
+        fileNameEditText.setEnabled(false);
+        applyNameImageButton.setVisibility(View.INVISIBLE);
+        cancelImageButton.setVisibility(View.INVISIBLE);
+    }
+
+    private String getNameWithoutName(String nameMaterial) {
+        final String format = materialPresenter.getFormat();
+        final int lengthName = nameMaterial.length() - (format.length() + 1);
+        return nameMaterial.substring(0, lengthName);
+    }
+
+    private void initFileNameEditText(String nameMaterial) {
+        fileNameEditText.setText(nameMaterial);
+        fileNameEditText.setEnabled(false);
+        fileNameEditText.setVisibleCloseButton(false);
     }
 
 }

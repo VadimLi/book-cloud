@@ -1,12 +1,17 @@
 package com.example.vadim.books_sync.dagger;
 
+import android.app.Activity;
 import android.app.Application;
+import android.app.DialogFragment;
 
 import com.example.vadim.books_sync.app_database.AppDatabase;
 import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.presenters.MaterialListPresenter;
+import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.presenters.services.FinderService;
 import com.example.vadim.books_sync.views.MainActivity;
+import com.example.vadim.books_sync.views.PropertiesDialog;
 
 import javax.inject.Singleton;
 
@@ -16,7 +21,9 @@ import dagger.Component;
 @Component(modules = {AppModule.class, RoomModule.class})
 public interface AppComponent {
 
-    void inject(MainActivity mainActivity);
+    void injectMainActivity(MainActivity activity);
+
+    void injectDialogFragment(PropertiesDialog propertiesDialog);
 
     MaterialDao materialDao();
 
@@ -24,8 +31,8 @@ public interface AppComponent {
 
     Application application();
 
-    MaterialsUpdaterPresenter getMaterialListPresenter();
-
     FinderService getFinderService();
+
+    MaterialsUpdaterPresenter getMaterialsUpdaterPresenter();
 
 }

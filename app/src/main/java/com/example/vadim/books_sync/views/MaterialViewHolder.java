@@ -29,10 +29,11 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
     @BindView(R.id.nameMaterial)
     TextView nameMaterial;
 
-    private MaterialListPresenter materialListPresenter;
+    private final MaterialListPresenter materialListPresenter;
 
     @Inject
-    public MaterialViewHolder(View itemView, MaterialListPresenter materialListPresenter) {
+    public MaterialViewHolder(View itemView,
+                              MaterialListPresenter materialListPresenter) {
         super(itemView);
         this.materialListPresenter = materialListPresenter;
         itemView.setOnClickListener(this);
@@ -54,8 +55,9 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
         final MaterialPresenter materialPresenter = materialListPresenter
                 .getMaterialsPresenter().get(position);
         materialPresenter.setMaterialPosition(position);
-
+        materialPresenter.setMaterialListPresenter(materialListPresenter);
         propertiesDialog.setMaterialPresenter(materialPresenter);
+
         final FragmentManager fragmentManager =
                 ((Activity) view.getContext()).getFragmentManager();
         propertiesDialog.show(fragmentManager, "properties dialog");

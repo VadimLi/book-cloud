@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="260dp"
+    android:background="@drawable/properties_dialog_bg"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <com.example.vadim.books_sync.views.CustomEditText
+        android:id="@+id/fileName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/enabledColorEditRename"
+        android:textColor="@drawable/edit_text_rename" />
+
+    <Button
+        android:id="@+id/applyName"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="OK"
+        android:background="@null"/>
+
+    <FrameLayout
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/rename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:src="@mipmap/ic_rename_foreground"
+            android:background="@null">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/addToFolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:src="@mipmap/ic_folders_foreground"
+            android:background="@null"
+            android:layout_marginStart="130dp"
+            android:layout_marginLeft="0dp">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:src="@mipmap/ic_trash_foreground"
+            android:background="@null"
+            android:layout_marginTop="130dp">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:src="@mipmap/ic_share_foreground"
+            android:background="@null">
+        </ImageButton>
+
+    </FrameLayout>
+</LinearLayout>

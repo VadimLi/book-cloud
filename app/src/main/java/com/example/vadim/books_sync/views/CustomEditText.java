@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.EditText;
@@ -44,20 +46,20 @@ public class CustomEditText extends EditText {
 
         // There may be initial text in the field, so we may need to display the  button
         handleClearButton();
-//        addTextChangedListener
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                CustomEditText.this.handleClearButton();
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable arg0) {
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//        });
+        addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                CustomEditText.this.handleClearButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+        });
 
         setOnTouchListener((v, event) -> {
             if (getCompoundDrawables()[2] == null)
@@ -65,27 +67,13 @@ public class CustomEditText extends EditText {
             if (event.getAction() != MotionEvent.ACTION_UP)
                 return false;
             if ((event.getX() > getWidth()  -
-                    getPaddingRight() - imgCloseButton.getIntrinsicWidth() / imgCloseButton.getMinimumWidth()) &&
-                    (event.getY() < getPaddingTop() + (imgCloseButton.getMinimumHeight())) &&
-                    (event.getY() > getHeight() - getPaddingBottom() - (imgCloseButton.getMinimumHeight()))) {
+                    getPaddingRight() - imgCloseButton.getIntrinsicWidth())) {
                 setText("");
                 CustomEditText.this.handleClearButton();
             }
             return false;
         });
 
-    }
-
-    public void setTypeface(Typeface tf, int style) {
-        if (style == Typeface.BOLD) {
-            super.setTypeface(
-                    Typeface.createFromAsset(getContext().getAssets(),
-                            "fonts/Vegur-B 0.602.otf"));
-        } else {
-            super.setTypeface(
-                    Typeface.createFromAsset(getContext().getAssets(),
-                            "fonts/Vegur-R 0.602.otf"));
-        }
     }
 
     public void handleClearButton() {

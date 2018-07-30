@@ -36,14 +36,14 @@ public class RoomModule {
 
     @Provides
     @Singleton
-    MaterialsUpdaterPresenter providesMaterialsRefresherPresenter(FinderService finderService) {
-        return new MaterialsUpdaterPresenter(finderService);
+    FinderService providesFinderService(MaterialDao materialDao) {
+        return new FinderService(materialDao);
     }
 
     @Provides
     @Singleton
-    FinderService providesFinderService(MaterialDao materialDao) {
-        return new FinderService(materialDao);
+    MaterialsUpdaterPresenter providesMaterialsUpdaterPresenter(FinderService finderService) {
+        return new MaterialsUpdaterPresenter(finderService);
     }
 
 }
