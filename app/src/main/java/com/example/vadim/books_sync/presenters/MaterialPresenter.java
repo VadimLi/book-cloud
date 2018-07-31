@@ -1,15 +1,31 @@
 package com.example.vadim.books_sync.presenters;
 
 
-import com.example.vadim.books_sync.model.Material;
+import android.view.View;
 
-public class MaterialPresenter {
+import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.states_of_document.AbstractStateProperties;
+import com.example.vadim.books_sync.views.PropertiesDialog;
+
+public class MaterialPresenter implements StateOwnerProperties {
 
     private MaterialListPresenter materialListPresenter;
 
     private Material material;
 
     private int materialPosition;
+
+    private AbstractStateProperties abstractPropertiesState;
+
+    private PropertiesDialog propertiesDialog;
+
+    public void attachDialog(PropertiesDialog propertiesDialog) {
+        this.propertiesDialog = propertiesDialog;
+    }
+
+    public PropertiesDialog getPropertiesDialog() {
+        return propertiesDialog;
+    }
 
     public MaterialListPresenter getMaterialListPresenter() {
         return materialListPresenter;
@@ -25,10 +41,6 @@ public class MaterialPresenter {
 
     public void setMaterialPosition(int materialPosition) {
         this.materialPosition = materialPosition;
-    }
-
-    public void removeDocument() {
-        materialListPresenter.removeAt(this);
     }
 
     public void update(String newName) {
@@ -58,4 +70,33 @@ public class MaterialPresenter {
     public void setMaterial(Material material) {
         this.material = material;
     }
+
+    public void setAbstractPropertiesState(AbstractStateProperties abstractPropertiesState) {
+        this.abstractPropertiesState=abstractPropertiesState;
+    }
+
+    public AbstractStateProperties getAbstractPropertiesState() {
+        return abstractPropertiesState;
+    }
+
+    @Override
+    public void removeDocument() {
+        abstractPropertiesState.doState(this);
+    }
+
+    @Override
+    public void renameDocument() {
+        abstractPropertiesState.doState(this);
+    }
+
+    @Override
+    public void shareDocument() {
+        abstractPropertiesState.doState(this);
+    }
+
+    @Override
+    public void addToFolderDocument() {
+        abstractPropertiesState.doState(this);
+    }
+
 }

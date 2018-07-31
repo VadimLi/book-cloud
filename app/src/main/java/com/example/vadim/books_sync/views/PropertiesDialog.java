@@ -3,12 +3,11 @@ package com.example.vadim.books_sync.views;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -28,11 +27,15 @@ import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.MaterialDao;
-import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
-import com.example.vadim.books_sync.views.animations.TrashAnimationListener;
+import com.example.vadim.books_sync.presenters.StateOwnerProperties;
+import com.example.vadim.books_sync.presenters.states_of_document.Removing;
+import com.example.vadim.books_sync.presenters.states_of_document.Renaming;
+import com.example.vadim.books_sync.presenters.states_of_document.Sharing;
+import com.example.vadim.books_sync.viewPresenters.DialogView;
+import com.example.vadim.books_sync.views.listeners.TrashAnimationListener;
 
-import java.io.File;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -40,7 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 @SuppressLint("ValidFragment")
-public class PropertiesDialog extends DialogFragment {
+public class PropertiesDialog extends DialogFragment
+        implements StateOwnerProperties, DialogView {
 
     @BindView(R.id.fileName)
     CustomEditText fileNameEditText;
@@ -81,83 +85,62 @@ public class PropertiesDialog extends DialogFragment {
                 .roomModule(new RoomModule(getActivity().getApplication()))
                 .build()
                 .injectDialogFragment(this);
+        materialPresenter.attachDialog(this);
 
         drawPropertiesDialog(viewProperties);
-
-        final InputMethodManager imm =
-                (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-
         final String nameMaterial = materialPresenter.getName();
-        final String nameWithoutFormat = getNameWithoutName(nameMaterial);
-        initFileNameEditText(nameMaterial);
+        fileNameEditText.setText(nameMaterial);
+        hideEditorOfName();
+        final InputMethodManager inputMethodManager =
+                (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        hideKeyBoard(inputMethodManager, viewProperties);
+        viewProperties.clearFocus();
 
-        applyNameImageButton.setVisibility(View.INVISIBLE);
-        cancelImageButton.setVisibility(View.INVISIBLE);
+        final Animation lowTrashAnimation =
+                AnimationUtils.loadAnimation(context, R.anim.low_shake_trash);
+        final Animation highTrashAnimation =
+                AnimationUtils.loadAnimation(context, R.anim.high_shake_trash);
+        highTrashAnimation.setAnimationListener(
+                new TrashAnimationListener(this));
+        trashImageButton.setOnClickListener(v ->
+                trashImageButton.startAnimation(lowTrashAnimation));
+        trashImageButton.setOnLongClickListener(v -> {
+            trashImageButton.startAnimation(highTrashAnimation);
+            removeDocument();
+            dismiss();
+            return false;
+        });
 
         fileNameEditText.setOnClickListener(v -> {
-            if (imm != null) {
-                imm.showSoftInput(fileNameEditText, InputMethodManager.SHOW_FORCED);
-            }
+            showKeyBoard(inputMethodManager);
         });
 
-        renameImageButton.setOnClickListener(v -> {
-            fileNameEditText.setEnabled(true);
-            fileNameEditText.requestFocus();
-            fileNameEditText.setFocusableInTouchMode(true);
-            fileNameEditText.setVisibleCloseButton(true);
-            fileNameEditText.setText(nameWithoutFormat);
-            applyNameImageButton.setVisibility(View.VISIBLE);
-            cancelImageButton.setVisibility(View.VISIBLE);
-            fileNameEditText.setSelection(nameWithoutFormat.length());
-            if (imm != null) {
-                imm.showSoftInput(fileNameEditText, InputMethodManager.SHOW_FORCED);
-            }
-        });
-
-        applyNameImageButton.setOnClickListener(v -> {
-            setInvisibleForEditTextIsFalse();
-            final Material material = materialPresenter.getMaterial();
-            material.setName(fileNameEditText.getText().toString());
-            materialDao.update(material);
-        });
-
-        cancelImageButton.setOnClickListener(v -> {
-            setInvisibleForEditTextIsFalse();
+        shareImageButton.setOnClickListener(v -> {
+            shareDocument();
+            dismiss();
         });
 
         addToFolderImageButton.setOnClickListener(v ->
                 Log.d("state ", "add to folder"));
 
-        final Animation lowTrashAnimation =
-                AnimationUtils.loadAnimation(context, R.anim.low_shake_trash);
-
-        final Animation highTrashAnimation =
-                AnimationUtils.loadAnimation(context, R.anim.high_shake_trash);
-        highTrashAnimation.setAnimationListener(new TrashAnimationListener(this));
-
-        trashImageButton.setOnClickListener(v ->
-                trashImageButton.startAnimation(lowTrashAnimation));
-
-        trashImageButton.setOnLongClickListener(v -> {
-            trashImageButton.startAnimation(highTrashAnimation);
-            final String path = materialPresenter.getPath();
-            final File file = new File(path);
-            if (file.exists()) {
-                materialDao.deleteByPath(path);
-                file.delete();
-            }
-            return false;
+        renameImageButton.setOnClickListener(v -> {
+            String nameWithoutFormat = getNameWithoutFormat(materialPresenter);
+            fileNameEditText.setText(nameWithoutFormat);
+            fileNameEditText.setSelection(nameWithoutFormat.length());
+            showEditorOfName();
+            showKeyBoard(inputMethodManager);
         });
 
-        shareImageButton.setOnClickListener(v -> {
-            final File file = new File(materialPresenter.getPath());
-            if (file.exists()) {
-                final Uri uriToFile = Uri.fromFile(file);
-                final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToFile);
-                shareIntent.setType("text/plain");
-                startActivity(Intent.createChooser(shareIntent, nameMaterial));
-            }
+        cancelImageButton.setOnClickListener(v -> {
+            fileNameEditText.setText(nameMaterial);
+            hideEditorOfName();
+            hideKeyBoard(inputMethodManager, viewProperties);
+        });
+
+        applyNameImageButton.setOnClickListener(v -> {
+            renameDocument();
+            hideEditorOfName();
+            hideKeyBoard(inputMethodManager, viewProperties);
         });
 
         return viewProperties;
@@ -171,7 +154,8 @@ public class PropertiesDialog extends DialogFragment {
         return materialPresenter;
     }
 
-    private void drawPropertiesDialog(View viewProperties) {
+    @Override
+    public void drawPropertiesDialog(View viewProperties) {
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -180,23 +164,85 @@ public class PropertiesDialog extends DialogFragment {
                 viewProperties.getContext(), R.drawable.properties_dialog_bg));
     }
 
-    private void setInvisibleForEditTextIsFalse() {
+    @Override
+    public void hideKeyBoard(InputMethodManager inputMethodManager, View view) {
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void showKeyBoard(InputMethodManager inputMethodManager) {
+        if (inputMethodManager != null) {
+            inputMethodManager.showSoftInput(fileNameEditText,
+                    InputMethodManager.SHOW_FORCED);
+        }
+    }
+
+    @Override
+    public void removeDocument() {
+        final Removing removing = new Removing(materialDao);
+        materialPresenter.setAbstractPropertiesState(removing);
+        materialPresenter.removeDocument();
+    }
+
+    @Override
+    public void renameDocument() {
+        if (fileNameEditText.getText().length() == 0) {
+            fileNameEditText.setText(materialPresenter.getName());
+        } else {
+            final String newNameMaterial = fileNameEditText.getText().toString();
+            final String fullName =String.valueOf(getFullNameFile(newNameMaterial));
+            fileNameEditText.setText(fullName);
+            final Renaming renaming = new Renaming(fullName);
+            materialPresenter.setAbstractPropertiesState(renaming);
+            materialPresenter.renameDocument();
+        }
+    }
+
+    @Override
+    public void shareDocument() {
+        final Sharing sharing = new Sharing();
+        materialPresenter.setAbstractPropertiesState(sharing);
+        materialPresenter.shareDocument();
+    }
+
+    @Override
+    public void addToFolderDocument() {
+
+    }
+
+    @Override
+    public void hideEditorOfName() {
         fileNameEditText.setVisibleCloseButton(false);
         fileNameEditText.setEnabled(false);
         applyNameImageButton.setVisibility(View.INVISIBLE);
         cancelImageButton.setVisibility(View.INVISIBLE);
+        applyNameImageButton.setVisibility(View.INVISIBLE);
+        cancelImageButton.setVisibility(View.INVISIBLE);
     }
 
-    private String getNameWithoutName(String nameMaterial) {
-        final String format = materialPresenter.getFormat();
+    @Override
+    public void showEditorOfName() {
+        fileNameEditText.setVisibleCloseButton(true);
+        fileNameEditText.setEnabled(true);
+        applyNameImageButton.setVisibility(View.VISIBLE);
+        cancelImageButton.setVisibility(View.VISIBLE);
+        applyNameImageButton.setVisibility(View.VISIBLE);
+        cancelImageButton.setVisibility(View.VISIBLE);
+    }
+
+    private String getNameWithoutFormat(MaterialPresenter materialPresenter) {
+        String nameMaterial = materialPresenter.getName();
+        String format = materialPresenter.getFormat();
         final int lengthName = nameMaterial.length() - (format.length() + 1);
         return nameMaterial.substring(0, lengthName);
     }
 
-    private void initFileNameEditText(String nameMaterial) {
-        fileNameEditText.setText(nameMaterial);
-        fileNameEditText.setEnabled(false);
-        fileNameEditText.setVisibleCloseButton(false);
+    private StringBuilder getFullNameFile(String name) {
+        final String format = materialPresenter.getFormat();
+        final String dote = ".";
+        return new StringBuilder(name)
+                .append(dote)
+                .append(format);
     }
 
 }

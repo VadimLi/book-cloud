@@ -25,7 +25,7 @@ import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.viewPresenters.MaterialsView;
-import com.example.vadim.books_sync.views.animations.ImageButtonAnimation;
+import com.example.vadim.books_sync.views.listeners.ImageButtonAnimation;
 
 import java.util.LinkedList;
 import java.util.List;

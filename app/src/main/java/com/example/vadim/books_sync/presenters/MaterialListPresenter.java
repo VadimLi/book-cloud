@@ -37,7 +37,8 @@ public class MaterialListPresenter {
         documentService.openDocumentByPath(view, material);
     }
 
-    public void onBindMaterialRowViewAtPosition(@NonNull MaterialRowView materialRowView, int position) {
+    public void onBindMaterialRowViewAtPosition(@NonNull MaterialRowView materialRowView,
+                                                int position) {
         materialRowView.setName(materials.get(position).getName());
         documentService = new DocumentService();
         final String pdfFormat = Format.PDF.getFormat();

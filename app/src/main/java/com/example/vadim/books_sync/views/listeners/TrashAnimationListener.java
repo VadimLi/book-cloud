@@ -1,4 +1,4 @@
-package com.example.vadim.books_sync.views.animations;
+package com.example.vadim.books_sync.views.listeners;
 
 import android.annotation.SuppressLint;
 import android.view.animation.Animation;

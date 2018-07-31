@@ -1,4 +1,4 @@
-package com.example.vadim.books_sync.views.animations;
+package com.example.vadim.books_sync.views.listeners;
 
 
 import android.view.animation.RotateAnimation;
