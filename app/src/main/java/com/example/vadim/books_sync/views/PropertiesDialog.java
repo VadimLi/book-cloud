@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.dagger.AppModule;
@@ -38,6 +40,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 @SuppressLint("ValidFragment")
 public class PropertiesDialog extends DialogFragment
@@ -144,12 +148,17 @@ public class PropertiesDialog extends DialogFragment
         }
     }
 
+    @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void removeDocument() {
         final Removing removing = new Removing(materialDao);
         removing.doState(materialPresenter);
+        final String notification =
+                materialPresenter.getAbstractStateProperties().toString();
+        showToast(notification);
     }
 
+    @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void renameDocument() {
         if (fileNameEditText.getText().length() == 0) {
@@ -160,13 +169,20 @@ public class PropertiesDialog extends DialogFragment
             fileNameEditText.setText(fullName);
             final Renaming renaming = new Renaming(fullName);
             renaming.doState(materialPresenter);
+            final String notification =
+                    materialPresenter.getAbstractStateProperties().toString();
+            showToast(notification);
         }
     }
 
+    @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void shareDocument() {
         final Sharing sharing = new Sharing();
         sharing.doState(materialPresenter);
+        final String notification =
+                materialPresenter.getAbstractStateProperties().toString();
+        showToast(notification);
     }
 
     @Override
@@ -197,6 +213,15 @@ public class PropertiesDialog extends DialogFragment
         String format = materialPresenter.getFormat();
         final int lengthName = nameMaterial.length() - (format.length() + 1);
         return nameMaterial.substring(0, lengthName);
+    }
+
+    @RequiresApi(api=Build.VERSION_CODES.M)
+    public void showToast(String notification) {
+        Toast toast = Toast.makeText(getActivity(),
+                notification,
+                LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM, 0, 0);
+        toast.show();
     }
 
     private StringBuilder getFullNameFile(String name) {

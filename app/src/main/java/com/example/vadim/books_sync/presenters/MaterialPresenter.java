@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.presenters;
 
 
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.states_of_document.AbstractStateProperties;
 
 public class MaterialPresenter implements StateOwnerProperties {
 
@@ -12,6 +13,17 @@ public class MaterialPresenter implements StateOwnerProperties {
     private int materialPosition;
 
     private StateOwnerProperties stateOwnerProperties;
+
+    private AbstractStateProperties abstractStateProperties;
+
+    public void setAbstractStateProperties(
+            final AbstractStateProperties abstractStateProperties) {
+        this.abstractStateProperties = abstractStateProperties;
+    }
+
+    public AbstractStateProperties getAbstractStateProperties() {
+        return abstractStateProperties;
+    }
 
     public void attachDialog(StateOwnerProperties stateOwnerProperties) {
         this.stateOwnerProperties = stateOwnerProperties;

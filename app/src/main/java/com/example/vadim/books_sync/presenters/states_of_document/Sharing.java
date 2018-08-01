@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.view.View;
 
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
+import com.example.vadim.books_sync.presenters.Notifications;
 import com.example.vadim.books_sync.viewPresenters.DialogView;
 import com.example.vadim.books_sync.views.PropertiesDialog;
 
@@ -25,6 +26,12 @@ public class Sharing extends AbstractStateProperties {
             propertiesDialog.startActivity(Intent.createChooser(shareIntent,
                             materialPresenter.getName()));
         }
+        materialPresenter.setAbstractStateProperties(this);
+    }
+
+    @Override
+    public String toString() {
+        return Notifications.SHARE.getNotification();
     }
 
 }

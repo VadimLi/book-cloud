@@ -38,8 +38,7 @@ public class CustomEditText extends EditText {
         imgCloseButton =
                 getResources().getDrawable(R.mipmap.ic_clear_text_foreground);
         // Set bounds of the Clear button so it will look ok
-        imgCloseButton.setBounds(0,
-                        0,
+        imgCloseButton.setBounds(0, 0,
                 imgCloseButton.getIntrinsicWidth() / 3,
                 imgCloseButton.getIntrinsicHeight() / 3);
 

@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.presenters.states_of_document;
 
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
+import com.example.vadim.books_sync.presenters.Notifications;
 
 import java.io.File;
 
@@ -32,6 +33,12 @@ public class Renaming extends AbstractStateProperties {
                 materialPresenter.update(fileName);
             }
         }
+        materialPresenter.setAbstractStateProperties(this);
+    }
+
+    @Override
+    public String toString() {
+        return Notifications.RENAME.getNotification();
     }
 
 }

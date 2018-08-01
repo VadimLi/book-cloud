@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.presenters.states_of_document;
 
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
+import com.example.vadim.books_sync.presenters.Notifications;
 
 import java.io.File;
 
@@ -21,6 +22,12 @@ public class Removing extends AbstractStateProperties {
             materialDao.deleteByPath(path);
             file.delete();
         }
+        materialPresenter.setAbstractStateProperties(this);
+    }
+
+    @Override
+    public String toString() {
+        return Notifications.REMOVE.getNotification();
     }
 
 }
