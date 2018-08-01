@@ -17,6 +17,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.schedulers.Schedulers;
+
 @SuppressLint("Registered")
 public class FinderService extends Application {
 
@@ -76,7 +79,21 @@ public class FinderService extends Application {
         }
     }
 
-    private void insertData(File file) {
+    private Observable<Material> getMaterialData(final Material material) {
+        return Observable.create(
+                (Observable.OnSubscribe<Material>)subscriber -> {
+            if (!subscriber.isUnsubscribed()) {
+                try {
+                    subscriber.onNext(insertData(new File(material.getPath())));
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    private Material insertData(File file) {
         final String format = getFileExtension(file);
         final String filePath = file.getAbsolutePath();
         if (checkFormat(format)) {
@@ -91,7 +108,9 @@ public class FinderService extends Application {
             }
             loadingMaterialList.add(material);
             Log.i("", "File: " + filePath);
+            return material;
         }
+        return null;
     }
 
     private boolean checkFormat(String format) {

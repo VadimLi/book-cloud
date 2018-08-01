@@ -16,18 +16,6 @@
             android:gravity="top"
             android:background="@color/colorNavigation"
             android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/btnSync"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_gravity="start|top"
-                android:src="@mipmap/ic_refresh_foreground"
-                android:background="@null"
-                tools:ignore="RtlCompat" />
-
             <ImageButton
                 android:id="@+id/btnFolders"
                 android:layout_width="60dp"
@@ -47,14 +35,19 @@
             android:hint="search..."
             android:textColor="@color/textColorSearch"
             android:inputType="textVisiblePassword"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/material_list"
-            android:layout_gravity="end"
-            android:layout_height="match_parent"
-            app:layoutManager="LinearLayoutManager"
-            android:layout_width="match_parent">
-        </android.support.v7.widget.RecyclerView>
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/material_list"
+                android:layout_gravity="end"
+                android:layout_height="match_parent"
+                app:layoutManager="LinearLayoutManager"
+                android:layout_width="match_parent">
+            </android.support.v7.widget.RecyclerView>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 </FrameLayout>

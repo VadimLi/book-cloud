@@ -66,6 +66,7 @@ public class MaterialListPresenter {
 
     public void removeAt(MaterialPresenter materialPresenter) {
         int position = materialPresenter.getMaterialPosition();
+        materialsPresenter.remove(position);
         materials.remove(position);
         materialViewHolderAdapter.notifyDataSetChanged();
         materialViewHolderAdapter.notifyItemMoved(
@@ -77,6 +78,7 @@ public class MaterialListPresenter {
         final Material material = materialPresenter.getMaterial();
         material.setName(newName);
         materials.set(position, material);
+        materialsPresenter.set(position, materialPresenter);
         materialViewHolderAdapter.notifyDataSetChanged();
         materialViewHolderAdapter.notifyItemMoved(
                 START_POSITION_OF_MATERIALS, materials.size());

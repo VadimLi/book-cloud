@@ -1,11 +1,7 @@
 package com.example.vadim.books_sync.presenters;
 
 
-import android.view.View;
-
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.states_of_document.AbstractStateProperties;
-import com.example.vadim.books_sync.views.PropertiesDialog;
 
 public class MaterialPresenter implements StateOwnerProperties {
 
@@ -15,16 +11,18 @@ public class MaterialPresenter implements StateOwnerProperties {
 
     private int materialPosition;
 
-    private AbstractStateProperties abstractPropertiesState;
+    private StateOwnerProperties stateOwnerProperties;
 
-    private PropertiesDialog propertiesDialog;
-
-    public void attachDialog(PropertiesDialog propertiesDialog) {
-        this.propertiesDialog = propertiesDialog;
+    public void attachDialog(StateOwnerProperties stateOwnerProperties) {
+        this.stateOwnerProperties = stateOwnerProperties;
     }
 
-    public PropertiesDialog getPropertiesDialog() {
-        return propertiesDialog;
+    public void detachDialog() {
+        stateOwnerProperties = null;
+    }
+
+    public StateOwnerProperties getPropertiesDialog() {
+        return stateOwnerProperties;
     }
 
     public MaterialListPresenter getMaterialListPresenter() {
@@ -71,32 +69,26 @@ public class MaterialPresenter implements StateOwnerProperties {
         this.material = material;
     }
 
-    public void setAbstractPropertiesState(AbstractStateProperties abstractPropertiesState) {
-        this.abstractPropertiesState=abstractPropertiesState;
-    }
-
-    public AbstractStateProperties getAbstractPropertiesState() {
-        return abstractPropertiesState;
-    }
-
     @Override
     public void removeDocument() {
-        abstractPropertiesState.doState(this);
+        materialListPresenter.removeAt(this);
+        stateOwnerProperties.removeDocument();
     }
 
     @Override
     public void renameDocument() {
-        abstractPropertiesState.doState(this);
+        stateOwnerProperties.renameDocument();
     }
 
     @Override
     public void shareDocument() {
-        abstractPropertiesState.doState(this);
+        materialListPresenter.setListContent(materialListPresenter.getMaterials());
+        stateOwnerProperties.shareDocument();
     }
 
     @Override
     public void addToFolderDocument() {
-        abstractPropertiesState.doState(this);
+        stateOwnerProperties.addToFolderDocument();
     }
 
 }

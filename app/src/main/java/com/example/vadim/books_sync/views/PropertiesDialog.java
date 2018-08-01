@@ -6,19 +6,18 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 
@@ -33,9 +32,7 @@ import com.example.vadim.books_sync.presenters.states_of_document.Removing;
 import com.example.vadim.books_sync.presenters.states_of_document.Renaming;
 import com.example.vadim.books_sync.presenters.states_of_document.Sharing;
 import com.example.vadim.books_sync.viewPresenters.DialogView;
-import com.example.vadim.books_sync.views.listeners.TrashAnimationListener;
-
-import java.util.Objects;
+import com.example.vadim.books_sync.views.listeners.CallbacksProperties;
 
 import javax.inject.Inject;
 
@@ -72,6 +69,8 @@ public class PropertiesDialog extends DialogFragment
 
     private MaterialPresenter materialPresenter;
 
+    private InputMethodManager inputMethodManager;
+
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("InflateParams")
@@ -88,60 +87,14 @@ public class PropertiesDialog extends DialogFragment
         materialPresenter.attachDialog(this);
 
         drawPropertiesDialog(viewProperties);
-        final String nameMaterial = materialPresenter.getName();
-        fileNameEditText.setText(nameMaterial);
+        fileNameEditText.setText(materialPresenter.getName());
         hideEditorOfName();
-        final InputMethodManager inputMethodManager =
+        inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         hideKeyBoard(inputMethodManager, viewProperties);
-        viewProperties.clearFocus();
 
-        final Animation lowTrashAnimation =
-                AnimationUtils.loadAnimation(context, R.anim.low_shake_trash);
-        final Animation highTrashAnimation =
-                AnimationUtils.loadAnimation(context, R.anim.high_shake_trash);
-        highTrashAnimation.setAnimationListener(
-                new TrashAnimationListener(this));
-        trashImageButton.setOnClickListener(v ->
-                trashImageButton.startAnimation(lowTrashAnimation));
-        trashImageButton.setOnLongClickListener(v -> {
-            trashImageButton.startAnimation(highTrashAnimation);
-            removeDocument();
-            dismiss();
-            return false;
-        });
-
-        fileNameEditText.setOnClickListener(v -> {
-            showKeyBoard(inputMethodManager);
-        });
-
-        shareImageButton.setOnClickListener(v -> {
-            shareDocument();
-            dismiss();
-        });
-
-        addToFolderImageButton.setOnClickListener(v ->
-                Log.d("state ", "add to folder"));
-
-        renameImageButton.setOnClickListener(v -> {
-            String nameWithoutFormat = getNameWithoutFormat(materialPresenter);
-            fileNameEditText.setText(nameWithoutFormat);
-            fileNameEditText.setSelection(nameWithoutFormat.length());
-            showEditorOfName();
-            showKeyBoard(inputMethodManager);
-        });
-
-        cancelImageButton.setOnClickListener(v -> {
-            fileNameEditText.setText(nameMaterial);
-            hideEditorOfName();
-            hideKeyBoard(inputMethodManager, viewProperties);
-        });
-
-        applyNameImageButton.setOnClickListener(v -> {
-            renameDocument();
-            hideEditorOfName();
-            hideKeyBoard(inputMethodManager, viewProperties);
-        });
+        new CallbackPropertiesImpl(this);
+        new CallbackPropertiesImpl.CallbacksEditorImpl(this);
 
         return viewProperties;
     }
@@ -155,9 +108,22 @@ public class PropertiesDialog extends DialogFragment
     }
 
     @Override
+    public void dismiss() {
+        super.dismiss();
+        materialPresenter.detachDialog();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialogInterface) {
+        super.onCancel(dialogInterface);
+        materialPresenter.detachDialog();
+    }
+
+    @Override
     public void drawPropertiesDialog(View viewProperties) {
         if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            getDialog().getWindow().setBackgroundDrawable(
+                    new ColorDrawable(Color.TRANSPARENT));
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
         viewProperties.setBackground(ContextCompat.getDrawable(
@@ -166,7 +132,8 @@ public class PropertiesDialog extends DialogFragment
 
     @Override
     public void hideKeyBoard(InputMethodManager inputMethodManager, View view) {
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override
@@ -180,8 +147,7 @@ public class PropertiesDialog extends DialogFragment
     @Override
     public void removeDocument() {
         final Removing removing = new Removing(materialDao);
-        materialPresenter.setAbstractPropertiesState(removing);
-        materialPresenter.removeDocument();
+        removing.doState(materialPresenter);
     }
 
     @Override
@@ -193,22 +159,18 @@ public class PropertiesDialog extends DialogFragment
             final String fullName =String.valueOf(getFullNameFile(newNameMaterial));
             fileNameEditText.setText(fullName);
             final Renaming renaming = new Renaming(fullName);
-            materialPresenter.setAbstractPropertiesState(renaming);
-            materialPresenter.renameDocument();
+            renaming.doState(materialPresenter);
         }
     }
 
     @Override
     public void shareDocument() {
         final Sharing sharing = new Sharing();
-        materialPresenter.setAbstractPropertiesState(sharing);
-        materialPresenter.shareDocument();
+        sharing.doState(materialPresenter);
     }
 
     @Override
-    public void addToFolderDocument() {
-
-    }
+    public void addToFolderDocument() { }
 
     @Override
     public void hideEditorOfName() {
@@ -230,7 +192,7 @@ public class PropertiesDialog extends DialogFragment
         cancelImageButton.setVisibility(View.VISIBLE);
     }
 
-    private String getNameWithoutFormat(MaterialPresenter materialPresenter) {
+    String getNameWithoutFormat(MaterialPresenter materialPresenter) {
         String nameMaterial = materialPresenter.getName();
         String format = materialPresenter.getFormat();
         final int lengthName = nameMaterial.length() - (format.length() + 1);
@@ -243,6 +205,10 @@ public class PropertiesDialog extends DialogFragment
         return new StringBuilder(name)
                 .append(dote)
                 .append(format);
+    }
+
+    public InputMethodManager getInputMethodManager() {
+        return inputMethodManager;
     }
 
 }

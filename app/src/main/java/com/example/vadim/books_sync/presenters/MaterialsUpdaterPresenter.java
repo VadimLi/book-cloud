@@ -10,8 +10,8 @@ import com.example.vadim.books_sync.presenters.services.FinderService;
 import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 
 import java.util.LinkedList;
-
 import javax.inject.Inject;
+
 
 public class MaterialsUpdaterPresenter implements MaterialsView {
 

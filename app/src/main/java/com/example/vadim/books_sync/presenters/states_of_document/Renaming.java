@@ -1,12 +1,9 @@
 package com.example.vadim.books_sync.presenters.states_of_document;
 
-import android.view.View;
-
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Renaming extends AbstractStateProperties {
 

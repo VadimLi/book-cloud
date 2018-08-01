@@ -6,15 +6,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
-import android.widget.ImageButton;
+import android.view.WindowManager;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.adapter.MaterialsRecyclerAdapter;
@@ -25,7 +23,7 @@ import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.viewPresenters.MaterialsView;
-import com.example.vadim.books_sync.views.listeners.ImageButtonAnimation;
+
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,14 +37,14 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
-    @BindView(R.id.btnSync)
-    ImageButton syncButton;
-
     @BindView(R.id.material_list)
     RecyclerView recyclerView;
 
     @BindView(R.id.inputSearch)
     SearchView inputSearch;
+
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout swipeContainer;
 
     @Inject
     MaterialDao materialDao;
@@ -61,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this,
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
                 = convertToLinkedMaterialList(materials);
 
         materialsUpdaterPresenter.updateMaterials(materialLinkedList);
+
+
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
@@ -95,25 +98,17 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
             }
         });
 
-        syncButton.setOnClickListener((View e) -> {
-            final ImageButtonAnimation animation =
-                    new ImageButtonAnimation(syncButton);
-            animation.startAnimation();
-            final RotateAnimation rotateAnimation = animation.getRotateAnimation();
-            rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {}
 
-                @Override
-                public void onAnimationEnd(Animation animation) {}
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                    materialsUpdaterPresenter.updateMaterials(materialLinkedList);
-                    rotateAnimation.setRepeatCount(Animation.ABSOLUTE);
-                }
-            });
+        swipeContainer.setOnRefreshListener(() -> {
+            materialsUpdaterPresenter.updateMaterials(materialLinkedList);
+            swipeContainer.setRefreshing(false);
         });
+
+        swipeContainer.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
 
     @Override
@@ -154,5 +149,5 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
         recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
-}
+};
 
