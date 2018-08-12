@@ -1,8 +1,11 @@
 package com.example.vadim.books_sync.presenters;
 
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.states_of_document.AbstractStateProperties;
+import com.example.vadim.books_sync.presenters.states_of_document.State;
 
 public class MaterialPresenter implements StateOwnerProperties {
 
@@ -14,15 +17,14 @@ public class MaterialPresenter implements StateOwnerProperties {
 
     private StateOwnerProperties stateOwnerProperties;
 
-    private AbstractStateProperties abstractStateProperties;
+    private State state;
 
-    public void setAbstractStateProperties(
-            final AbstractStateProperties abstractStateProperties) {
-        this.abstractStateProperties = abstractStateProperties;
+    public void setState(final State state) {
+        this.state = state;
     }
 
-    public AbstractStateProperties getAbstractStateProperties() {
-        return abstractStateProperties;
+    public State getState() {
+        return state;
     }
 
     public void attachDialog(StateOwnerProperties stateOwnerProperties) {
@@ -81,17 +83,20 @@ public class MaterialPresenter implements StateOwnerProperties {
         this.material = material;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void removeDocument() {
         materialListPresenter.removeAt(this);
         stateOwnerProperties.removeDocument();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void renameDocument() {
         stateOwnerProperties.renameDocument();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void shareDocument() {
         materialListPresenter.setListContent(materialListPresenter.getMaterials());

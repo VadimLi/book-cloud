@@ -6,7 +6,7 @@ import com.example.vadim.books_sync.presenters.Notifications;
 
 import java.io.File;
 
-public class Renaming extends AbstractStateProperties {
+public class Renaming extends State {
 
     private final String fileName;
 
@@ -33,7 +33,7 @@ public class Renaming extends AbstractStateProperties {
                 materialPresenter.update(fileName);
             }
         }
-        materialPresenter.setAbstractStateProperties(this);
+        materialPresenter.setState(this);
     }
 
     @Override

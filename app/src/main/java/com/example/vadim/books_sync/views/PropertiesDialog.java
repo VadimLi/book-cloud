@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -18,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -33,8 +33,8 @@ import com.example.vadim.books_sync.presenters.StateOwnerProperties;
 import com.example.vadim.books_sync.presenters.states_of_document.Removing;
 import com.example.vadim.books_sync.presenters.states_of_document.Renaming;
 import com.example.vadim.books_sync.presenters.states_of_document.Sharing;
+import com.example.vadim.books_sync.presenters.states_of_document.State;
 import com.example.vadim.books_sync.viewPresenters.DialogView;
-import com.example.vadim.books_sync.views.listeners.CallbacksProperties;
 
 import javax.inject.Inject;
 
@@ -75,6 +75,8 @@ public class PropertiesDialog extends DialogFragment
 
     private InputMethodManager inputMethodManager;
 
+    private Sharing sharing;
+
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("InflateParams")
@@ -90,6 +92,9 @@ public class PropertiesDialog extends DialogFragment
                 .injectDialogFragment(this);
         materialPresenter.attachDialog(this);
 
+        new CallbackPropertiesImpl(this);
+        new CallbackPropertiesImpl.CallbacksEditorImpl(this);
+
         drawPropertiesDialog(viewProperties);
         fileNameEditText.setText(materialPresenter.getName());
         hideEditorOfName();
@@ -97,8 +102,6 @@ public class PropertiesDialog extends DialogFragment
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         hideKeyBoard(inputMethodManager, viewProperties);
 
-        new CallbackPropertiesImpl(this);
-        new CallbackPropertiesImpl.CallbacksEditorImpl(this);
 
         return viewProperties;
     }
@@ -153,9 +156,7 @@ public class PropertiesDialog extends DialogFragment
     public void removeDocument() {
         final Removing removing = new Removing(materialDao);
         removing.doState(materialPresenter);
-        final String notification =
-                materialPresenter.getAbstractStateProperties().toString();
-        showToast(notification);
+        showToast(materialPresenter.getState());
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
@@ -169,24 +170,19 @@ public class PropertiesDialog extends DialogFragment
             fileNameEditText.setText(fullName);
             final Renaming renaming = new Renaming(fullName);
             renaming.doState(materialPresenter);
-            final String notification =
-                    materialPresenter.getAbstractStateProperties().toString();
-            showToast(notification);
+            showToast(materialPresenter.getState());
         }
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void shareDocument() {
-        final Sharing sharing = new Sharing();
+        sharing = new Sharing();
         sharing.doState(materialPresenter);
-        final String notification =
-                materialPresenter.getAbstractStateProperties().toString();
-        showToast(notification);
     }
 
     @Override
-    public void addToFolderDocument() { }
+    public void addToFolderDocument() {}
 
     @Override
     public void hideEditorOfName() {
@@ -216,12 +212,14 @@ public class PropertiesDialog extends DialogFragment
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
-    public void showToast(String notification) {
-        Toast toast = Toast.makeText(getActivity(),
-                notification,
-                LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
-        toast.show();
+    public void showToast(State state) {
+        if (state != null) {
+            final Toast toast = Toast.makeText(getActivity(),
+                    state.toString(),
+                    LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM, 0, 0);
+            toast.show();
+        }
     }
 
     private StringBuilder getFullNameFile(String name) {
@@ -230,6 +228,17 @@ public class PropertiesDialog extends DialogFragment
         return new StringBuilder(name)
                 .append(dote)
                 .append(format);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == sharing.getRequestCodeForSendDocuments()) {
+            sharing.notifyState(materialPresenter);
+            dismiss();
+            showToast(materialPresenter.getState());
+        }
     }
 
     public InputMethodManager getInputMethodManager() {

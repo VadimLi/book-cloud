@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.views;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.adapter.MaterialsRecyclerAdapter;
@@ -45,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
 
     @BindView(R.id.swipeContainer)
     SwipeRefreshLayout swipeContainer;
+
+    @BindView(R.id.btnFolders)
+    ImageButton folders;
 
     @Inject
     MaterialDao materialDao;
@@ -82,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
                 = convertToLinkedMaterialList(materials);
 
         materialsUpdaterPresenter.updateMaterials(materialLinkedList);
-
 
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -147,6 +151,11 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
                 new LinearLayoutManager(this));
         materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
         recyclerView.setAdapter(materialsRecyclerAdapter);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 };

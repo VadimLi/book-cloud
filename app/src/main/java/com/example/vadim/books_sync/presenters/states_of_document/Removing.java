@@ -6,7 +6,7 @@ import com.example.vadim.books_sync.presenters.Notifications;
 
 import java.io.File;
 
-public class Removing extends AbstractStateProperties {
+public class Removing extends State {
 
     private final MaterialDao materialDao;
 
@@ -21,8 +21,8 @@ public class Removing extends AbstractStateProperties {
         if (file.exists()) {
             materialDao.deleteByPath(path);
             file.delete();
+            materialPresenter.setState(this);
         }
-        materialPresenter.setAbstractStateProperties(this);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.vadim.books_sync.views;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,7 +15,8 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
 
     private final PropertiesDialog propertiesDialog;
 
-    public CallbackPropertiesImpl(PropertiesDialog propertiesDialog) {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    CallbackPropertiesImpl(PropertiesDialog propertiesDialog) {
         this.propertiesDialog = propertiesDialog;
         propertiesDialog.shareImageButton.setOnClickListener(onClickShare());
         propertiesDialog.trashImageButton.setOnClickListener(onClickRemove());
@@ -22,12 +25,10 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
         propertiesDialog.addToFolderImageButton.setOnClickListener(onClickAddToFile());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View.OnClickListener onClickShare() {
-        return v -> {
-            propertiesDialog.getMaterialPresenter().shareDocument();
-            propertiesDialog.dismiss();
-        };
+        return v -> propertiesDialog.getMaterialPresenter().shareDocument();
     }
 
     @Override
@@ -39,6 +40,7 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
         };
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View.OnLongClickListener onLongClickRemove() {
         return v -> {
@@ -76,7 +78,8 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
 
         private InputMethodManager inputMethodManager;
 
-        public CallbacksEditorImpl(PropertiesDialog propertiesDialog) {
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        CallbacksEditorImpl(PropertiesDialog propertiesDialog) {
             this.propertiesDialog = propertiesDialog;
             inputMethodManager = propertiesDialog.getInputMethodManager();
             propertiesDialog.applyNameImageButton.setOnClickListener(onClickApply());
@@ -94,6 +97,7 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
             };
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public View.OnClickListener onClickApply() {
             return v -> {
@@ -105,9 +109,7 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
 
         @Override
         public View.OnClickListener onClickEditText() {
-            return v -> {
-                propertiesDialog.showKeyBoard(inputMethodManager);
-            };
+            return v -> propertiesDialog.showKeyBoard(inputMethodManager);
         }
 
     }
