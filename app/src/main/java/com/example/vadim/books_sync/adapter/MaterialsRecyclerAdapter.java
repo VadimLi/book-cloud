@@ -49,7 +49,8 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
 
     public void setListContent(List<Material> materials) {
         materialListPresenter.setListContent(materials);
-        notifyItemRangeChanged(MaterialListPresenter.START_POSITION_OF_MATERIALS, materials.size());
+        notifyItemRangeChanged(MaterialListPresenter.START_POSITION_OF_MATERIALS,
+                materials.size());
     }
 
     @Override

@@ -36,12 +36,14 @@ public class MaterialsUpdaterPresenter implements MaterialsView {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void updateMaterials(LinkedList<Material> materials) {
-        final LinkedList<Material> newMaterials = finderService.getMaterials();
-        for (Material material : newMaterials) {
-            materials.addFirst(material);
-        }
-        finderService.deleteMaterialFiles(materials);
-        materialsView.updateMaterials(materials);
+        new Thread(() -> {
+            final LinkedList<Material> newMaterials = finderService.getMaterials();
+            for (Material material : newMaterials) {
+                materials.addFirst(material);
+            }
+            finderService.deleteMaterialFiles(materials);
+            new Thread(() -> materialsView.updateMaterials(materials)).start();
+        }).start();
     }
 
 }

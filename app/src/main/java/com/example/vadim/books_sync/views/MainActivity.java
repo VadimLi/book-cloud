@@ -2,7 +2,6 @@ package com.example.vadim.books_sync.views;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -25,7 +24,6 @@ import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.viewPresenters.MaterialsView;
-
 
 import java.util.LinkedList;
 import java.util.List;
@@ -64,9 +62,7 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this,
@@ -85,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList
                 = convertToLinkedMaterialList(materials);
-
         materialsUpdaterPresenter.updateMaterials(materialLinkedList);
 
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -102,17 +97,9 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
             }
         });
 
+        swipeContainer.setOnRefreshListener(() ->
+                materialsUpdaterPresenter.updateMaterials(materialLinkedList));
 
-        swipeContainer.setOnRefreshListener(() -> {
-            materialsUpdaterPresenter.updateMaterials(materialLinkedList);
-            swipeContainer.setRefreshing(false);
-        });
-
-        swipeContainer.setColorSchemeResources(
-                android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
     }
 
     @Override
@@ -132,8 +119,11 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void updateMaterials(LinkedList<Material> materials) {
-        materialsRecyclerAdapter.setListContent(materials);
-        recyclerView.setAdapter(materialsRecyclerAdapter);
+        swipeContainer.post(() -> {
+            materialsRecyclerAdapter.setListContent(materials);
+            recyclerView.setAdapter(materialsRecyclerAdapter);
+            swipeContainer.setRefreshing(false);
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -153,10 +143,5 @@ public class MainActivity extends AppCompatActivity implements MaterialsView {
         recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-};
+}
 
