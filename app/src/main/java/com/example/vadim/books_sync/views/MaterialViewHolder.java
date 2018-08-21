@@ -1,10 +1,10 @@
 package com.example.vadim.books_sync.views;
 
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -59,7 +59,7 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
         propertiesDialog.setMaterialPresenter(materialPresenter);
 
         final FragmentManager fragmentManager =
-                ((Activity) view.getContext()).getFragmentManager();
+                ((FragmentActivity) view.getContext()).getSupportFragmentManager();
         propertiesDialog.show(fragmentManager, "properties dialog");
         return true;
     }

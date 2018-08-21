@@ -4,13 +4,13 @@ package com.example.vadim.books_sync.views;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
@@ -35,6 +35,8 @@ import com.example.vadim.books_sync.presenters.states_of_document.Sharing;
 import com.example.vadim.books_sync.presenters.states_of_document.State;
 import com.example.vadim.books_sync.viewPresenters.DialogView;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -43,7 +45,7 @@ import butterknife.ButterKnife;
 import static android.widget.Toast.LENGTH_SHORT;
 
 @SuppressLint("ValidFragment")
-public class PropertiesDialog extends DialogFragment
+public class PropertiesDialog extends android.support.v4.app.DialogFragment
         implements StateOwnerProperties, DialogView {
 
     @BindView(R.id.fileName)
@@ -77,13 +79,16 @@ public class PropertiesDialog extends DialogFragment
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("InflateParams")
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
         final View viewProperties = inflater.inflate(R.layout.dialog_properties, null);
         final Context context = viewProperties.getContext();
         ButterKnife.bind(this, viewProperties);
         DaggerAppComponent.builder()
-                .appModule(new AppModule(getActivity().getApplication()))
+                .appModule(new AppModule(
+                        Objects.requireNonNull(getActivity())
+                                .getApplication()))
                 .roomModule(new RoomModule(getActivity().getApplication()))
                 .build()
                 .injectDialogFragment(this);
@@ -97,7 +102,6 @@ public class PropertiesDialog extends DialogFragment
         hideEditorOfName();
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        hideKeyBoard(inputMethodManager, viewProperties);
 
         return viewProperties;
     }

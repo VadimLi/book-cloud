@@ -43,7 +43,7 @@ public class MaterialListPresenter {
         documentService = new DocumentService();
         final String pdfFormat = Format.PDF.getFormat();
         if (materials.get(position).getFormat().equals(pdfFormat)) {
-            materialRowView.setImageResource(R.mipmap.ic_pdf_foreground);
+            materialRowView.setImageResource(R.mipmap.ic_word_foreground);
         } else {
             materialRowView.setImageResource(R.mipmap.ic_word_foreground);
         }

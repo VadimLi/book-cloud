@@ -10,6 +10,7 @@ import com.example.vadim.books_sync.presenters.services.FinderService;
 import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 
 import java.util.LinkedList;
+
 import javax.inject.Inject;
 
 
@@ -36,14 +37,17 @@ public class MaterialsUpdaterPresenter implements MaterialsView {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void updateMaterials(LinkedList<Material> materials) {
-        new Thread(() -> {
+        final Thread updaterMaterialsThread = new Thread(() -> {
             final LinkedList<Material> newMaterials = finderService.getMaterials();
             for (Material material : newMaterials) {
                 materials.addFirst(material);
             }
             finderService.deleteMaterialFiles(materials);
-            new Thread(() -> materialsView.updateMaterials(materials)).start();
-        }).start();
+            final Thread updaterAdapter =
+                    new Thread(() -> materialsView.updateMaterials(materials));
+            updaterAdapter.start();
+        });
+        updaterMaterialsThread.start();
     }
 
 }

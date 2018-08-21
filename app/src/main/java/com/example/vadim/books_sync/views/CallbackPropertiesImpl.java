@@ -93,7 +93,6 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
                 propertiesDialog.fileNameEditText.setText(
                         propertiesDialog.getMaterialPresenter().getName());
                 propertiesDialog.hideEditorOfName();
-                propertiesDialog.hideKeyBoard(inputMethodManager, v);
             };
         }
 
@@ -103,7 +102,6 @@ public class CallbackPropertiesImpl implements CallbacksProperties {
             return v -> {
                 propertiesDialog.getMaterialPresenter().renameDocument();
                 propertiesDialog.hideEditorOfName();
-                propertiesDialog.hideKeyBoard(inputMethodManager, v);
             };
         }
 
