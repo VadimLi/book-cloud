@@ -1,7 +1,10 @@
 package com.example.vadim.books_sync.views;
 
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,7 +16,7 @@ import android.widget.TextView;
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
-import com.example.vadim.books_sync.viewPresenters.MaterialRowView;
+import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
 
 import javax.inject.Inject;
 
@@ -21,7 +24,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MaterialViewHolder extends RecyclerView.ViewHolder
-        implements View.OnClickListener, View.OnLongClickListener, MaterialRowView {
+        implements View.OnClickListener, View.OnLongClickListener,
+        BaseRowPresenter {
 
     @BindView(R.id.formatMaterial)
     ImageView formatMaterial;
@@ -41,15 +45,22 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
         ButterKnife.bind(this, itemView);
     }
 
+    @SuppressLint({"ResourceAsColor", "ResourceType"})
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onClick(View view) {
+        changeBackgroundResource(view);
+        view.setBackgroundResource(R.color.colorItemFile);
+        new Handler().postDelayed(() ->
+                view.setBackgroundResource(Color.TRANSPARENT), 500);
         final int position = getAdapterPosition();
         materialListPresenter.openDocumentByPath(view, position);
     }
 
+    @SuppressLint({"ResourceAsColor", "ResourceType"})
     @Override
     public boolean onLongClick(View view) {
+        changeBackgroundResource(view);
         final int position = getAdapterPosition();
         final PropertiesDialog propertiesDialog = new PropertiesDialog();
         final MaterialPresenter materialPresenter = materialListPresenter
@@ -72,6 +83,14 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
     @Override
     public void setImageResource(int resourceId) {
         formatMaterial.setImageResource(resourceId);
+    }
+
+    @SuppressLint("ResourceType")
+    public void changeBackgroundResource(View view) {
+        final int delay = 500;
+        view.setBackgroundResource(R.color.colorItemFile);
+        new Handler().postDelayed(() ->
+                view.setBackgroundResource(Color.TRANSPARENT), delay);
     }
 
 }

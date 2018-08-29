@@ -24,8 +24,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getInMemoryDatabase(Context context) {
         if (instance == null) {
             instance = Room
-                    .databaseBuilder(context, AppDatabase.class, "doc_db")
-                    .addMigrations(FROM_1_TO_2, FROM_2_TO_3, FROM_3_TO_4, FROM_4_TO_5)
+                    .databaseBuilder(context, AppDatabase.class, "document_db")
+                    .addMigrations(
+                            FROM_1_TO_2,
+                            FROM_2_TO_3,
+                            FROM_3_TO_4,
+                            FROM_4_TO_5)
                     .allowMainThreadQueries()
                     .build();
         }
@@ -64,6 +68,26 @@ public abstract class AppDatabase extends RoomDatabase {
             database.execSQL("DELETE FROM material");
         }
     };
+
+//    private static final Migration FROM_5_TO_6 = new Migration(5, 6) {
+//        @Override
+//        public void migrate(final SupportSQLiteDatabase database) {
+//            database.execSQL("CREATE TABLE IF NOT EXISTS 'folder'(" +
+//                    "'id' LONG AUTO_INCREMENT," +
+//                    "'name' TEXT NOT NULL," +
+//                    "'id_material' LONG NOT NULL," +
+//                    "'id_folder' LONG NOT NULL," +
+//                    "PRIMARY KEY('id'))");
+//        }
+//    };
+//
+//    private static final Migration FROM_6_TO_7 = new Migration(6, 7) {
+//        @Override
+//        public void migrate(final SupportSQLiteDatabase database) {
+//            database.execSQL("ALTER TABLE material " +
+//                    "ADD COLUMN id_folder LONG;");
+//        }
+//    };
 
     public static void destroyInstance() {
         instance = null;

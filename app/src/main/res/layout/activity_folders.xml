@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.FoldersActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="vertical">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="top"
+            android:background="@color/colorNavigation"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/btnFiles"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="start|top"
+                android:src="@mipmap/ic_back_to_files_foreground"
+                android:background="@null"
+                tools:ignore="RtlCompat" />
+            <ImageButton
+                android:id="@+id/btnCreatorFolder"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="end|top"
+                android:src="@mipmap/ic_creator_folder_foreground"
+                android:background="@null"
+                tools:ignore="RtlCompat" />
+        </FrameLayout>
+        <android.support.v7.widget.SearchView
+            android:id="@+id/inputSearch"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="search..."
+            android:textColor="@color/textColorSearch"
+            android:inputType="textVisiblePassword"/>
+    </LinearLayout>
+</FrameLayout>

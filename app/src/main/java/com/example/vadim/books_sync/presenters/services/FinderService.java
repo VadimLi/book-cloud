@@ -96,7 +96,7 @@ public class FinderService extends Application {
     }
 
     private boolean checkFormat(String format) {
-        for (Format f : Format.values()) {
+        for (Formats.Format f : Formats.Format.values()) {
             if (format.equals(f.getFormat())) {
                 return true;
             }

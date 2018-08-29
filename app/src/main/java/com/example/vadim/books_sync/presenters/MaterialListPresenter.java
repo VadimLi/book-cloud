@@ -8,10 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.vadim.books_sync.R;
+import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.services.DocumentService;
-import com.example.vadim.books_sync.presenters.services.Format;
-import com.example.vadim.books_sync.viewPresenters.MaterialRowView;
+import com.example.vadim.books_sync.presenters.services.Formats;
 import com.example.vadim.books_sync.views.MaterialViewHolder;
 
 import java.util.ArrayList;
@@ -37,24 +37,25 @@ public class MaterialListPresenter {
         documentService.openDocumentByPath(view, material);
     }
 
-    public void onBindMaterialRowViewAtPosition(@NonNull MaterialRowView materialRowView,
+    public void onBindMaterialRowViewAtPosition(@NonNull BaseRowPresenter baseRowPresenter,
                                                 int position) {
-        materialRowView.setName(materials.get(position).getName());
+        baseRowPresenter.setName(materials.get(position).getName());
         documentService = new DocumentService();
-        final String pdfFormat = Format.PDF.getFormat();
-        if (materials.get(position).getFormat().equals(pdfFormat)) {
-            materialRowView.setImageResource(R.mipmap.ic_word_foreground);
-        } else {
-            materialRowView.setImageResource(R.mipmap.ic_word_foreground);
+
+        final String format = materials.get(position).getFormat();
+        switch (format) {
+            case Formats.PDF:
+                baseRowPresenter.setImageResource(R.mipmap.ic_pdf_foreground);
+                break;
+            case Formats.DOCX : {
+                baseRowPresenter.setImageResource(R.mipmap.ic_word_foreground);
+                break;
+            }
         }
     }
 
     public int getMaterialsSize() {
         return materials.size();
-    }
-
-    public int getFilterMaterialsSize() {
-        return filterMaterials.size();
     }
 
     public void setListContent(List<Material> materials) {
@@ -100,7 +101,8 @@ public class MaterialListPresenter {
         return materialsPresenter;
     }
 
-    public void setMaterialViewHolderAdapter(RecyclerView.Adapter<MaterialViewHolder> materialViewHolderAdapter) {
+    public void setMaterialViewHolderAdapter(
+            RecyclerView.Adapter<MaterialViewHolder> materialViewHolderAdapter) {
         this.materialViewHolderAdapter = materialViewHolderAdapter;
     }
 

@@ -7,30 +7,30 @@ import android.support.annotation.RequiresApi;
 
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.services.FinderService;
-import com.example.vadim.books_sync.viewPresenters.MaterialsView;
+import com.example.vadim.books_sync.basePresenters.BaseMaterialsPresenter;
 
 import java.util.LinkedList;
 
 import javax.inject.Inject;
 
 
-public class MaterialsUpdaterPresenter implements MaterialsView {
+public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
 
     private FinderService finderService;
 
-    private MaterialsView materialsView;
+    private BaseMaterialsPresenter baseMaterialsPresenter;
 
     @Inject
     public MaterialsUpdaterPresenter(FinderService finderService) {
         this.finderService = finderService;
     }
 
-    public void attachView(MaterialsView materialsView) {
-        this.materialsView = materialsView;
+    public void attachView(BaseMaterialsPresenter baseMaterialsPresenter) {
+        this.baseMaterialsPresenter = baseMaterialsPresenter;
     }
 
     public void detachView() {
-        materialsView = null;
+        baseMaterialsPresenter = null;
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -43,8 +43,11 @@ public class MaterialsUpdaterPresenter implements MaterialsView {
                 materials.addFirst(material);
             }
             finderService.deleteMaterialFiles(materials);
-            final Thread updaterAdapter =
-                    new Thread(() -> materialsView.updateMaterials(materials));
+            final Thread updaterAdapter = new Thread(() -> {
+                if (baseMaterialsPresenter != null) {
+                    baseMaterialsPresenter.updateMaterials(materials);
+                }
+            });
             updaterAdapter.start();
         });
         updaterMaterialsThread.start();

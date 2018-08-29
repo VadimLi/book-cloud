@@ -33,7 +33,6 @@ import com.example.vadim.books_sync.presenters.states_of_document.Removing;
 import com.example.vadim.books_sync.presenters.states_of_document.Renaming;
 import com.example.vadim.books_sync.presenters.states_of_document.Sharing;
 import com.example.vadim.books_sync.presenters.states_of_document.State;
-import com.example.vadim.books_sync.viewPresenters.DialogView;
 
 import java.util.Objects;
 

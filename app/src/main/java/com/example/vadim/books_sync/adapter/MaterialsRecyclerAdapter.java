@@ -22,14 +22,9 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
 
     private LayoutInflater layoutInflater;
 
-    private View view;
-
-    private final Context context;
-
     private MaterialListPresenter materialListPresenter;
 
     public MaterialsRecyclerAdapter(Context context) {
-        this.context = context;
         layoutInflater = LayoutInflater.from(context);
         materialListPresenter = new MaterialListPresenter();
         materialListPresenter.setMaterialViewHolderAdapter(this);
@@ -38,7 +33,7 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
     @NonNull
     @Override
     public MaterialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = layoutInflater.inflate(R.layout.material, parent, false);
+        final View view = layoutInflater.inflate(R.layout.material, parent, false);
         return new MaterialViewHolder(view, materialListPresenter);
     }
 

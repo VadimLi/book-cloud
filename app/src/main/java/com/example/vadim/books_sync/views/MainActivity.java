@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.views;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -19,13 +20,13 @@ import android.widget.ProgressBar;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.adapter.MaterialsRecyclerAdapter;
+import com.example.vadim.books_sync.basePresenters.BaseMaterialsPresenter;
 import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
-import com.example.vadim.books_sync.viewPresenters.MaterialsView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeContainer;
 
     @BindView(R.id.btnFolders)
-    ImageButton folders;
+    ImageButton moveFolders;
 
     @Inject
     MaterialDao materialDao;
@@ -62,12 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
     private MaterialsRecyclerAdapter materialsRecyclerAdapter;
 
+    private Bundle savedInstanceState;
+
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        this.savedInstanceState = savedInstanceState;
+        super.onCreate(this.savedInstanceState);
+        this.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this,
@@ -83,11 +88,14 @@ public class MainActivity extends AppCompatActivity {
 
         createMaterialAdapter();
         final List<Material> materials = materialDao.findAll();
-        final LinkedList<Material> materialLinkedList
-                = convertToLinkedMaterialList(materials);
+        final LinkedList<Material> materialLinkedList = convertToLinkedMaterialList(materials);
+        setProgressBarLoadMaterials(materialLinkedList);
 
-        materialsUpdaterPresenter.attachView(new ProgressBarRefresherMaterials());
-        materialsUpdaterPresenter.updateMaterials(materialLinkedList);
+        moveFolders.setOnClickListener(v -> {
+            final Intent foldersIntent =
+                    new Intent(this, FoldersActivity.class);
+            startActivityForResult(foldersIntent, 1);
+        });
 
         inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -101,18 +109,47 @@ public class MainActivity extends AppCompatActivity {
                 materialsRecyclerAdapter.getFilter().filter(newText);
                 return false;
             }
+
         });
 
         swipeContainer.setOnRefreshListener(() -> {
             if (progressBarLoadMaterials.getVisibility() == View.INVISIBLE) {
-                materialsUpdaterPresenter.attachView(new SwipeContainerRefresherMaterials());
+                materialsUpdaterPresenter.attachView(
+                        new SwipeContainerRefresherBaseMaterials());
                 materialsUpdaterPresenter.updateMaterials(materialLinkedList);
             } else {
                 final int delay = 300;
-                swipeContainer.postDelayed(() -> swipeContainer.setRefreshing(false), delay);
+                swipeContainer.postDelayed(() ->
+                        swipeContainer.setRefreshing(false), delay);
             }
         });
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void setProgressBarLoadMaterials(LinkedList<Material> materialLinkedList) {
+        final ProgressBarRefresherBaseMaterials progressBarRefresherBaseMaterials =
+                new ProgressBarRefresherBaseMaterials();
+        if (this.savedInstanceState == null) {
+            materialsUpdaterPresenter.attachView(progressBarRefresherBaseMaterials);
+            materialsUpdaterPresenter.updateMaterials(materialLinkedList);
+        } else {
+            progressBarLoadMaterials.setVisibility(View.INVISIBLE);
+            progressBarRefresherBaseMaterials.updateMaterials(materialLinkedList);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                setProgressBarLoadMaterials(
+                        convertToLinkedMaterialList(materialDao.findAll()));
+            }
+        }
     }
 
     @Override
@@ -139,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
-    public class ProgressBarRefresherMaterials implements MaterialsView {
+    public class ProgressBarRefresherBaseMaterials implements BaseMaterialsPresenter {
 
         @Override
         public void updateMaterials(LinkedList<Material> materials) {
@@ -152,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class SwipeContainerRefresherMaterials implements MaterialsView {
+    public class SwipeContainerRefresherBaseMaterials implements BaseMaterialsPresenter {
 
         @Override
         public void updateMaterials(LinkedList<Material> materials) {
