@@ -4,6 +4,7 @@ package com.example.vadim.books_sync.presenters;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.services.FinderService;
@@ -37,6 +38,7 @@ public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void updateMaterials(LinkedList<Material> materials) {
+        final int minSleep = 200;
         final Thread updaterMaterialsThread = new Thread(() -> {
             final LinkedList<Material> newMaterials = finderService.getMaterials();
             for (Material material : newMaterials) {
@@ -44,9 +46,12 @@ public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
             }
             finderService.deleteMaterialFiles(materials);
             final Thread updaterAdapter = new Thread(() -> {
-                if (baseMaterialsPresenter != null) {
-                    baseMaterialsPresenter.updateMaterials(materials);
+                try {
+                    Thread.sleep(minSleep);
+                } catch (final InterruptedException e) {
+                    Log.e("TAG ", "error: inner updater adapter");
                 }
+                baseMaterialsPresenter.updateMaterials(materials);
             });
             updaterAdapter.start();
         });
