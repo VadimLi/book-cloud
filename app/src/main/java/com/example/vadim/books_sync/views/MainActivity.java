@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void setProgressBarLoadMaterials(LinkedList<Material> materialLinkedList) {
         final ProgressBarRefresherBaseMaterials progressBarRefresherBaseMaterials =
@@ -178,13 +179,15 @@ public class MainActivity extends AppCompatActivity {
 
     public class ProgressBarRefresherBaseMaterials implements BaseMaterialsPresenter {
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void updateMaterials(LinkedList<Material> materials) {
-            progressBarLoadMaterials.post(() -> {
+            final int minDelay = 1000;
+            progressBarLoadMaterials.postDelayed(() -> {
                 materialsRecyclerAdapter.setListContent(materials);
                 recyclerView.setAdapter(materialsRecyclerAdapter);
-                progressBarLoadMaterials.setVisibility(View.INVISIBLE);
-            });
+                progressBarLoadMaterials.setVisibility(View.GONE);
+            }, minDelay);
         }
 
     }
