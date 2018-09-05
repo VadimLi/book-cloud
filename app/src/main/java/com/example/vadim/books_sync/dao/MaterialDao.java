@@ -22,9 +22,12 @@ public interface MaterialDao {
     @Query("DELETE FROM material WHERE path IN (:path)")
     void deleteByPath(String path);
 
+    @Query("SELECT DISTINCT format FROM material")
+    List<String> findByDistinctName();
+
     @Query("DELETE FROM material WHERE id IN (:id)")
     void deleteById(long id);
-    
+
     @Query("DELETE FROM material")
     void deleteAll();
 

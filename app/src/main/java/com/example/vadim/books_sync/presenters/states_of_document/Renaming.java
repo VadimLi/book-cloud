@@ -6,7 +6,7 @@ import com.example.vadim.books_sync.presenters.Notifications;
 
 import java.io.File;
 
-public class Renaming extends State {
+public class Renaming implements State {
 
     private final String fileName;
 
@@ -31,9 +31,9 @@ public class Renaming extends State {
                 material.setName(fileName);
                 material.setPath(filePath);
                 materialPresenter.update(fileName);
+                materialPresenter.setState(this);
             }
         }
-        materialPresenter.setState(this);
     }
 
     @Override

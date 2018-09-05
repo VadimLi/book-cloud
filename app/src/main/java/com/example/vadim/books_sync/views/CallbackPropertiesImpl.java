@@ -8,8 +8,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 
 import com.example.vadim.books_sync.R;
-import com.example.vadim.books_sync.views.listeners.CallbacksProperties;
-import com.example.vadim.books_sync.views.listeners.TrashAnimationListener;
+import com.example.vadim.books_sync.views.customs.TrashAnimationListener;
 
 public class CallbackPropertiesImpl implements CallbacksProperties {
 

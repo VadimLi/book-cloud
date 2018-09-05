@@ -1,4 +1,4 @@
-package com.example.vadim.books_sync.views.listeners;
+package com.example.vadim.books_sync.views;
 
 import android.view.View;
 

@@ -19,18 +19,19 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <ImageButton
-            android:id="@+id/cancelName"
+            android:id="@+id/cancelImageButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginRight="20dp"
             android:src="@mipmap/ic_cancel_foreground"
-            android:background="@color/colorNavigation"/>
+            android:background="@null"
+            android:layout_marginEnd="20dp" />
         <ImageButton
             android:id="@+id/applyName"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:src="@mipmap/ic_ok_foreground"
-            android:background="@color/colorNavigation"/>
+            android:background="@null"/>
     </LinearLayout>
     <FrameLayout
         android:layout_gravity="center"

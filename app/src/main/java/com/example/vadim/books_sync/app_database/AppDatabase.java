@@ -7,29 +7,41 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 
+import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
+import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.model.MaterialFolderJoin;
 
 /* singleton */
-@Database(entities = { Material.class }, version = AppDatabase.VERSION, exportSchema = false)
+@Database(entities = { Material.class, Folder.class, MaterialFolderJoin.class},
+        version = AppDatabase.VERSION, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
 
     // started version with 1
-    static final int VERSION = 5;
+    static final int VERSION = 8;
 
     public abstract MaterialDao getMaterialDao();
+
+    public abstract FolderDao getFolderDao();
+
+    public abstract MaterialFolderJoinDao getMaterialFolderJoinDao();
 
     public static AppDatabase getInMemoryDatabase(Context context) {
         if (instance == null) {
             instance = Room
-                    .databaseBuilder(context, AppDatabase.class, "document_db")
+                    .databaseBuilder(context, AppDatabase.class, "documents")
                     .addMigrations(
                             FROM_1_TO_2,
                             FROM_2_TO_3,
                             FROM_3_TO_4,
-                            FROM_4_TO_5)
+                            FROM_4_TO_5,
+                            FROM_5_TO_6,
+                            FROM_6_TO_7,
+                            FROM_7_TO_8)
                     .allowMainThreadQueries()
                     .build();
         }
@@ -69,25 +81,37 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-//    private static final Migration FROM_5_TO_6 = new Migration(5, 6) {
-//        @Override
-//        public void migrate(final SupportSQLiteDatabase database) {
-//            database.execSQL("CREATE TABLE IF NOT EXISTS 'folder'(" +
-//                    "'id' LONG AUTO_INCREMENT," +
-//                    "'name' TEXT NOT NULL," +
-//                    "'id_material' LONG NOT NULL," +
-//                    "'id_folder' LONG NOT NULL," +
-//                    "PRIMARY KEY('id'))");
-//        }
-//    };
-//
-//    private static final Migration FROM_6_TO_7 = new Migration(6, 7) {
-//        @Override
-//        public void migrate(final SupportSQLiteDatabase database) {
-//            database.execSQL("ALTER TABLE material " +
-//                    "ADD COLUMN id_folder LONG;");
-//        }
-//    };
+    private static final Migration FROM_5_TO_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'folder'(" +
+                    "'id' INT AUTO_INCREMENT," +
+                    "'name' TEXT NOT NULL," +
+                    "PRIMARY KEY('id'))");
+        }
+    };
+
+    private static final Migration FROM_6_TO_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'material_folder_join'( " +
+                    "'materialId' INT, " +
+                    "'folderId' INT, " +
+                    "PRIMARY KEY('materialId', 'folderId'), " +
+                    "FOREIGN KEY ('materialId') REFERENCES 'material' ('id') " +
+                    "ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                    "FOREIGN KEY ('folderId') REFERENCES 'folder' ('id') " +
+                    "ON UPDATE NO ACTION ON DELETE CASCADE);");
+        }
+    };
+
+    private static final Migration FROM_7_TO_8 = new Migration(7, VERSION) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE folder " +
+                    " ADD COLUMN root INTEGER NOT NULL DEFAULT 0");
+        }
+    };
 
     public static void destroyInstance() {
         instance = null;

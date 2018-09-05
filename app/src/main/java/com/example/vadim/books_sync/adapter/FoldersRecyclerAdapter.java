@@ -10,52 +10,48 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import com.example.vadim.books_sync.R;
+import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.FolderListPresenter;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
-import com.example.vadim.books_sync.views.MaterialViewHolder;
+import com.example.vadim.books_sync.views.FolderViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FoldersRecyclerAdapter extends RecyclerView.Adapter<MaterialViewHolder>
+public class FoldersRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolder>
         implements Filterable {
 
     private LayoutInflater layoutInflater;
 
-    private View view;
-
-    private final Context context;
-
-    private MaterialListPresenter materialListPresenter;
+    private FolderListPresenter folderListPresenter;
 
     public FoldersRecyclerAdapter(Context context) {
-        this.context = context;
         layoutInflater = LayoutInflater.from(context);
-        materialListPresenter = new MaterialListPresenter();
-        materialListPresenter.setMaterialViewHolderAdapter(this);
+        folderListPresenter = new FolderListPresenter();
     }
 
     @NonNull
     @Override
-    public MaterialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = layoutInflater.inflate(R.layout.material, parent, false);
-        return new MaterialViewHolder(view, materialListPresenter);
+    public FolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        final View view = layoutInflater.inflate(R.layout.file_system, parent, false);
+        return new FolderViewHolder(view, folderListPresenter);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MaterialViewHolder holder, int position) {
-        materialListPresenter.onBindMaterialRowViewAtPosition(holder, position);
+    public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
+        folderListPresenter.onBindMaterialRowViewAtPosition(holder, position);
     }
 
-    public void setListContent(List<Material> materials) {
-        materialListPresenter.setListContent(materials);
+    public void setListContent(List<Folder> folders) {
+        folderListPresenter.setListContent(folders);
         notifyItemRangeChanged(MaterialListPresenter.START_POSITION_OF_MATERIALS,
-                materials.size());
+                folders.size());
     }
 
     @Override
     public int getItemCount() {
-        return materialListPresenter.getMaterialsSize();
+        return folderListPresenter.getMaterialsSize();
     }
 
     @Override
@@ -64,21 +60,21 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<MaterialViewHol
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 final FilterResults results = new FilterResults();
-                final List<Material> filterMaterials = materialListPresenter.getFilterMaterials();
+                final List<Folder> filterFolders = folderListPresenter.getFilterMaterialsOrFolders();
                 if (constraint != null && constraint.length() > 0) {
                     constraint = constraint.toString().toLowerCase();
-                    final List<Material> filters = new ArrayList<>();
-                    for (Material material : filterMaterials) {
-                        if (material.getName().toLowerCase()
+                    final List<Folder> filters = new ArrayList<>();
+                    for (Folder folder : filterFolders) {
+                        if (folder.getName().toLowerCase()
                                 .contains(constraint)) {
-                            filters.add(material);
+                            filters.add(folder);
                         }
                     }
                     results.count = filters.size();
                     results.values = filters;
                 } else {
-                    results.count = filterMaterials.size();
-                    results.values = filterMaterials;
+                    results.count = filterFolders.size();
+                    results.values = filterFolders;
                 }
                 return results;
             }
@@ -86,7 +82,7 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<MaterialViewHol
             @Override
             protected void publishResults(CharSequence charSequence,
                                           FilterResults filterResults) {
-                materialListPresenter.setMaterials((List<Material>) filterResults.values);
+                folderListPresenter.setFolders((List<Folder>) filterResults.values);
                 notifyDataSetChanged();
             }
         };

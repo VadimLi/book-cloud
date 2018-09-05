@@ -6,7 +6,7 @@ import com.example.vadim.books_sync.presenters.Notifications;
 
 import java.io.File;
 
-public class Removing extends State {
+public class Removing implements State {
 
     private final MaterialDao materialDao;
 

@@ -3,9 +3,11 @@ package com.example.vadim.books_sync.dagger;
 import android.app.Application;
 
 import com.example.vadim.books_sync.app_database.AppDatabase;
+import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.presenters.services.FinderService;
+import com.example.vadim.books_sync.views.FoldersActivity;
 import com.example.vadim.books_sync.views.MainActivity;
 import com.example.vadim.books_sync.views.PropertiesDialog;
 
@@ -19,9 +21,13 @@ public interface AppComponent {
 
     void injectMainActivity(MainActivity activity);
 
+    void injectFoldersActivity(FoldersActivity activity);
+
     void injectDialogFragment(PropertiesDialog propertiesDialog);
 
     MaterialDao materialDao();
+
+    FolderDao folderDao();
 
     AppDatabase appDatabase();
 

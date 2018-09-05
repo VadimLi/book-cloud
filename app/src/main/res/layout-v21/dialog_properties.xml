@@ -11,15 +11,28 @@
         android:id="@+id/fileName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="@color/colorNavigation"
+        android:backgroundTint="@color/enabledColorEditRename"
         android:textColor="@drawable/edit_text_rename" />
-    <ImageButton
-        android:id="@+id/applyName"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:background="@drawable/apply_name_bg"
-        android:src="@mipmap/ic_apply_name_foreground"
-        tools:ignore="ContentDescription" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/cancelImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/ic_cancel_foreground"
+            android:background="@null"
+            android:layout_marginEnd="20dp" />
+        <ImageButton
+            android:id="@+id/applyName"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_ok_foreground"
+            android:background="@null"/>
+    </LinearLayout>
     <FrameLayout
         android:layout_gravity="center"
         android:layout_width="wrap_content"
@@ -32,8 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|left"
             android:src="@mipmap/ic_rename_foreground"
-            android:background="@null"
-            tools:ignore="ContentDescription,RtlHardcoded">
+            android:background="@null">
         </ImageButton>
 
         <ImageButton
@@ -44,7 +56,7 @@
             android:src="@mipmap/ic_folders_foreground"
             android:background="@null"
             android:layout_marginStart="130dp"
-            tools:ignore="RtlHardcoded">
+            android:layout_marginLeft="0dp">
         </ImageButton>
 
         <ImageButton
@@ -54,8 +66,7 @@
             android:layout_gravity="bottom|left"
             android:src="@mipmap/ic_trash_foreground"
             android:background="@null"
-            android:layout_marginTop="130dp"
-            tools:ignore="RtlHardcoded">
+            android:layout_marginTop="130dp">
         </ImageButton>
 
         <ImageButton
@@ -64,8 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:src="@mipmap/ic_share_foreground"
-            android:background="@null"
-            tools:ignore="RtlHardcoded">
+            android:background="@null">
         </ImageButton>
 
     </FrameLayout>

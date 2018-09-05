@@ -23,7 +23,7 @@
         </activity>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name=".presenters.states_of_document.Sharing"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -32,7 +32,7 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".views.FoldersActivity"></activity>
+        <activity android:name=".views.FoldersActivity" />
     </application>
 
 </manifest>

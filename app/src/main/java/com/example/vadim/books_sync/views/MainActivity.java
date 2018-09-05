@@ -24,7 +24,9 @@ import com.example.vadim.books_sync.basePresenters.BaseMaterialsPresenter;
 import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
+import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 
@@ -43,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.material_list)
     RecyclerView recyclerView;
 
-    @BindView(R.id.inputSearch)
-    SearchView inputSearch;
+    @BindView(R.id.searchMaterials)
+    SearchView searchMaterials;
 
     @BindView(R.id.progressBarLoadMaterials)
     ProgressBar progressBarLoadMaterials;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     MaterialDao materialDao;
 
     @Inject
+    FolderDao folderDao;
+
+    @Inject
     MaterialsUpdaterPresenter materialsUpdaterPresenter;
 
     private MaterialsRecyclerAdapter materialsRecyclerAdapter;
@@ -71,9 +76,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         this.savedInstanceState = savedInstanceState;
         super.onCreate(this.savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this,
                 new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
@@ -89,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         createMaterialAdapter();
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList = convertToLinkedMaterialList(materials);
+
         setProgressBarLoadMaterials(materialLinkedList);
 
         moveFolders.setOnClickListener(v -> {
@@ -97,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(foldersIntent, 1);
         });
 
-        inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -113,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         swipeContainer.setOnRefreshListener(() -> {
-            if (progressBarLoadMaterials.getVisibility() == View.INVISIBLE) {
+            if (progressBarLoadMaterials.getVisibility() == View.GONE) {
                 materialsUpdaterPresenter.attachView(
                         new SwipeContainerRefresherBaseMaterials());
                 materialsUpdaterPresenter.updateMaterials(materialLinkedList);
@@ -187,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 materialsRecyclerAdapter.setListContent(materials);
                 recyclerView.setAdapter(materialsRecyclerAdapter);
                 progressBarLoadMaterials.setVisibility(View.GONE);
+                addFormatsFiles();
             }, minDelay);
         }
 
@@ -200,9 +208,20 @@ public class MainActivity extends AppCompatActivity {
                 materialsRecyclerAdapter.setListContent(materials);
                 recyclerView.setAdapter(materialsRecyclerAdapter);
                 swipeContainer.setRefreshing(false);
+                addFormatsFiles();
             });
         }
 
+    }
+
+    private void addFormatsFiles() {
+        folderDao.deleteAllByRoot();
+        for (String format : materialDao.findByDistinctName()) {
+            final Folder rootFolder = new Folder();
+            rootFolder.setRoot(1);
+            rootFolder.setName(format);
+            folderDao.insertRootFolder(rootFolder);
+        }
     }
 
 }

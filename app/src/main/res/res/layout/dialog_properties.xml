@@ -6,21 +6,32 @@
     android:background="@drawable/properties_dialog_bg"
     android:orientation="vertical"
     android:padding="15dp">
-
     <com.example.vadim.books_sync.views.CustomEditText
         android:id="@+id/fileName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:backgroundTint="@color/enabledColorEditRename"
         android:textColor="@drawable/edit_text_rename" />
 
-    <Button
-        android:id="@+id/applyName"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="OK"
-        android:background="@null"/>
-
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/cancelImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/ic_cancel_foreground"
+            android:background="@null"
+            android:layout_marginEnd="20dp" />
+        <ImageButton
+            android:id="@+id/applyName"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_ok_foreground"
+            android:background="@null"/>
+    </LinearLayout>
     <FrameLayout
         android:layout_gravity="center"
         android:layout_width="wrap_content"

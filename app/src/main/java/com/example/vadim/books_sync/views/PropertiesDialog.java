@@ -53,7 +53,7 @@ public class PropertiesDialog extends android.support.v4.app.DialogFragment
     @BindView(R.id.applyName)
     ImageButton applyNameImageButton;
 
-    @BindView(R.id.cancelName)
+    @BindView(R.id.cancelImageButton)
     ImageButton cancelImageButton;
 
     @BindView(R.id.rename)

@@ -35,7 +35,7 @@
             android:indeterminate="true"/>
 
         <android.support.v7.widget.SearchView
-            android:id="@+id/inputSearch"
+            android:id="@+id/searchMaterials"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="search..."

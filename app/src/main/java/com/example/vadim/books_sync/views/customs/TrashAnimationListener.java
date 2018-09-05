@@ -1,4 +1,4 @@
-package com.example.vadim.books_sync.views.listeners;
+package com.example.vadim.books_sync.views.customs;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -30,6 +30,5 @@ public class TrashAnimationListener extends Animation
 
     @Override
     public void onAnimationRepeat(Animation animation) { }
-
 
 }
