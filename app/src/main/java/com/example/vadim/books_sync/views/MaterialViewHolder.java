@@ -59,16 +59,16 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
     public boolean onLongClick(View view) {
         changeBackgroundResource(view);
         final int position = getAdapterPosition();
-        final PropertiesDialog propertiesDialog = new PropertiesDialog();
+        final PropertiesDialogForMaterials propertiesDialogForMaterials = new PropertiesDialogForMaterials();
         final MaterialPresenter materialPresenter = materialListPresenter
                 .getMaterialsPresenter().get(position);
         materialPresenter.setMaterialPosition(position);
         materialPresenter.setMaterialListPresenter(materialListPresenter);
-        propertiesDialog.setMaterialPresenter(materialPresenter);
+        propertiesDialogForMaterials.setMaterialPresenter(materialPresenter);
 
         final FragmentManager fragmentManager =
                 ((FragmentActivity) view.getContext()).getSupportFragmentManager();
-        propertiesDialog.show(fragmentManager, "properties dialog");
+        propertiesDialogForMaterials.show(fragmentManager, "properties dialog for files");
         return true;
     }
 

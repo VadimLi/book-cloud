@@ -11,7 +11,6 @@ import android.widget.Filterable;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.model.Folder;
-import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.FolderListPresenter;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
 import com.example.vadim.books_sync.views.FolderViewHolder;
@@ -26,9 +25,18 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolde
 
     private FolderListPresenter folderListPresenter;
 
+    public FolderListPresenter getFolderListPresenter() {
+        return folderListPresenter;
+    }
+
+    public void setFolderListPresenter(FolderListPresenter folderListPresenter) {
+        this.folderListPresenter = folderListPresenter;
+    }
+
     public FoldersRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
         folderListPresenter = new FolderListPresenter();
+        folderListPresenter.setMaterialViewHolderAdapter(this);
     }
 
     @NonNull
@@ -51,7 +59,7 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolde
 
     @Override
     public int getItemCount() {
-        return folderListPresenter.getMaterialsSize();
+        return folderListPresenter.getFoldersSize();
     }
 
     @Override
@@ -60,7 +68,7 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolde
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 final FilterResults results = new FilterResults();
-                final List<Folder> filterFolders = folderListPresenter.getFilterMaterialsOrFolders();
+                final List<Folder> filterFolders = folderListPresenter.getFilterFolders();
                 if (constraint != null && constraint.length() > 0) {
                     constraint = constraint.toString().toLowerCase();
                     final List<Folder> filters = new ArrayList<>();

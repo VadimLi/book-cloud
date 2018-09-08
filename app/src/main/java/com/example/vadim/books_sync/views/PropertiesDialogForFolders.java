@@ -1,6 +1,5 @@
 package com.example.vadim.books_sync.views;
 
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -26,13 +25,12 @@ import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
-import com.example.vadim.books_sync.dao.MaterialDao;
-import com.example.vadim.books_sync.presenters.MaterialPresenter;
+import com.example.vadim.books_sync.dao.FolderDao;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
+import com.example.vadim.books_sync.presenters.StateOfDocument;
 import com.example.vadim.books_sync.presenters.StateOwnerProperties;
-import com.example.vadim.books_sync.presenters.states_of_document.Removing;
-import com.example.vadim.books_sync.presenters.states_of_document.Renaming;
-import com.example.vadim.books_sync.presenters.states_of_document.Sharing;
-import com.example.vadim.books_sync.presenters.states_of_document.State;
+import com.example.vadim.books_sync.presenters.states_of_folder.RemovingFolder;
+import com.example.vadim.books_sync.presenters.states_of_folder.RenamingFolder;
 
 import java.util.Objects;
 
@@ -43,11 +41,10 @@ import butterknife.ButterKnife;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
-@SuppressLint("ValidFragment")
-public class PropertiesDialog extends android.support.v4.app.DialogFragment
+public class PropertiesDialogForFolders extends android.support.v4.app.DialogFragment
         implements StateOwnerProperties, DialogView {
 
-    @BindView(R.id.fileName)
+    @BindView(R.id.folderName)
     CustomEditText fileNameEditText;
 
     @BindView(R.id.applyName)
@@ -59,19 +56,13 @@ public class PropertiesDialog extends android.support.v4.app.DialogFragment
     @BindView(R.id.rename)
     ImageButton renameImageButton;
 
-    @BindView(R.id.addToFolder)
-    ImageButton addToFolderImageButton;
-
     @BindView(R.id.trash)
     ImageButton trashImageButton;
 
-    @BindView(R.id.share)
-    ImageButton shareImageButton;
-
     @Inject
-    MaterialDao materialDao;
+    FolderDao folderDao;
 
-    private MaterialPresenter materialPresenter;
+    private FolderPresenter folderPresenter;
 
     private InputMethodManager inputMethodManager;
 
@@ -81,7 +72,8 @@ public class PropertiesDialog extends android.support.v4.app.DialogFragment
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        final View viewProperties = inflater.inflate(R.layout.dialog_properties, null);
+        final View viewProperties =
+                inflater.inflate(R.layout.folders_dialog_properties, null);
         final Context context = viewProperties.getContext();
         ButterKnife.bind(this, viewProperties);
         DaggerAppComponent.builder()
@@ -90,39 +82,39 @@ public class PropertiesDialog extends android.support.v4.app.DialogFragment
                                 .getApplication()))
                 .roomModule(new RoomModule(getActivity().getApplication()))
                 .build()
-                .injectDialogFragment(this);
-        materialPresenter.attachDialog(this);
+                .injectDialogFragmentForFolders(this);
+        folderPresenter.attachDialog(this);
 
-        new CallbackPropertiesImpl(this);
-        new CallbackPropertiesImpl.CallbacksEditorImpl(this);
+        new CallbackPropertiesForFoldersImpl(this);
+        new CallbackPropertiesForFoldersImpl.CallbacksEditorImpl(this);
 
         drawPropertiesDialog(viewProperties);
-        fileNameEditText.setText(materialPresenter.getName());
-        hideEditorOfName();
+        fileNameEditText.setText(folderPresenter.getName());
+        hideEditor();
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         return viewProperties;
     }
 
-    public void setMaterialPresenter(MaterialPresenter materialPresenter) {
-        this.materialPresenter = materialPresenter;
+    public void setFolderPresenter(FolderPresenter folderPresenter) {
+        this.folderPresenter = folderPresenter;
     }
 
-    public MaterialPresenter getMaterialPresenter() {
-        return materialPresenter;
+    public FolderPresenter getFolderPresenter() {
+        return folderPresenter;
     }
 
     @Override
     public void dismiss() {
         super.dismiss();
-        materialPresenter.detachDialog();
+        folderPresenter.dismiss();
     }
 
     @Override
     public void onCancel(DialogInterface dialogInterface) {
         super.onCancel(dialogInterface);
-        materialPresenter.detachDialog();
+        folderPresenter.dismiss();
     }
 
     @Override
@@ -137,96 +129,75 @@ public class PropertiesDialog extends android.support.v4.app.DialogFragment
     }
 
     @Override
-    public void hideKeyBoard(InputMethodManager inputMethodManager, View view) {
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),
+    public void hideKeyBoard() {
+        inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override
-    public void showKeyBoard(InputMethodManager inputMethodManager) {
+    public void showKeyBoard() {
         if (inputMethodManager != null) {
             inputMethodManager.showSoftInput(fileNameEditText,
                     InputMethodManager.SHOW_FORCED);
         }
     }
 
-    @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
-    public void removeDocument() {
-        final Removing removing = new Removing(materialDao);
-        removing.doState(materialPresenter);
-        showToast(materialPresenter.getState());
-    }
-
-    @RequiresApi(api=Build.VERSION_CODES.M)
-    @Override
-    public void renameDocument() {
-        if (fileNameEditText.getText().length() == 0) {
-            fileNameEditText.setText(materialPresenter.getName());
-        } else {
-            final String newNameMaterial = fileNameEditText.getText().toString();
-            final String fullName =String.valueOf(getFullNameFile(newNameMaterial));
-            fileNameEditText.setText(fullName);
-            final Renaming renaming = new Renaming(fullName);
-            renaming.doState(materialPresenter);
-            showToast(materialPresenter.getState());
-        }
-    }
-
-    @RequiresApi(api=Build.VERSION_CODES.M)
-    @Override
-    public void shareDocument() {
-        final Sharing sharing = new Sharing();
-        sharing.doState(materialPresenter);
-    }
-
-    @Override
-    public void addToFolderDocument() {}
-
-    @Override
-    public void hideEditorOfName() {
-        fileNameEditText.setVisibleCloseButton(false);
-        fileNameEditText.setEnabled(false);
-        applyNameImageButton.setVisibility(View.INVISIBLE);
-        cancelImageButton.setVisibility(View.INVISIBLE);
-        applyNameImageButton.setVisibility(View.INVISIBLE);
-        cancelImageButton.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void showEditorOfName() {
-        fileNameEditText.setVisibleCloseButton(true);
-        fileNameEditText.setEnabled(true);
-        applyNameImageButton.setVisibility(View.VISIBLE);
-        cancelImageButton.setVisibility(View.VISIBLE);
-        applyNameImageButton.setVisibility(View.VISIBLE);
-        cancelImageButton.setVisibility(View.VISIBLE);
-    }
-
-    String getNameWithoutFormat(MaterialPresenter materialPresenter) {
-        String nameMaterial = materialPresenter.getName();
-        String format = materialPresenter.getFormat();
-        final int lengthName = nameMaterial.length() - (format.length() + 1);
-        return nameMaterial.substring(0, lengthName);
-    }
-
-    @RequiresApi(api=Build.VERSION_CODES.M)
-    public void showToast(State state) {
-        if (state != null) {
+    public void showToast(StateOfDocument stateOfDocument) {
+        if (stateOfDocument != null) {
             final Toast toast = Toast.makeText(getActivity(),
-                    state.toString(),
+                    stateOfDocument.toString(),
                     LENGTH_SHORT);
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
     }
 
-    private StringBuilder getFullNameFile(String name) {
-        final String format = materialPresenter.getFormat();
-        final String dote = ".";
-        return new StringBuilder(name)
-                .append(dote)
-                .append(format);
+    @RequiresApi(api=Build.VERSION_CODES.M)
+    @Override
+    public void removeDocument() {
+        final RemovingFolder removing = new RemovingFolder(folderDao);
+        removing.doStateWithFolder(folderPresenter);
+        showToast(folderPresenter.getStateOfFolder());
+    }
+
+    @RequiresApi(api=Build.VERSION_CODES.M)
+    @Override
+    public void renameDocument() {
+        if (fileNameEditText.getText().length() == 0) {
+            fileNameEditText.setText(folderPresenter.getName());
+        } else {
+            final String newNameFolder = fileNameEditText.getText().toString();
+            fileNameEditText.setText(newNameFolder);
+            final RenamingFolder renaming = new RenamingFolder(newNameFolder, folderDao);
+            renaming.doStateWithFolder(folderPresenter);
+            showToast(folderPresenter.getStateOfFolder());
+        }
+    }
+
+    @RequiresApi(api=Build.VERSION_CODES.M)
+    @Override
+    public void shareDocument() { }
+
+    @Override
+    public void addToFolderOrNewFolder(String name) {
+
+    }
+
+    @Override
+    public void hideEditor() {
+        fileNameEditText.setVisibleCloseButton(false);
+        fileNameEditText.setEnabled(false);
+        applyNameImageButton.setVisibility(View.INVISIBLE);
+        cancelImageButton.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showEditor() {
+        fileNameEditText.setVisibleCloseButton(true);
+        fileNameEditText.setEnabled(true);
+        applyNameImageButton.setVisibility(View.VISIBLE);
+        cancelImageButton.setVisibility(View.VISIBLE);
     }
 
     public InputMethodManager getInputMethodManager() {
@@ -234,3 +205,4 @@ public class PropertiesDialog extends android.support.v4.app.DialogFragment
     }
 
 }
+

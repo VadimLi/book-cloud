@@ -25,8 +25,6 @@ public class MaterialFolderJoin {
 
     private long folderId;
 
-    public MaterialFolderJoin() {}
-
     public long getMaterialId() {
         return materialId;
     }

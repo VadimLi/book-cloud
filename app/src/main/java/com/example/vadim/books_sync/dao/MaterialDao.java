@@ -19,11 +19,17 @@ public interface MaterialDao {
     @Query("SELECT *FROM material WHERE path = :path")
     List<Material> findByPath(String path);
 
+    @Query("SELECT *FROM material WHERE format = :format")
+    List<Material> findByFormat(String format);
+
     @Query("DELETE FROM material WHERE path IN (:path)")
     void deleteByPath(String path);
 
     @Query("SELECT DISTINCT format FROM material")
-    List<String> findByDistinctName();
+    List<String> findDistinctName();
+
+    @Query("SELECT DISTINCT format FROM material WHERE name IN (:name)")
+    List<String> findDistinctNameByName(final String name);
 
     @Query("DELETE FROM material WHERE id IN (:id)")
     void deleteById(long id);

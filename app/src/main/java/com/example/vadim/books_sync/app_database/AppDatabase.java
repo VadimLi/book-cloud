@@ -63,7 +63,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final Migration FROM_2_TO_3 = new Migration(2, 3) {
         @Override
         public void migrate(final SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE material ADD CONSTRAINT UC_Path UNIQUE (path)");
+            database.execSQL("DELETE FROM material");
         }
     };
 
@@ -77,13 +77,6 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final Migration FROM_4_TO_5 = new Migration(4, 5) {
         @Override
         public void migrate(final SupportSQLiteDatabase database) {
-            database.execSQL("DELETE FROM material");
-        }
-    };
-
-    private static final Migration FROM_5_TO_6 = new Migration(5, 6) {
-        @Override
-        public void migrate(final SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS 'folder'(" +
                     "'id' INT AUTO_INCREMENT," +
                     "'name' TEXT NOT NULL," +
@@ -91,7 +84,7 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-    private static final Migration FROM_6_TO_7 = new Migration(6, 7) {
+    private static final Migration FROM_5_TO_6 = new Migration(5, 6) {
         @Override
         public void migrate(final SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS 'material_folder_join'( " +
@@ -105,11 +98,19 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-    private static final Migration FROM_7_TO_8 = new Migration(7, VERSION) {
+    private static final Migration FROM_6_TO_7 = new Migration(6, 7) {
         @Override
         public void migrate(final SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE folder " +
                     " ADD COLUMN root INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
+    private static final Migration FROM_7_TO_8 = new Migration(7, VERSION) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE folder " +
+                    " DROP COLUMN root");
         }
     };
 

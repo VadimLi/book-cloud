@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.views;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.arch.persistence.room.Transaction;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,8 +27,10 @@ import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
 import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.model.MaterialFolderJoin;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 
 import java.util.LinkedList;
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
     FolderDao folderDao;
 
     @Inject
+    MaterialFolderJoinDao materialFolderJoinDao;
+
+    @Inject
     MaterialsUpdaterPresenter materialsUpdaterPresenter;
 
     private MaterialsRecyclerAdapter materialsRecyclerAdapter;
@@ -97,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         final LinkedList<Material> materialLinkedList = convertToLinkedMaterialList(materials);
 
         setProgressBarLoadMaterials(materialLinkedList);
-
         moveFolders.setOnClickListener(v -> {
             final Intent foldersIntent =
                     new Intent(this, FoldersActivity.class);
@@ -214,13 +219,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Transaction
     private void addFormatsFiles() {
-        folderDao.deleteAllByRoot();
-        for (String format : materialDao.findByDistinctName()) {
-            final Folder rootFolder = new Folder();
-            rootFolder.setRoot(1);
-            rootFolder.setName(format);
-            folderDao.insertRootFolder(rootFolder);
+        folderDao.deleteAll();
+        for (final String format : materialDao.findDistinctName()) {
+            final Folder folder = new Folder();
+            folder.setName(format);
+            folderDao.insert(folder);
+        }
+        for (Folder folder : folderDao.findAll()) {
+            for (Material material : materialDao.findByFormat(folder.getName())) {
+                final MaterialFolderJoin materialFolderJoin =
+                        new MaterialFolderJoin();
+                materialFolderJoin.setMaterialId(material.getId());
+                materialFolderJoin.setFolderId(folder.getId());
+                materialFolderJoinDao.insert(materialFolderJoin);
+            }
         }
     }
 

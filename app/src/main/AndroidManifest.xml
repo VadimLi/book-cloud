@@ -23,7 +23,7 @@
         </activity>
 
         <provider
-            android:name=".presenters.states_of_document.Sharing"
+            android:name=".presenters.states_of_file.SharingFile"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -31,8 +31,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity android:name=".views.FoldersActivity" />
+        <activity android:name=".views.FoldersActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".views.MaterialsOfFolderActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
 
 </manifest>

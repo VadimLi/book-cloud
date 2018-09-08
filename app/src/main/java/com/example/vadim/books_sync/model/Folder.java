@@ -1,8 +1,12 @@
 package com.example.vadim.books_sync.model;
 
+import android.annotation.SuppressLint;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+@SuppressLint("ParcelCreator")
 @Entity
 public class Folder {
 
@@ -10,8 +14,6 @@ public class Folder {
     private long id;
 
     private String name;
-
-    private int root;
 
     public Folder() {}
 
@@ -29,14 +31,6 @@ public class Folder {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getRoot() {
-        return root;
-    }
-
-    public void setRoot(int root) {
-        this.root = root;
     }
 
 }

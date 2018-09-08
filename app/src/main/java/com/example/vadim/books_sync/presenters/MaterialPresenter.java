@@ -5,7 +5,6 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.states_of_document.State;
 
 public class MaterialPresenter implements StateOwnerProperties {
 
@@ -17,22 +16,18 @@ public class MaterialPresenter implements StateOwnerProperties {
 
     private StateOwnerProperties stateOwnerProperties;
 
-    private State state;
+    private StateOfDocument.StateOfFile stateOfFile;
 
-    public void setState(final State state) {
-        this.state = state;
+    public void setStateOfFile(final StateOfDocument.StateOfFile stateOfFile) {
+        this.stateOfFile = stateOfFile;
     }
 
-    public State getState() {
-        return state;
+    public StateOfDocument.StateOfFile getStateOfFile() {
+        return stateOfFile;
     }
 
     public void attachDialog(StateOwnerProperties stateOwnerProperties) {
         this.stateOwnerProperties = stateOwnerProperties;
-    }
-
-    public void detachDialog() {
-        stateOwnerProperties = null;
     }
 
     public StateOwnerProperties getPropertiesDialog() {
@@ -104,8 +99,13 @@ public class MaterialPresenter implements StateOwnerProperties {
     }
 
     @Override
-    public void addToFolderDocument() {
-        stateOwnerProperties.addToFolderDocument();
+    public void addToFolderOrNewFolder(String materialName) {
+
+    }
+
+    @Override
+    public void dismiss() {
+        stateOwnerProperties = null;
     }
 
 }

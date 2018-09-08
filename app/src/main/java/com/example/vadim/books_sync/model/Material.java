@@ -5,8 +5,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 
-@Entity(indices = {@Index(value = "path",
-        unique = true)})
+@Entity
 public class Material {
 
     @PrimaryKey(autoGenerate = true)

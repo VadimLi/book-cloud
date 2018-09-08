@@ -3,10 +3,13 @@ package com.example.vadim.books_sync.views;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.example.vadim.books_sync.presenters.StateOfDocument;
+
 public interface DialogView {
-    void hideEditorOfName();
-    void showEditorOfName();
+    void hideEditor();
+    void showEditor();
     void drawPropertiesDialog(View view);
-    void hideKeyBoard(InputMethodManager inputMethodManager, View view);
-    void showKeyBoard(InputMethodManager inputMethodManager);
+    void hideKeyBoard();
+    void showKeyBoard();
+    void showToast(StateOfDocument stateOfDocument);
 }

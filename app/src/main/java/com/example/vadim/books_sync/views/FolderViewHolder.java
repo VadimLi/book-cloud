@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
 import com.example.vadim.books_sync.presenters.FolderListPresenter;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +57,20 @@ public class FolderViewHolder extends RecyclerView.ViewHolder
     @Override
     public boolean onLongClick(View view) {
         changeBackgroundResource(view);
+        final int position = getAdapterPosition();
+        final PropertiesDialogForFolders propertiesDialogForFolders =
+                new PropertiesDialogForFolders();
+        final FolderPresenter folderPresenter = folderListPresenter
+                .getFoldersPresenter().get(position);
+        if (((FoldersActivity) view.getContext()).materialDao.
+                findDistinctNameByName(folderPresenter.getName()) == null) {
+            folderPresenter.setFolderPosition(position);
+            folderPresenter.setFolderListPresenter(folderListPresenter);
+            propertiesDialogForFolders.setFolderPresenter(folderPresenter);
+            final FragmentManager fragmentManager =
+                    ((FragmentActivity) view.getContext()).getSupportFragmentManager();
+            propertiesDialogForFolders.show(fragmentManager, "properties dialog for folder");
+        }
         return true;
     }
 

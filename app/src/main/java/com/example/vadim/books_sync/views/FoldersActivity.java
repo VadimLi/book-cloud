@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.views;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Folder;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
 
 import java.util.List;
 
@@ -32,8 +34,8 @@ public class FoldersActivity extends AppCompatActivity {
     @BindView(R.id.btnFiles)
     ImageButton imageButtonFiles;
 
-    @BindView(R.id.searchAll)
-    SearchView searchAll;
+    @BindView(R.id.searchFolders)
+    SearchView searchFolders;
 
     @BindView(R.id.folder_list)
     RecyclerView recyclerView;
@@ -43,8 +45,6 @@ public class FoldersActivity extends AppCompatActivity {
 
     @Inject
     MaterialDao materialDao;
-
-    private Bundle savedInstanceState;
 
     private FoldersRecyclerAdapter foldersRecyclerAdapter;
 
@@ -61,8 +61,7 @@ public class FoldersActivity extends AppCompatActivity {
                 .injectFoldersActivity(this);
 
         createFolderAdapter();
-        final List<Folder> folders = folderDao.findByRoot();
-
+        final List<Folder> folders = folderDao.findAll();
         foldersRecyclerAdapter.setListContent(folders);
         recyclerView.setAdapter(foldersRecyclerAdapter);
 
@@ -70,6 +69,31 @@ public class FoldersActivity extends AppCompatActivity {
             final Intent booksIntent = new Intent(this, MainActivity.class);
             setResult(RESULT_OK, booksIntent);
             finish();
+        });
+
+        imageButtonCreatorFolder.setOnClickListener(v -> {
+            final AddFolderDialog addFolderDialog =
+                    new AddFolderDialog();
+            final FolderPresenter folderPresenter = new FolderPresenter();
+            addFolderDialog.setFolderPresenter(folderPresenter);
+            folderPresenter.setFolderListPresenter(foldersRecyclerAdapter.getFolderListPresenter());
+            final FragmentManager fragmentManager = getSupportFragmentManager();
+            addFolderDialog.show(fragmentManager, "dialog for adding folder");
+        });
+
+        searchFolders.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                foldersRecyclerAdapter.getFilter().filter(newText);
+                return false;
+            }
+
         });
 
     }

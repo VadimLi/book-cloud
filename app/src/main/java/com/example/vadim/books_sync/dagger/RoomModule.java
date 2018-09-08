@@ -6,6 +6,8 @@ import android.app.Application;
 import com.example.vadim.books_sync.app_database.AppDatabase;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
+import com.example.vadim.books_sync.model.MaterialFolderJoin;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.presenters.services.FinderService;
 
@@ -39,6 +41,12 @@ public class RoomModule {
     @Provides
     FolderDao providesFolderDao(AppDatabase appDatabase) {
         return appDatabase.getFolderDao();
+    }
+
+    @Singleton
+    @Provides
+    MaterialFolderJoinDao providesMaterialFolderJoinDao(AppDatabase appDatabase) {
+        return appDatabase.getMaterialFolderJoinDao();
     }
 
     @Provides
