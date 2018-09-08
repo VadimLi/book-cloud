@@ -117,7 +117,9 @@ public class FolderListPresenter {
         Folder folder = new Folder();
         folder.setName(folderName);
         folderPresenter.setFolder(folder);
+        folderPresenter.setFolderListPresenter(this);
         this.folders.add(folder);
+        this.foldersPresenter.add(folderPresenter);
         folderViewHolderAdapter.notifyDataSetChanged();
         folderViewHolderAdapter.notifyItemMoved(
                 START_POSITION_OF_MATERIALS, folders.size());
