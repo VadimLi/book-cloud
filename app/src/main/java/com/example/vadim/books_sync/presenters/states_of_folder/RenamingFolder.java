@@ -29,7 +29,7 @@ public class RenamingFolder implements StateOfDocument.StateOfFolder {
 
     @Override
     public String toString() {
-        return Notifications.REMOVE_FOLDER.getNotification();
+        return Notifications.RENAME_FOLDER.getNotification();
     }
 
 }

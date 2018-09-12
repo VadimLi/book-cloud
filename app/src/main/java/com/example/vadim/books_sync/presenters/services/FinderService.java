@@ -11,6 +11,7 @@ import com.example.vadim.books_sync.model.Material;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class FinderService extends Application {
 
     private LinkedList<Material> materials = new LinkedList<>();
 
-    private List<Material> loadingMaterialList = new ArrayList<>();
+    private List<String> fileSystemMaterialPathList = new ArrayList<>();
 
     @Inject
     public FinderService(MaterialDao materialDao) {
@@ -35,20 +36,29 @@ public class FinderService extends Application {
         final File rootFile = Environment.getExternalStorageDirectory();
         Log.d("root dir : ", rootFile.getAbsolutePath());
         materials.clear();
-        loadingMaterialList.clear();
+        fileSystemMaterialPathList.clear();
         searchFiles(rootFile);
         return materials;
+    }
+
+    public void deleteMaterialFiles(final List<Material> materials) {
+        final Iterator<Material> materialIterator = materials.iterator();
+        while (materialIterator.hasNext()) {
+            final Material material = materialIterator.next();
+            if ( !fileSystemMaterialPathList.contains(material.getPath()) ) {
+                materialIterator.remove();
+                materialDao.deleteByPath(material.getPath());
+            }
+        }
     }
 
     private void searchFiles(File root) {
         final File[] list = root.listFiles();
         if (list != null) {
             for (File f : list) {
-                if (f.isDirectory()) {
+                if (f.isDirectory())
                     searchFiles(f);
-                } else {
-                    insertData(f);
-                }
+                else insertData(f);
             }
         } else {
             Log.e("", "list null");
@@ -69,7 +79,7 @@ public class FinderService extends Application {
                 material.setId(materialId);
                 materials.addFirst(material);
             }
-            loadingMaterialList.add(material);
+            fileSystemMaterialPathList.add(material.getPath());
             Log.i("", "File: " + filePath);
         }
     }

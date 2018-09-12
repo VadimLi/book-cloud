@@ -24,4 +24,5 @@ public class RemovingFolder implements StateOfDocument.StateOfFolder {
     public String toString() {
         return Notifications.REMOVE_FOLDER.getNotification();
     }
+
 }

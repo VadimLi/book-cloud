@@ -41,16 +41,17 @@ public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
         final int minSleep = 200;
         final Thread updaterMaterialsThread = new Thread(() -> {
             final LinkedList<Material> newMaterials = finderService.getMaterials();
-            for (Material material : newMaterials) {
-                materials.addFirst(material);
-            }
+            newMaterials.forEach(materials::addFirst);
+            finderService.deleteMaterialFiles(materials);
             final Thread updaterAdapter = new Thread(() -> {
                 try {
                     Thread.sleep(minSleep);
+                    if (baseMaterialsPresenter != null) {
+                        baseMaterialsPresenter.updateMaterials(materials);
+                    }
                 } catch (final InterruptedException e) {
                     Log.e("TAG ", "error: inner updater adapter");
                 }
-                baseMaterialsPresenter.updateMaterials(materials);
             });
             updaterAdapter.start();
         });
