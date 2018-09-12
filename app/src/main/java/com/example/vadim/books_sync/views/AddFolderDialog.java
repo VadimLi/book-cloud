@@ -2,8 +2,6 @@ package com.example.vadim.books_sync.views;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -11,20 +9,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.FolderDao;
-import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 import com.example.vadim.books_sync.presenters.StateOwnerProperties;
@@ -36,6 +34,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class AddFolderDialog extends android.support.v4.app.DialogFragment
         implements DialogView, StateOwnerProperties {
@@ -52,8 +52,6 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
     @Inject
     FolderDao folderDao;
 
-    private InputMethodManager inputMethodManager;
-
     private FolderPresenter folderPresenter;
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -64,9 +62,6 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
                              Bundle savedInstanceState) {
         final View viewProperties =
                 inflater.inflate(R.layout.add_new_folder_alert_dialog, null);
-        final Context context = viewProperties.getContext();
-        inputMethodManager =
-                (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         ButterKnife.bind(this, viewProperties);
         DaggerAppComponent.builder()
                 .appModule(new AppModule(
@@ -109,19 +104,25 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
 
     @Override
     public void hideKeyBoard() {
-        getDialog().getWindow().setSoftInputMode(
+        Objects.requireNonNull(getDialog().getWindow()).setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override
     public void showKeyBoard() {
-        getDialog().getWindow().setSoftInputMode(
+        Objects.requireNonNull(getDialog().getWindow()).setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     @Override
     public void showToast(StateOfDocument stateOfDocument) {
-
+        if (stateOfDocument != null) {
+            final Toast toast = Toast.makeText(getActivity(),
+                    stateOfDocument.toString(),
+                    LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM, 0, 0);
+            toast.show();
+        }
     }
 
     public void setFolderPresenter(FolderPresenter folderPresenter) {

@@ -22,9 +22,8 @@ public class RenamingFile implements StateOfDocument.StateOfFile {
 
     @Override
     public void doStateWithFile(MaterialPresenter materialPresenter) {
-        final Material material = materialPresenter.getMaterial();
         final File file = new File(materialPresenter.getPath());
-        if (file.exists()) {
+        if ( file.exists() ) {
             final String absolutePath = file.getPath();
             final String filePath =
                     String.valueOf(new StringBuilder(absolutePath.
@@ -33,6 +32,7 @@ public class RenamingFile implements StateOfDocument.StateOfFile {
                             .append(fileName));
             final File newFile = new File(filePath);
             if ( !newFile.exists() ) {
+                final Material material = materialPresenter.getMaterial();
                 file.renameTo(newFile);
                 material.setName(fileName);
                 material.setPath(filePath);
@@ -45,7 +45,7 @@ public class RenamingFile implements StateOfDocument.StateOfFile {
 
     @Override
     public String toString() {
-        return Notifications.RENAME.getNotification();
+        return Notifications.REMOVE_FILE.getNotification();
     }
 
 }

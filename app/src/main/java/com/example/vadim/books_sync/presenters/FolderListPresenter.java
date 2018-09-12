@@ -11,10 +11,7 @@ import android.view.View;
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
 import com.example.vadim.books_sync.model.Folder;
-import com.example.vadim.books_sync.model.Material;
-import com.example.vadim.books_sync.presenters.services.DocumentService;
 import com.example.vadim.books_sync.views.FolderViewHolder;
-import com.example.vadim.books_sync.views.MaterialViewHolder;
 import com.example.vadim.books_sync.views.MaterialsOfFolderActivity;
 
 import java.util.ArrayList;
@@ -30,14 +27,14 @@ public class FolderListPresenter {
 
     private RecyclerView.Adapter<FolderViewHolder> folderViewHolderAdapter;
 
-    private final static int START_POSITION_OF_MATERIALS = 0;
+    private final static int START_POSITION_OF_FOLDERS = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void openFolderOrMaterial(View view, int position) {
         final Folder folder = folders.get(position);
         final Intent foldersIntent =
                 new Intent(view.getContext(), MaterialsOfFolderActivity.class);
-        foldersIntent.putExtra("format", folder.getName());
+        foldersIntent.putExtra("folder", folder);
         ((Activity) view.getContext()).startActivityForResult(foldersIntent, 1);
     }
 
@@ -48,6 +45,7 @@ public class FolderListPresenter {
         baseRowPresenter.setImageResource(
                 R.mipmap.ic_move_to_folders_foreground);
     }
+
     public int getFoldersSize() {
         return folders.size();
     }
@@ -67,7 +65,7 @@ public class FolderListPresenter {
         foldersPresenter.set(position, folderPresenter);
         folderViewHolderAdapter.notifyDataSetChanged();
         folderViewHolderAdapter.notifyItemMoved(
-                START_POSITION_OF_MATERIALS, folders.size());
+                START_POSITION_OF_FOLDERS, folders.size());
     }
 
     public void removeAt(FolderPresenter folderPresenter) {
@@ -76,7 +74,7 @@ public class FolderListPresenter {
         folders.remove(position);
         folderViewHolderAdapter.notifyDataSetChanged();
         folderViewHolderAdapter.notifyItemMoved(
-                START_POSITION_OF_MATERIALS, folders.size());
+                START_POSITION_OF_FOLDERS, folders.size());
     }
 
     public void setFolders(List<Folder> folders) {
@@ -113,18 +111,12 @@ public class FolderListPresenter {
         }
     }
 
-    public void addNewFolder(final String folderName, final FolderPresenter folderPresenter) {
-        Folder folder = new Folder();
-        folder.setName(folderName);
-        folderPresenter.setFolder(folder);
-        folderPresenter.setFolderListPresenter(this);
-        this.folders.add(folder);
+    public void addNewFolder(final FolderPresenter folderPresenter) {
+        this.folders.add(folderPresenter.getFolder());
         this.foldersPresenter.add(folderPresenter);
         folderViewHolderAdapter.notifyDataSetChanged();
         folderViewHolderAdapter.notifyItemMoved(
-                START_POSITION_OF_MATERIALS, folders.size());
-
+                START_POSITION_OF_FOLDERS, folders.size());
     }
-
 
 }

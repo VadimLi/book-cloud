@@ -2,13 +2,19 @@ package com.example.vadim.books_sync.presenters;
 
 public enum Notifications {
 
-    REMOVE("Документ удален"),
+    REMOVE_FILE("Документ удален"),
 
-    RENAME("Документ переименован"),
+    RENAME_FILE("Документ переименован"),
 
-    SHARE("Документ отправлен"),
+    SHARE_FILE("Документ отправлен"),
 
-    ADD_TO_FOLDER("Документ добавлен");
+    ADD_TO_FOLDER("Документ добавлен"),
+
+    ADD_NEW_FOLDER("Папка добавлена"),
+
+    REMOVE_FOLDER("Папка удалена"),
+
+    RENAME_FOLDER("Папка переименована");
 
     final String notification;
 

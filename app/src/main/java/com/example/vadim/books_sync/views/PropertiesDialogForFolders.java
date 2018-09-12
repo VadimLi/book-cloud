@@ -45,7 +45,7 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         implements StateOwnerProperties, DialogView {
 
     @BindView(R.id.folderName)
-    CustomEditText fileNameEditText;
+    CustomEditText folderName;
 
     @BindView(R.id.applyName)
     ImageButton applyNameImageButton;
@@ -89,7 +89,7 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         new CallbackPropertiesForFoldersImpl.CallbacksEditorImpl(this);
 
         drawPropertiesDialog(viewProperties);
-        fileNameEditText.setText(folderPresenter.getName());
+        folderName.setText(folderPresenter.getName());
         hideEditor();
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -130,14 +130,15 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
 
     @Override
     public void hideKeyBoard() {
-        inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(),
+        inputMethodManager.hideSoftInputFromWindow(
+                Objects.requireNonNull(getView()).getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override
     public void showKeyBoard() {
         if (inputMethodManager != null) {
-            inputMethodManager.showSoftInput(fileNameEditText,
+            inputMethodManager.showSoftInput(folderName,
                     InputMethodManager.SHOW_FORCED);
         }
     }
@@ -164,11 +165,12 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
     @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void renameDocument() {
-        if (fileNameEditText.getText().length() == 0) {
-            fileNameEditText.setText(folderPresenter.getName());
+        // handler with reactive android
+        if (folderName.getText().length() == 0) {
+            folderName.setText(folderPresenter.getName());
         } else {
-            final String newNameFolder = fileNameEditText.getText().toString();
-            fileNameEditText.setText(newNameFolder);
+            final String newNameFolder = folderName.getText().toString();
+            folderName.setText(newNameFolder);
             final RenamingFolder renaming = new RenamingFolder(newNameFolder, folderDao);
             renaming.doStateWithFolder(folderPresenter);
             showToast(folderPresenter.getStateOfFolder());
@@ -180,22 +182,20 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
     public void shareDocument() { }
 
     @Override
-    public void addToFolderOrNewFolder(String name) {
-
-    }
+    public void addToFolderOrNewFolder(String name) { }
 
     @Override
     public void hideEditor() {
-        fileNameEditText.setVisibleCloseButton(false);
-        fileNameEditText.setEnabled(false);
+        folderName.setVisibleCloseButton(false);
+        folderName.setEnabled(false);
         applyNameImageButton.setVisibility(View.INVISIBLE);
         cancelImageButton.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showEditor() {
-        fileNameEditText.setVisibleCloseButton(true);
-        fileNameEditText.setEnabled(true);
+        folderName.setVisibleCloseButton(true);
+        folderName.setEnabled(true);
         applyNameImageButton.setVisibility(View.VISIBLE);
         cancelImageButton.setVisibility(View.VISIBLE);
     }

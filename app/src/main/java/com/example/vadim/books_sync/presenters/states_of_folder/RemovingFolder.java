@@ -22,6 +22,6 @@ public class RemovingFolder implements StateOfDocument.StateOfFolder {
 
     @Override
     public String toString() {
-        return Notifications.REMOVE.getNotification();
+        return Notifications.REMOVE_FOLDER.getNotification();
     }
 }

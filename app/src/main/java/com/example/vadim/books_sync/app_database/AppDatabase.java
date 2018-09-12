@@ -22,7 +22,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
 
     // started version with 1
-    static final int VERSION = 8;
+    static final int VERSION = 10;
 
     public abstract MaterialDao getMaterialDao();
 
@@ -41,7 +41,9 @@ public abstract class AppDatabase extends RoomDatabase {
                             FROM_4_TO_5,
                             FROM_5_TO_6,
                             FROM_6_TO_7,
-                            FROM_7_TO_8)
+                            FROM_7_TO_8,
+                            FROM_8_TO_9,
+                            FROM_9_TO_10)
                     .allowMainThreadQueries()
                     .build();
         }
@@ -106,11 +108,25 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-    private static final Migration FROM_7_TO_8 = new Migration(7, VERSION) {
+    private static final Migration FROM_7_TO_8 = new Migration(7, 8) {
         @Override
         public void migrate(final SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE folder " +
                     " DROP COLUMN root");
+        }
+    };
+
+    private static final Migration FROM_8_TO_9 = new Migration(8, 9) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE folder ADD CONSTRAINT UC_Name UNIQUE (name)");
+        }
+    };
+
+    private static final Migration FROM_9_TO_10 = new Migration(9, VERSION) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE material ADD CONSTRAINT UC_Path UNIQUE (path)");
         }
     };
 

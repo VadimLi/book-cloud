@@ -14,13 +14,16 @@ import java.util.List;
 public interface FolderDao {
 
     @Insert
-    void insert(Folder folder);
+    long insert(Folder folder);
 
     @Update
     void update(Folder folder);
 
     @Query("DELETE FROM folder")
     void deleteAll();
+
+    @Query("SELECT *FROM folder WHERE name IN (:name)")
+    List<Folder> findByName(final String name);
 
     @Query("DELETE FROM folder WHERE name IN (:name)")
     void deleteByName(final String name);

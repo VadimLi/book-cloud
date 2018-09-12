@@ -11,7 +11,6 @@ import com.example.vadim.books_sync.model.Material;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,27 +40,6 @@ public class FinderService extends Application {
         return materials;
     }
 
-    public void deleteMaterialFiles(List<Material> materials) {
-        boolean checkMaterial;
-        final Iterator<Material> materialIterator = materials.iterator();
-        while (materialIterator.hasNext()) {
-            checkMaterial = false;
-            final Material outerMaterial = materialIterator.next();
-            String outerMaterialPath = outerMaterial.getPath();
-            for (Material innerMaterial : loadingMaterialList) {
-                if ( outerMaterialPath
-                        .equals(innerMaterial.getPath()) ) {
-                    checkMaterial = true;
-                }
-            }
-            if ( !checkMaterial ) {
-                Log.d("material remove : ", outerMaterial.getName());
-                materialIterator.remove();
-                materialDao.deleteByPath(outerMaterialPath);
-            }
-        }
-    }
-
     private void searchFiles(File root) {
         final File[] list = root.listFiles();
         if (list != null) {
@@ -87,7 +65,8 @@ public class FinderService extends Application {
             material.setPath(file.getAbsolutePath());
             if (materialDao.findByPath(file.getAbsolutePath()).isEmpty() ||
                     materialDao.findByPath(file.getAbsolutePath()) == null) {
-                materialDao.insert(material);
+                final long materialId = materialDao.insert(material);
+                material.setId(materialId);
                 materials.addFirst(material);
             }
             loadingMaterialList.add(material);

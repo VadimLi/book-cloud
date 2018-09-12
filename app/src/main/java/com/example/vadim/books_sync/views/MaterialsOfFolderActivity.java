@@ -23,6 +23,7 @@ import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
+import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 
@@ -83,12 +84,16 @@ public class MaterialsOfFolderActivity extends AppCompatActivity {
 
         createMaterialAdapter();
 
-        final Intent intent = getIntent();
-        final String format = intent.getStringExtra("format");
-        final List<Material> materials = materialDao.findByFormat(format);
+        final Bundle folderBundle = getIntent().getExtras();
+        final Folder folder;
+        if (folderBundle != null) {
+            folder = folderBundle.getParcelable("folder");
+            final List<Material> materials = materialFolderJoinDao
+                    .findMaterialsForFolders(folder.getId());
 
-        materialsRecyclerAdapter.setListContent(materials);
-        recyclerView.setAdapter(materialsRecyclerAdapter);
+            materialsRecyclerAdapter.setListContent(materials);
+            recyclerView.setAdapter(materialsRecyclerAdapter);
+        }
 
         searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 

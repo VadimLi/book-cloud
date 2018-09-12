@@ -17,6 +17,8 @@ import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
 import com.example.vadim.books_sync.presenters.FolderListPresenter;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -58,12 +60,14 @@ public class FolderViewHolder extends RecyclerView.ViewHolder
     public boolean onLongClick(View view) {
         changeBackgroundResource(view);
         final int position = getAdapterPosition();
-        final PropertiesDialogForFolders propertiesDialogForFolders =
-                new PropertiesDialogForFolders();
         final FolderPresenter folderPresenter = folderListPresenter
                 .getFoldersPresenter().get(position);
-        if (((FoldersActivity) view.getContext()).materialDao.
-                findDistinctNameByName(folderPresenter.getName()) == null) {
+        final List<String> formatList =
+                ((FoldersActivity) view.getContext()).materialDao.
+                        findDistinctNameByFormat(folderPresenter.getName());
+        if ( formatList.isEmpty() ) {
+            final PropertiesDialogForFolders propertiesDialogForFolders =
+                    new PropertiesDialogForFolders();
             folderPresenter.setFolderPosition(position);
             folderPresenter.setFolderListPresenter(folderListPresenter);
             propertiesDialogForFolders.setFolderPresenter(folderPresenter);
@@ -71,7 +75,7 @@ public class FolderViewHolder extends RecyclerView.ViewHolder
                     ((FragmentActivity) view.getContext()).getSupportFragmentManager();
             propertiesDialogForFolders.show(fragmentManager, "properties dialog for folder");
         }
-        return true;
+        return false;
     }
 
     @Override

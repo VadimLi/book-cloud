@@ -59,7 +59,8 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
     public boolean onLongClick(View view) {
         changeBackgroundResource(view);
         final int position = getAdapterPosition();
-        final PropertiesDialogForMaterials propertiesDialogForMaterials = new PropertiesDialogForMaterials();
+        final PropertiesDialogForMaterials propertiesDialogForMaterials =
+                new PropertiesDialogForMaterials();
         final MaterialPresenter materialPresenter = materialListPresenter
                 .getMaterialsPresenter().get(position);
         materialPresenter.setMaterialPosition(position);

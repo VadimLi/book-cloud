@@ -8,28 +8,28 @@ import com.example.vadim.books_sync.presenters.StateOfDocument;
 
 public class RenamingFolder implements StateOfDocument.StateOfFolder {
 
-    private final String fileName;
+    private final String folderName;
 
     private final FolderDao folderDao;
 
-    public RenamingFolder(final String fileName,
+    public RenamingFolder(final String folderName,
                         final FolderDao folderDao) {
-        this.fileName = fileName;
+        this.folderName = folderName;
         this.folderDao = folderDao;
     }
 
     @Override
     public void doStateWithFolder(FolderPresenter folderPresenter) {
         final Folder folder = folderPresenter.getFolder();
-        folder.setName(fileName);
-        folderPresenter.update(fileName);
+        folder.setName(folderName);
+        folderPresenter.update(folderName);
         folderDao.update(folder);
         folderPresenter.setStateOfFolder(this);
     }
 
     @Override
     public String toString() {
-        return Notifications.RENAME.getNotification();
+        return Notifications.REMOVE_FOLDER.getNotification();
     }
 
 }

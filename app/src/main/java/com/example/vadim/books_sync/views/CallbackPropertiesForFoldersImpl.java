@@ -57,8 +57,9 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
             final String nameWithoutFormat = propertiesDialogForFolders
                     .getFolderPresenter()
                     .getName();
-            propertiesDialogForFolders.fileNameEditText.setText(nameWithoutFormat);
-            propertiesDialogForFolders.fileNameEditText.setSelection(nameWithoutFormat.length());
+            propertiesDialogForFolders.folderName.setText(nameWithoutFormat);
+            propertiesDialogForFolders.folderName.setSelection(
+                    nameWithoutFormat.length());
             propertiesDialogForFolders.showEditor();
             propertiesDialogForFolders.showKeyBoard();
         };
@@ -78,13 +79,13 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
             this.propertiesDialogForFolders = propertiesDialogForFolders;
             propertiesDialogForFolders.applyNameImageButton.setOnClickListener(onClickApply());
             propertiesDialogForFolders.cancelImageButton.setOnClickListener(onClickCancel());
-            propertiesDialogForFolders.fileNameEditText.setOnClickListener(onClickEditText());
+            propertiesDialogForFolders.folderName.setOnClickListener(onClickEditText());
         }
 
         @Override
         public View.OnClickListener onClickCancel() {
             return v -> {
-                propertiesDialogForFolders.fileNameEditText.setText(
+                propertiesDialogForFolders.folderName.setText(
                         propertiesDialogForFolders.getFolderPresenter().getName());
                 propertiesDialogForFolders.hideEditor();
             };

@@ -44,7 +44,6 @@ public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
             for (Material material : newMaterials) {
                 materials.addFirst(material);
             }
-            finderService.deleteMaterialFiles(materials);
             final Thread updaterAdapter = new Thread(() -> {
                 try {
                     Thread.sleep(minSleep);

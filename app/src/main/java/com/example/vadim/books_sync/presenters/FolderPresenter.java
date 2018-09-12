@@ -88,7 +88,10 @@ public class FolderPresenter implements StateOwnerProperties {
 
     @Override
     public void addToFolderOrNewFolder(final String folderName) {
-        folderListPresenter.addNewFolder(folderName, this);
+        final Folder newFolder = new Folder();
+        newFolder.setName(folderName);
+        this.setFolder(newFolder);
+        folderListPresenter.addNewFolder(this);
         stateOwnerProperties.addToFolderOrNewFolder(folderName);
     }
 

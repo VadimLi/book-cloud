@@ -190,9 +190,7 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     }
 
     @Override
-    public void addToFolderOrNewFolder(String name) {
-
-    }
+    public void addToFolderOrNewFolder(String name) { }
 
     @Override
     public void hideEditor() {

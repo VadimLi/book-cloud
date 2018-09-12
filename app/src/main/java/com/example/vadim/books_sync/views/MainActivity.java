@@ -100,8 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
         createMaterialAdapter();
         final List<Material> materials = materialDao.findAll();
-        final LinkedList<Material> materialLinkedList = convertToLinkedMaterialList(materials);
-
+        final LinkedList<Material> materialLinkedList =
+                convertToLinkedMaterialList(materials);
+        
         setProgressBarLoadMaterials(materialLinkedList);
         moveFolders.setOnClickListener(v -> {
             final Intent foldersIntent =
@@ -221,16 +222,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Transaction
     private void addFormatsFiles() {
-        folderDao.deleteAll();
-        for (final String format : materialDao.findDistinctName()) {
-            final Folder folder = new Folder();
-            folder.setName(format);
-            folderDao.insert(folder);
+        final List<String> materialFormats = materialDao.findDistinctFormats();
+        for (final String format : materialFormats) {
+            final List<Folder> folders = folderDao.findByName(format);
+            if ( folders.isEmpty() ) {
+                final Folder folder = new Folder();
+                folder.setName(format);
+                final long folderId = folderDao.insert(folder);
+                folder.setId(folderId);
+            }
         }
-        for (Folder folder : folderDao.findAll()) {
-            for (Material material : materialDao.findByFormat(folder.getName())) {
-                final MaterialFolderJoin materialFolderJoin =
-                        new MaterialFolderJoin();
+        addMaterialsToFolder();
+    }
+
+    private void addMaterialsToFolder() {
+        final List<Folder> folders = folderDao.findAll();
+        for (final Folder folder : folders) {
+            for (final Material material : materialDao.findByFormat(folder.getName())) {
+                final MaterialFolderJoin materialFolderJoin = new MaterialFolderJoin();
                 materialFolderJoin.setMaterialId(material.getId());
                 materialFolderJoin.setFolderId(folder.getId());
                 materialFolderJoinDao.insert(materialFolderJoin);
