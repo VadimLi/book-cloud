@@ -22,7 +22,7 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
 
     private LayoutInflater layoutInflater;
 
-    private MaterialListPresenter materialListPresenter;
+    private final MaterialListPresenter materialListPresenter;
 
     public MaterialsRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);

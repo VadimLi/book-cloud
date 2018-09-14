@@ -107,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
         moveFolders.setOnClickListener(v -> {
             final Intent foldersIntent =
                     new Intent(this, FoldersActivity.class);
+            materialsUpdaterPresenter.getUpdaterAdapter().interrupt();
+            swipeContainer.setRefreshing(false);
             startActivityForResult(foldersIntent, 1);
         });
 
@@ -177,9 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private LinkedList<Material> convertToLinkedMaterialList(
             List<Material> materials) {
         final LinkedList<Material> newMaterialList = new LinkedList<>();
-        for (Material material : materials) {
-            newMaterialList.addLast(material);
-        }
+        materials.forEach(newMaterialList::addLast);
         return newMaterialList;
     }
 

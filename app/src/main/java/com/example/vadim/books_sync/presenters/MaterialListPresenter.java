@@ -33,8 +33,32 @@ public class MaterialListPresenter {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void openDocumentByPath(View view, int position) {
+        changeFirstElementWithPosition(position);
+        documentService.openDocumentByPath(view,
+                materialsPresenter.get(position).getMaterial());
+    }
+
+    private void changeFirstElementWithPosition(int position) {
+        final MaterialPresenter materialPresenter = materialsPresenter.get(position);
         final Material material = materials.get(position);
-        documentService.openDocumentByPath(view, material);
+
+        materials.set(position,
+                materials.get(START_POSITION_OF_MATERIALS));
+        materials.set(START_POSITION_OF_MATERIALS, material);
+
+        materialsPresenter.set(position,
+                materialsPresenter.get(START_POSITION_OF_MATERIALS));
+        materialsPresenter.set(START_POSITION_OF_MATERIALS, materialPresenter);
+
+        materialsPresenter.get(position).setMaterialPosition(
+                materialsPresenter.get(START_POSITION_OF_MATERIALS).getMaterialPosition());
+        materialsPresenter.get(START_POSITION_OF_MATERIALS)
+                .setMaterialPosition(materialPresenter.getMaterialPosition());
+
+        materialsPresenter.get(position).setMaterial(
+                materialsPresenter.get(START_POSITION_OF_MATERIALS).getMaterial());
+        materialsPresenter.get(START_POSITION_OF_MATERIALS)
+                .setMaterial(materialPresenter.getMaterial());
     }
 
     public void onBindMaterialRowViewAtPosition(@NonNull BaseRowPresenter baseRowPresenter,
