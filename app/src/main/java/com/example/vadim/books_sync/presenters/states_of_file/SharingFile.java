@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import com.example.vadim.books_sync.BuildConfig;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
@@ -32,7 +33,10 @@ public class SharingFile extends FileProvider implements StateOfDocument.StateOf
             propertiesDialogForMaterials.startActivity(
                     Intent.createChooser(shareIntent,
                             materialPresenter.getName()));
+            Log.d("TAG", "Sharing has worked");
+            return;
         }
+        Log.d("TAG", "Sharing has not worked");
     }
 
 }

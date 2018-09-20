@@ -1,5 +1,7 @@
 package com.example.vadim.books_sync.presenters.states_of_file;
 
+import android.util.Log;
+
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
@@ -39,13 +41,16 @@ public class RenamingFile implements StateOfDocument.StateOfFile {
                 materialPresenter.update(fileName);
                 materialDao.update(material);
                 materialPresenter.setStateOfFile(this);
+                Log.d("TAG", "File has renamed");
+                return;
             }
         }
+        Log.d("TAG", "File has not renamed");
     }
 
     @Override
     public String toString() {
-        return Notifications.REMOVE_FILE.getNotification();
+        return Notifications.RENAME_FILE.getNotification();
     }
 
 }

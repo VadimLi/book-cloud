@@ -26,7 +26,9 @@ import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 import com.example.vadim.books_sync.presenters.StateOwnerProperties;
+import com.example.vadim.books_sync.presenters.services.Formats;
 import com.example.vadim.books_sync.presenters.states_of_folder.AddingNewFolder;
+import com.example.vadim.books_sync.views.rx.ObserversForNameDocument;
 
 import java.util.Objects;
 
@@ -34,6 +36,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.functions.Function;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -71,12 +74,10 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
                 .build()
                 .injectAddFolderDialog(this);
         folderPresenter.attachDialog(this);
-
-        new CallbackPropertiesForInsertFolderImpl(this);
-
+        CallbackPropertiesForAddingFolderImpl.newCallbacksForAddingFolder(this);
+        validateOfNameDocument();
         drawPropertiesDialog(viewProperties);
         showKeyBoard();
-
         return viewProperties;
     }
 
@@ -134,19 +135,23 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
     }
 
     @Override
-    public void removeDocument() {
-
+    public void validateOfNameDocument() {
+        CustomEditText.getPublishSubject()
+                .map((Function<String, Object>) s ->
+                        folderDao.findByName(s).isEmpty()
+                                && Formats.checkNameOfFormat(s)
+                                && !s.isEmpty()).subscribe(ObserversForNameDocument
+                                .getNameDocumentObserver(applyName, folderName));
     }
 
     @Override
-    public void renameDocument() {
-
-    }
+    public void removeDocument() { }
 
     @Override
-    public void shareDocument() {
+    public void renameDocument() { }
 
-    }
+    @Override
+    public void shareDocument() { }
 
     @Override
     public void addToFolderOrNewFolder(final String name) {

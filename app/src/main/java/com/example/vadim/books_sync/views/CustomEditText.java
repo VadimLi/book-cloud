@@ -12,11 +12,15 @@ import android.widget.EditText;
 
 import com.example.vadim.books_sync.R;
 
+import io.reactivex.subjects.PublishSubject;
+
 @SuppressLint("AppCompatCustomView")
 public class CustomEditText extends EditText {
 
     //The image we are going to use for the Clear button
     private Drawable imgCloseButton;
+
+    private final static PublishSubject<String> PUBLISH_SUBJECT = PublishSubject.create();;
 
     public CustomEditText(Context context) {
         super(context);
@@ -52,6 +56,7 @@ public class CustomEditText extends EditText {
 
             @Override
             public void afterTextChanged(Editable arg0) {
+                PUBLISH_SUBJECT.onNext(arg0.toString());
             }
 
             @Override
@@ -95,6 +100,10 @@ public class CustomEditText extends EditText {
                     this.getCompoundDrawables()[1],
                     null, this.getCompoundDrawables()[3]);
         }
+    }
+
+    public static PublishSubject<String> getPublishSubject() {
+        return PUBLISH_SUBJECT;
     }
 
 }

@@ -4,12 +4,19 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.view.View;
 
-public class CallbackPropertiesForInsertFolderImpl implements CallbacksProperties.CallbacksEditor {
+public class CallbackPropertiesForAddingFolderImpl
+        implements CallbacksProperties.CallbacksEditor {
 
-    private AddFolderDialog addFolderDialog;
+    private final AddFolderDialog addFolderDialog;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    CallbackPropertiesForInsertFolderImpl(AddFolderDialog addFolderDialog) {
+    public static CallbackPropertiesForAddingFolderImpl newCallbacksForAddingFolder(
+            AddFolderDialog addFolderDialog) {
+        return new CallbackPropertiesForAddingFolderImpl(addFolderDialog);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private CallbackPropertiesForAddingFolderImpl(AddFolderDialog addFolderDialog) {
         this.addFolderDialog = addFolderDialog;
         addFolderDialog.folderName.setOnClickListener(onClickEditText());
         addFolderDialog.applyName.setOnClickListener(onClickApply());

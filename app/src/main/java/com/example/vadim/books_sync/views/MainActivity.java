@@ -179,7 +179,9 @@ public class MainActivity extends AppCompatActivity {
     private LinkedList<Material> convertToLinkedMaterialList(
             List<Material> materials) {
         final LinkedList<Material> newMaterialList = new LinkedList<>();
-        materials.forEach(newMaterialList::addLast);
+        for (final Material material : materials) {
+            newMaterialList.addFirst(material);
+        }
         return newMaterialList;
     }
 

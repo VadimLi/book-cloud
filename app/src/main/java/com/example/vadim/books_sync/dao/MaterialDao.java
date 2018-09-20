@@ -3,7 +3,6 @@ package com.example.vadim.books_sync.dao;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
@@ -19,6 +18,13 @@ public interface MaterialDao {
 
     @Query("SELECT *FROM material WHERE path IN (:path)")
     List<Material> findByPath(String path);
+
+    @Query("SELECT *FROM material WHERE name IN (:name) AND id NOT IN (:id)")
+    List<Material> findByNameAndWithoutId(final String name,
+                                          final long id);
+
+    @Query("SELECT *FROM material WHERE name IN (:name)")
+    List<Material> findByName(final String name);
 
     @Query("SELECT *FROM material WHERE format IN (:format)")
     List<Material> findByFormat(final String format);

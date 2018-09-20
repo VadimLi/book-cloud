@@ -25,6 +25,10 @@ public interface FolderDao {
     @Query("SELECT *FROM folder WHERE name IN (:name)")
     List<Folder> findByName(final String name);
 
+    @Query("SELECT *FROM folder WHERE name IN (:name) AND id NOT IN (:id)")
+    List<Folder> findByNameWithoutId(final String name,
+                                     final long id);
+
     @Query("DELETE FROM folder WHERE name IN (:name)")
     void deleteByName(final String name);
 

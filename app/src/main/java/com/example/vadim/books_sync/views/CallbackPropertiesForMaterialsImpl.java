@@ -5,7 +5,6 @@ import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.views.customs.TrashAnimationListener;
@@ -15,11 +14,17 @@ public class CallbackPropertiesForMaterialsImpl implements CallbacksProperties {
     private final PropertiesDialogForMaterials propertiesDialogForMaterials;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    CallbackPropertiesForMaterialsImpl(PropertiesDialogForMaterials propertiesDialogForMaterials) {
-        if (propertiesDialogForMaterials.getContext() instanceof MainActivity) {
-            propertiesDialogForMaterials.renameImageButton.setOnClickListener(onClickRename());
-        }
+    public static CallbacksEditorImpl newCallbacksEditorImpl(
+            PropertiesDialogForMaterials propertiesDialogForMaterials) {
+        return new CallbackPropertiesForMaterialsImpl(propertiesDialogForMaterials)
+                .new CallbacksEditorImpl();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private CallbackPropertiesForMaterialsImpl(
+            final PropertiesDialogForMaterials propertiesDialogForMaterials) {
         this.propertiesDialogForMaterials = propertiesDialogForMaterials;
+        propertiesDialogForMaterials.renameMaterial.setOnClickListener(onClickRename());
         propertiesDialogForMaterials.shareImageButton.setOnClickListener(onClickShare());
         propertiesDialogForMaterials.trashImageButton.setOnClickListener(onClickRemove());
         propertiesDialogForMaterials.trashImageButton.setOnLongClickListener(onLongClickRemove());
@@ -73,22 +78,7 @@ public class CallbackPropertiesForMaterialsImpl implements CallbacksProperties {
         return null;
     }
 
-    static class CallbacksEditorImpl implements CallbacksProperties.CallbacksEditor {
-
-        private PropertiesDialogForMaterials propertiesDialogForMaterials;
-
-        private InputMethodManager inputMethodManager;
-
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        CallbacksEditorImpl(PropertiesDialogForMaterials propertiesDialogForMaterials) {
-            if (propertiesDialogForMaterials.getContext() instanceof MainActivity) {
-                this.propertiesDialogForMaterials = propertiesDialogForMaterials;
-                inputMethodManager = propertiesDialogForMaterials.getInputMethodManager();
-                propertiesDialogForMaterials.applyNameImageButton.setOnClickListener(onClickApply());
-                propertiesDialogForMaterials.cancelImageButton.setOnClickListener(onClickCancel());
-                propertiesDialogForMaterials.fileNameEditText.setOnClickListener(onClickEditText());
-            }
-        }
+    class CallbacksEditorImpl implements CallbacksProperties.CallbacksEditor {
 
         @Override
         public View.OnClickListener onClickCancel() {
@@ -111,6 +101,14 @@ public class CallbackPropertiesForMaterialsImpl implements CallbacksProperties {
         @Override
         public View.OnClickListener onClickEditText() {
             return v -> propertiesDialogForMaterials.showKeyBoard();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        public CallbackPropertiesForMaterialsImpl create() {
+            propertiesDialogForMaterials.applyMaterialName.setOnClickListener(onClickApply());
+            propertiesDialogForMaterials.cancelImageButton.setOnClickListener(onClickCancel());
+            propertiesDialogForMaterials.fileNameEditText.setOnClickListener(onClickEditText());
+            return CallbackPropertiesForMaterialsImpl.this;
         }
 
     }

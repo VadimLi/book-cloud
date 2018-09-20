@@ -43,7 +43,9 @@ public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
         final int minSleep = 200;
         final Thread updaterMaterialsThread = new Thread(() -> {
             final LinkedList<Material> newMaterials = finderService.getMaterials();
-            newMaterials.forEach(materials::addFirst);
+            for (final Material material : newMaterials) {
+                materials.addFirst(material);
+            }
             finderService.deleteMaterialFiles(materials);
             updaterAdapter = new Thread(() -> {
                 try {
@@ -62,10 +64,6 @@ public class MaterialsUpdaterPresenter implements BaseMaterialsPresenter {
 
     public Thread getUpdaterAdapter() {
         return updaterAdapter;
-    }
-
-    public void setUpdaterAdapter(Thread updaterAdapter) {
-        this.updaterAdapter = updaterAdapter;
     }
 
 }

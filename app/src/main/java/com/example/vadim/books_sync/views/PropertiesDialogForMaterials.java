@@ -33,10 +33,15 @@ import com.example.vadim.books_sync.presenters.StateOwnerProperties;
 import com.example.vadim.books_sync.presenters.states_of_file.RemovingFile;
 import com.example.vadim.books_sync.presenters.states_of_file.RenamingFile;
 import com.example.vadim.books_sync.presenters.states_of_file.SharingFile;
+import com.example.vadim.books_sync.views.rx.ObserversForNameDocument;
 
 import java.util.Objects;
 
 import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.reactivex.functions.Function;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -44,18 +49,25 @@ import static android.widget.Toast.LENGTH_SHORT;
 public class PropertiesDialogForMaterials extends android.support.v4.app.DialogFragment
         implements StateOwnerProperties, DialogView {
 
+    @BindView(R.id.fileName)
     CustomEditText fileNameEditText;
 
-    ImageButton applyNameImageButton;
+    @BindView(R.id.applyMaterialName)
+    ImageButton applyMaterialName;
 
+    @BindView(R.id.cancelMaterialImageButton)
     ImageButton cancelImageButton;
 
-    ImageButton renameImageButton;
+    @BindView(R.id.renameMaterial)
+    ImageButton renameMaterial;
 
+    @BindView(R.id.addToFolder)
     ImageButton addToFolderImageButton;
 
+    @BindView(R.id.trash)
     ImageButton trashImageButton;
 
+    @BindView(R.id.share)
     ImageButton shareImageButton;
 
     @Inject
@@ -67,31 +79,14 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
 
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressLint("InflateParams")
+    @SuppressLint({"InflateParams", "CheckResult", "ResourceAsColor"})
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        View viewProperties;
-        if (getContext() instanceof MainActivity) {
-            viewProperties =
+        final View viewProperties =
                     inflater.inflate(R.layout.materials_dialog_properties, null);
-            fileNameEditText = viewProperties.findViewById(R.id.fileName);
-            applyNameImageButton = viewProperties.findViewById(R.id.applyName);
-            cancelImageButton = viewProperties.findViewById(R.id.cancelImageButton);
-            renameImageButton = viewProperties.findViewById(R.id.rename);
-            addToFolderImageButton = viewProperties.findViewById(R.id.addToFolder);
-            trashImageButton = viewProperties.findViewById(R.id.trash);
-            shareImageButton = viewProperties.findViewById(R.id.share);
-        } else {
-            viewProperties =
-                    inflater.inflate(R.layout.materials_folder_dialog_properties, null);
-            fileNameEditText = viewProperties.findViewById(R.id.fileName);
-            addToFolderImageButton = viewProperties.findViewById(R.id.addToFolder);
-            trashImageButton = viewProperties.findViewById(R.id.trash);
-            shareImageButton = viewProperties.findViewById(R.id.share);
-        }
-
         final Context context = viewProperties.getContext();
+        ButterKnife.bind(this, viewProperties);
         DaggerAppComponent.builder()
                 .appModule(new AppModule(
                         Objects.requireNonNull(getActivity())
@@ -101,15 +96,15 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
                 .injectDialogFragmentForMaterials(this);
         materialPresenter.attachDialog(this);
 
-        new CallbackPropertiesForMaterialsImpl(this);
-        new CallbackPropertiesForMaterialsImpl.CallbacksEditorImpl(this);
-
-        drawPropertiesDialog(viewProperties);
         fileNameEditText.setText(materialPresenter.getName());
+        CallbackPropertiesForMaterialsImpl
+                .newCallbacksEditorImpl(this)
+                .create();
+        drawPropertiesDialog(viewProperties);
         hideEditor();
+        validateOfNameDocument();
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-
         return viewProperties;
     }
 
@@ -170,16 +165,12 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void renameDocument() {
-        if (fileNameEditText.getText().length() == 0) {
-            fileNameEditText.setText(materialPresenter.getName());
-        } else {
-            final String newNameMaterial = fileNameEditText.getText().toString();
-            final String fullName = String.valueOf(getFullNameFile(newNameMaterial));
-            fileNameEditText.setText(fullName);
-            final RenamingFile renamingFile = new RenamingFile(fullName, materialDao);
-            renamingFile.doStateWithFile(materialPresenter);
-            showToast(materialPresenter.getStateOfFile());
-        }
+        final String newNameMaterial = fileNameEditText.getText().toString();
+        final String fullName = getFullNameFile(newNameMaterial);
+        fileNameEditText.setText(fullName);
+        final RenamingFile renamingFile = new RenamingFile(fullName, materialDao);
+        renamingFile.doStateWithFile(materialPresenter);
+        showToast(materialPresenter.getStateOfFile());
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
@@ -196,20 +187,16 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     public void hideEditor() {
         fileNameEditText.setVisibleCloseButton(false);
         fileNameEditText.setEnabled(false);
-        if (getContext() instanceof MainActivity) {
-            applyNameImageButton.setVisibility(View.INVISIBLE);
-            cancelImageButton.setVisibility(View.INVISIBLE);
-        }
+        applyMaterialName.setVisibility(View.INVISIBLE);
+        cancelImageButton.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showEditor() {
         fileNameEditText.setVisibleCloseButton(true);
         fileNameEditText.setEnabled(true);
-        if (getContext() instanceof MainActivity) {
-            applyNameImageButton.setVisibility(View.VISIBLE);
-            cancelImageButton.setVisibility(View.VISIBLE);
-        }
+        applyMaterialName.setVisibility(View.VISIBLE);
+        cancelImageButton.setVisibility(View.VISIBLE);
     }
 
     String getNameWithoutFormat(MaterialPresenter materialPresenter) {
@@ -221,26 +208,32 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
 
     @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
-    public void showToast(StateOfDocument stateOfFile) {
-        if (stateOfFile != null) {
+    public void showToast(StateOfDocument stateOfDocument) {
+        if (stateOfDocument instanceof StateOfDocument.StateOfFile) {
             final Toast toast = Toast.makeText(getActivity(),
-                    stateOfFile.toString(),
+                    stateOfDocument.toString(),
                     LENGTH_SHORT);
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
     }
 
-    private StringBuilder getFullNameFile(String name) {
-        final String format = materialPresenter.getFormat();
-        final String dote = ".";
-        return new StringBuilder(name)
-                .append(dote)
-                .append(format);
+    @Override
+    public void validateOfNameDocument() {
+        CustomEditText.getPublishSubject()
+                .map((Function<String, Object>) s ->
+                        materialDao.findByNameAndWithoutId(getFullNameFile(s),
+                                materialPresenter.getId()).isEmpty()
+                                && !s.isEmpty()).subscribe(ObserversForNameDocument
+                .getNameDocumentObserver(applyMaterialName, fileNameEditText));
     }
 
-    public InputMethodManager getInputMethodManager() {
-        return inputMethodManager;
+    private String getFullNameFile(String name) {
+        final String format = materialPresenter.getFormat();
+        final String dote = ".";
+        return String.valueOf(new StringBuilder(name)
+                .append(dote)
+                .append(format));
     }
 
 }

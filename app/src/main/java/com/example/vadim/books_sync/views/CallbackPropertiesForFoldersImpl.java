@@ -9,12 +9,21 @@ import android.view.animation.AnimationUtils;
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.views.customs.TrashAnimationListener;
 
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
 
     private final PropertiesDialogForFolders propertiesDialogForFolders;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    CallbackPropertiesForFoldersImpl(PropertiesDialogForFolders propertiesDialogForFolders) {
+    public static CallbackPropertiesForFoldersImpl.CallbacksEditorImpl newCallbacksEditorImpl(
+            PropertiesDialogForFolders propertiesDialogForFolders) {
+        return new CallbackPropertiesForFoldersImpl(propertiesDialogForFolders)
+                .new CallbacksEditorImpl();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private CallbackPropertiesForFoldersImpl(
+            PropertiesDialogForFolders propertiesDialogForFolders) {
         this.propertiesDialogForFolders = propertiesDialogForFolders;
         propertiesDialogForFolders.renameImageButton.setOnClickListener(onClickRename());
         propertiesDialogForFolders.trashImageButton.setOnClickListener(onClickRemove());
@@ -70,17 +79,7 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
         return null;
     }
 
-    static class CallbacksEditorImpl implements CallbacksProperties.CallbacksEditor {
-
-        private PropertiesDialogForFolders propertiesDialogForFolders;
-
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        CallbacksEditorImpl(PropertiesDialogForFolders propertiesDialogForFolders) {
-            this.propertiesDialogForFolders = propertiesDialogForFolders;
-            propertiesDialogForFolders.applyNameImageButton.setOnClickListener(onClickApply());
-            propertiesDialogForFolders.cancelImageButton.setOnClickListener(onClickCancel());
-            propertiesDialogForFolders.folderName.setOnClickListener(onClickEditText());
-        }
+    class CallbacksEditorImpl implements CallbacksProperties.CallbacksEditor {
 
         @Override
         public View.OnClickListener onClickCancel() {
@@ -103,6 +102,14 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
         @Override
         public View.OnClickListener onClickEditText() {
             return v -> propertiesDialogForFolders.showKeyBoard();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        public CallbackPropertiesForFoldersImpl create() {
+            propertiesDialogForFolders.applyNameImageButton.setOnClickListener(onClickApply());
+            propertiesDialogForFolders.cancelImageButton.setOnClickListener(onClickCancel());
+            propertiesDialogForFolders.folderName.setOnClickListener(onClickEditText());
+            return CallbackPropertiesForFoldersImpl.this;
         }
 
     }

@@ -1,5 +1,7 @@
 package com.example.vadim.books_sync.presenters.states_of_file;
 
+import android.util.Log;
+
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.Notifications;
@@ -19,9 +21,13 @@ public class RemovingFile implements StateOfDocument.StateOfFile {
     public void doStateWithFile(MaterialPresenter materialPresenter) {
         final String path = materialPresenter.getPath();
         final File file = new File(path);
-        materialDao.deleteByPath(path);
-        file.delete();
-        materialPresenter.setStateOfFile(this);
+        if ( file.delete() ) {
+            materialDao.deleteByPath(path);
+            materialPresenter.setStateOfFile(this);
+            Log.d("TAG", "File has removed");
+            return;
+        }
+        Log.d("TAG", "File has not removed");
     }
 
     @Override

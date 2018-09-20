@@ -29,8 +29,10 @@ import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 import com.example.vadim.books_sync.presenters.StateOwnerProperties;
+import com.example.vadim.books_sync.presenters.services.Formats;
 import com.example.vadim.books_sync.presenters.states_of_folder.RemovingFolder;
 import com.example.vadim.books_sync.presenters.states_of_folder.RenamingFolder;
+import com.example.vadim.books_sync.views.rx.ObserversForNameDocument;
 
 import java.util.Objects;
 
@@ -38,6 +40,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.functions.Function;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -68,7 +71,7 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
 
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressLint("InflateParams")
+    @SuppressLint({"InflateParams", "CheckResult", "ResourceAsColor"})
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,16 +87,15 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
                 .build()
                 .injectDialogFragmentForFolders(this);
         folderPresenter.attachDialog(this);
-
-        new CallbackPropertiesForFoldersImpl(this);
-        new CallbackPropertiesForFoldersImpl.CallbacksEditorImpl(this);
-
+        CallbackPropertiesForFoldersImpl
+                .newCallbacksEditorImpl(this)
+                .create();
         drawPropertiesDialog(viewProperties);
         folderName.setText(folderPresenter.getName());
         hideEditor();
+        validateOfNameDocument();
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-
         return viewProperties;
     }
 
@@ -145,13 +147,24 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
 
     @Override
     public void showToast(StateOfDocument stateOfDocument) {
-        if (stateOfDocument != null) {
+        if (stateOfDocument instanceof StateOfDocument.StateOfFolder) {
             final Toast toast = Toast.makeText(getActivity(),
                     stateOfDocument.toString(),
                     LENGTH_SHORT);
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
+    }
+
+    @Override
+    public void validateOfNameDocument() {
+        CustomEditText.getPublishSubject()
+                .map((Function<String, Object>) s ->
+                        folderDao.findByNameWithoutId(s,
+                                folderPresenter.getId()).isEmpty()
+                                && Formats.checkNameOfFormat(s)
+                                && !s.isEmpty()).subscribe(ObserversForNameDocument
+                                .getNameDocumentObserver(applyNameImageButton, folderName));
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
@@ -162,19 +175,15 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         showToast(folderPresenter.getStateOfFolder());
     }
 
+    @SuppressLint("CheckResult")
     @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void renameDocument() {
-        // handler with reactive android
-        if (folderName.getText().length() == 0) {
-            folderName.setText(folderPresenter.getName());
-        } else {
-            final String newNameFolder = folderName.getText().toString();
-            folderName.setText(newNameFolder);
-            final RenamingFolder renaming = new RenamingFolder(newNameFolder, folderDao);
-            renaming.doStateWithFolder(folderPresenter);
-            showToast(folderPresenter.getStateOfFolder());
-        }
+        final String newNameFolder = folderName.getText().toString();
+        folderName.setText(newNameFolder);
+        final RenamingFolder renaming = new RenamingFolder(newNameFolder, folderDao);
+        renaming.doStateWithFolder(folderPresenter);
+        showToast(folderPresenter.getStateOfFolder());
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
@@ -198,10 +207,6 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         folderName.setEnabled(true);
         applyNameImageButton.setVisibility(View.VISIBLE);
         cancelImageButton.setVisibility(View.VISIBLE);
-    }
-
-    public InputMethodManager getInputMethodManager() {
-        return inputMethodManager;
     }
 
 }

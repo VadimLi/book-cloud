@@ -12,4 +12,5 @@ public interface DialogView {
     void hideKeyBoard();
     void showKeyBoard();
     void showToast(StateOfDocument stateOfDocument);
+    void validateOfNameDocument();
 }
