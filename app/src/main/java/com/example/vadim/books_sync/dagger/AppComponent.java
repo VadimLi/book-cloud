@@ -14,6 +14,7 @@ import com.example.vadim.books_sync.views.MainActivity;
 import com.example.vadim.books_sync.views.MaterialsOfFolderActivity;
 import com.example.vadim.books_sync.views.PropertiesDialogForFolders;
 import com.example.vadim.books_sync.views.PropertiesDialogForMaterials;
+import com.example.vadim.books_sync.views.SelectorFolderActivity;
 
 import javax.inject.Singleton;
 
@@ -25,7 +26,7 @@ public interface AppComponent {
 
     void injectMainActivity(MainActivity activity);
 
-    void injectFoldersActivity(FoldersActivity activity);
+    void injectSelectorFolderActivity(FoldersActivity activity);
 
     void injectMaterialsOfFolderActivity(MaterialsOfFolderActivity activity);
 
@@ -36,6 +37,8 @@ public interface AppComponent {
             PropertiesDialogForFolders propertiesDialogForMaterials);
 
     void injectAddFolderDialog(AddFolderDialog addFolderDialog);
+
+    void injectSelectorFolderActivity(SelectorFolderActivity selectorFolderActivity);
 
     MaterialDao materialDao();
 

@@ -35,4 +35,7 @@ public interface FolderDao {
     @Query("SELECT *FROM folder")
     List<Folder> findAll();
 
+    @Query("SELECT *FROM folder WHERE name NOT IN (SELECT DISTINCT format FROM material)")
+    List<Folder> findAllWithoutFormats();
+
 }

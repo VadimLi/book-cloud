@@ -32,6 +32,7 @@ import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.model.MaterialFolderJoin;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
+import com.example.vadim.books_sync.presenters.services.Formats;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +42,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityView {
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .injectMainActivity(this);
-
         createMaterialAdapter();
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList =
@@ -111,22 +111,12 @@ public class MainActivity extends AppCompatActivity {
             swipeContainer.setRefreshing(false);
             startActivityForResult(foldersIntent, 1);
         });
+        addQueryTextListener();
+        addRefresherListener(materialLinkedList);
+    }
 
-        searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                materialsRecyclerAdapter.getFilter().filter(newText);
-                return false;
-            }
-
-        });
-
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void addRefresherListener(LinkedList<Material> materialLinkedList) {
         swipeContainer.setOnRefreshListener(() -> {
             if (progressBarLoadMaterials.getVisibility() == View.GONE) {
                 materialsUpdaterPresenter.attachView(
@@ -138,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                         swipeContainer.setRefreshing(false), delay);
             }
         });
-
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -192,6 +181,24 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
+    @Override
+    public void addQueryTextListener() {
+        searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                materialsRecyclerAdapter.getFilter().filter(newText);
+                return false;
+            }
+
+        });
+    }
+
     public class ProgressBarRefresherBaseMaterials implements BaseMaterialsPresenter {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -224,8 +231,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Transaction
     private void addFormatsFiles() {
-        final List<String> materialFormats = materialDao.findDistinctFormats();
-        for (final String format : materialFormats) {
+        final List<String> materialsOfFormats = materialDao.findDistinctFormats();
+        for (final String format : materialsOfFormats) {
             final List<Folder> folders = folderDao.findByName(format);
             if ( folders.isEmpty() ) {
                 final Folder folder = new Folder();
@@ -234,7 +241,19 @@ public class MainActivity extends AppCompatActivity {
                 folder.setId(folderId);
             }
         }
+        deleteFoldersWithFormats(materialsOfFormats);
         addMaterialsToFolder();
+    }
+
+    private void deleteFoldersWithFormats(final List<String> materialsOfFormats) {
+        final List<Folder> folders = folderDao.findAll();
+        for (final Folder folder : folders) {
+            final String folderName = folder.getName();
+            if ( !Formats.checkNameOfFormat(folderName) &&
+                    !materialsOfFormats.contains(folderName) ) {
+                folderDao.deleteByName(folderName);
+            }
+        }
     }
 
     private void addMaterialsToFolder() {

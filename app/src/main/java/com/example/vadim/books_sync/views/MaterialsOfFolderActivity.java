@@ -34,7 +34,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MaterialsOfFolderActivity extends AppCompatActivity {
+public class MaterialsOfFolderActivity extends AppCompatActivity implements ActivityView {
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
@@ -81,35 +81,16 @@ public class MaterialsOfFolderActivity extends AppCompatActivity {
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .injectMaterialsOfFolderActivity(this);
-
         createMaterialAdapter();
-
         final Bundle folderBundle = getIntent().getExtras();
-        final Folder folder;
         if (folderBundle != null) {
-            folder = folderBundle.getParcelable("folder");
+            final Folder folder = folderBundle.getParcelable("folder");
             final List<Material> materials = materialFolderJoinDao
                     .findMaterialsForFolders(folder.getId());
-
             materialsRecyclerAdapter.setListContent(materials);
             recyclerView.setAdapter(materialsRecyclerAdapter);
         }
-
-        searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                materialsRecyclerAdapter.getFilter().filter(newText);
-                return false;
-            }
-
-        });
-
+        addQueryTextListener();
         moveFolders.setOnClickListener(v -> {
             final Intent booksIntent = new Intent(this, FoldersActivity.class);
             setResult(RESULT_OK, booksIntent);
@@ -130,6 +111,24 @@ public class MaterialsOfFolderActivity extends AppCompatActivity {
                 new LinearLayoutManager(this));
         materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
         recyclerView.setAdapter(materialsRecyclerAdapter);
+    }
+
+    @Override
+    public void addQueryTextListener() {
+        searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                materialsRecyclerAdapter.getFilter().filter(newText);
+                return false;
+            }
+
+        });
     }
 
 }

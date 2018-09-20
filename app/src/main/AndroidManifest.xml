@@ -35,6 +35,8 @@
             android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity android:name=".views.MaterialsOfFolderActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".views.SelectorFolderActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
 
 </manifest>

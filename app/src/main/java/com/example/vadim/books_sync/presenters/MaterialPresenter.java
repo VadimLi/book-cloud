@@ -100,7 +100,7 @@ public class MaterialPresenter implements StateOwnerProperties {
 
     @Override
     public void addToFolderOrNewFolder(String materialName) {
-
+        stateOwnerProperties.addToFolderOrNewFolder(materialName);
     }
 
     @Override

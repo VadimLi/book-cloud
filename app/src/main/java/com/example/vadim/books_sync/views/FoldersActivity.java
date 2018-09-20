@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FoldersActivity extends AppCompatActivity {
+public class FoldersActivity extends AppCompatActivity implements ActivityView {
 
     @BindView(R.id.btnCreatorFolder)
     ImageButton imageButtonCreatorFolder;
@@ -58,7 +58,7 @@ public class FoldersActivity extends AppCompatActivity {
                 .appModule(new AppModule(getApplication()))
                 .roomModule(new RoomModule(getApplication()))
                 .build()
-                .injectFoldersActivity(this);
+                .injectSelectorFolderActivity(this);
 
         createFolderAdapter();
         final List<Folder> folders = folderDao.findAll();
@@ -81,6 +81,17 @@ public class FoldersActivity extends AppCompatActivity {
             addFolderDialog.show(fragmentManager, "dialog for adding folder");
         });
 
+    }
+
+    private void createFolderAdapter() {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this));
+        foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
+        recyclerView.setAdapter(foldersRecyclerAdapter);
+    }
+
+    @Override
+    public void addQueryTextListener() {
         searchFolders.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
@@ -95,14 +106,6 @@ public class FoldersActivity extends AppCompatActivity {
             }
 
         });
-
-    }
-
-    private void createFolderAdapter() {
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this));
-        foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
-        recyclerView.setAdapter(foldersRecyclerAdapter);
     }
 
 }

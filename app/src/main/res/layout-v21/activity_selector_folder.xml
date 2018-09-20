@@ -5,5 +5,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".views.SelectorFolderActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="top"
+            android:background="@color/colorNavigation"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/btnPropertiesForFile"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="start|top"
+                android:src="@mipmap/ic_back_to_files_foreground"
+                android:background="@null"
+                tools:ignore="RtlCompat" />
+            <ImageButton
+                android:id="@+id/btnCreatorFolder"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="end|top"
+                android:src="@mipmap/ic_creator_folder_foreground"
+                android:background="@null"
+                tools:ignore="RtlCompat" />
+        </FrameLayout>
 
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchFolders"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="search..."
+            android:textColor="@color/textColorSearch"
+            android:inputType="textVisiblePassword"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/folder_list"
+            android:layout_gravity="end"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            android:layout_width="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

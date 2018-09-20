@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -43,6 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.functions.Function;
 
+import static android.app.Activity.RESULT_OK;
 import static android.widget.Toast.LENGTH_SHORT;
 
 @SuppressLint("ValidFragment")
@@ -181,7 +183,23 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     }
 
     @Override
-    public void addToFolderOrNewFolder(String name) { }
+    public void addToFolderOrNewFolder(String name) {
+        final Intent foldersIntent =
+                new Intent(getActivity(), SelectorFolderActivity.class);
+        startActivityForResult(foldersIntent, 1);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+
+            }
+        }
+    }
 
     @Override
     public void hideEditor() {

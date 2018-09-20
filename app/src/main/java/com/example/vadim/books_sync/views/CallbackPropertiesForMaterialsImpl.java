@@ -75,7 +75,12 @@ public class CallbackPropertiesForMaterialsImpl implements CallbacksProperties {
 
     @Override
     public View.OnClickListener onClickAddToFile() {
-        return null;
+        return v -> {
+            final String materialName = String.valueOf(
+                    propertiesDialogForMaterials.fileNameEditText.getText());
+            propertiesDialogForMaterials.getMaterialPresenter()
+                    .addToFolderOrNewFolder(materialName);
+        };
     }
 
     class CallbacksEditorImpl implements CallbacksProperties.CallbacksEditor {
