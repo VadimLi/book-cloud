@@ -26,10 +26,14 @@ import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.FolderDao;
+import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
+import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
+import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 import com.example.vadim.books_sync.presenters.StateOwnerProperties;
 import com.example.vadim.books_sync.presenters.services.Formats;
+import com.example.vadim.books_sync.presenters.states_of_file.AddingFileToFolder;
 import com.example.vadim.books_sync.presenters.states_of_folder.RemovingFolder;
 import com.example.vadim.books_sync.presenters.states_of_folder.RenamingFolder;
 import com.example.vadim.books_sync.views.rx.ObserversForNameDocument;
@@ -65,6 +69,9 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
     @Inject
     FolderDao folderDao;
 
+    @Inject
+    MaterialFolderJoinDao materialFolderJoinDao;
+
     private FolderPresenter folderPresenter;
 
     private InputMethodManager inputMethodManager;
@@ -79,13 +86,7 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
                 inflater.inflate(R.layout.folders_dialog_properties, null);
         final Context context = viewProperties.getContext();
         ButterKnife.bind(this, viewProperties);
-        DaggerAppComponent.builder()
-                .appModule(new AppModule(
-                        Objects.requireNonNull(getActivity())
-                                .getApplication()))
-                .roomModule(new RoomModule(getActivity().getApplication()))
-                .build()
-                .injectDialogFragmentForFolders(this);
+        injectOfDaggerAppComponent();
         folderPresenter.attachDialog(this);
         CallbackPropertiesForFoldersImpl
                 .newCallbacksEditorImpl(this)
@@ -97,6 +98,29 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         return viewProperties;
+    }
+
+    class AddingToFolderView extends View {
+
+        public AddingToFolderView(Context context) {
+            super(context);
+            injectOfDaggerAppComponent();
+            final AddingFileToFolder addingFileToFolder =
+                    new AddingFileToFolder(materialFolderJoinDao);
+            final MaterialPresenter materialPresenter = folderPresenter.getMaterialPresenter();
+            addingFileToFolder.doStateWithFile(materialPresenter);
+            showToast(folderPresenter.getStateOfFolder());
+        }
+
+    }
+
+    private void injectOfDaggerAppComponent() {
+        DaggerAppComponent.builder()
+                .appModule(new AppModule(
+                        getActivity().getApplication()))
+                .roomModule(new RoomModule(getActivity().getApplication()))
+                .build()
+                .injectDialogFragmentForFolders(this);
     }
 
     public void setFolderPresenter(FolderPresenter folderPresenter) {
@@ -191,7 +215,12 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
     public void shareDocument() { }
 
     @Override
-    public void addToFolderOrNewFolder(String name) { }
+    public void addToFolder(String materialName) {
+        new AddingToFolderView(getDialog().getContext());
+    }
+
+    @Override
+    public void addNewFolder(String name) { }
 
     @Override
     public void hideEditor() {

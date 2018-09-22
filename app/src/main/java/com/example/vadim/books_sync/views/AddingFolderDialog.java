@@ -40,7 +40,7 @@ import io.reactivex.functions.Function;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
-public class AddFolderDialog extends android.support.v4.app.DialogFragment
+public class AddingFolderDialog extends android.support.v4.app.DialogFragment
         implements DialogView, StateOwnerProperties {
 
     @BindView(R.id.folderName)
@@ -88,9 +88,7 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
     }
 
     @Override
-    public void showEditor() {
-
-    }
+    public void showEditor() { }
 
     @Override
     public void drawPropertiesDialog(View viewProperties) {
@@ -154,7 +152,10 @@ public class AddFolderDialog extends android.support.v4.app.DialogFragment
     public void shareDocument() { }
 
     @Override
-    public void addToFolderOrNewFolder(final String name) {
+    public void addToFolder(final String materialName) { }
+
+    @Override
+    public void addNewFolder(String name) {
         final AddingNewFolder addingNewFolder = new AddingNewFolder(folderDao);
         addingNewFolder.doStateWithFolder(folderPresenter);
         showToast(folderPresenter.getStateOfFolder());

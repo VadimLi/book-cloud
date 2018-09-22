@@ -26,7 +26,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FoldersActivity extends AppCompatActivity implements ActivityView {
+public class FoldersActivity extends AppCompatActivity
+        implements ActivityView, ActivityView.ActivityViewForFolders {
 
     @BindView(R.id.btnCreatorFolder)
     ImageButton imageButtonCreatorFolder;
@@ -59,8 +60,7 @@ public class FoldersActivity extends AppCompatActivity implements ActivityView {
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .injectSelectorFolderActivity(this);
-
-        createFolderAdapter();
+        createAdapter();
         final List<Folder> folders = folderDao.findAll();
         foldersRecyclerAdapter.setListContent(folders);
         recyclerView.setAdapter(foldersRecyclerAdapter);
@@ -70,24 +70,20 @@ public class FoldersActivity extends AppCompatActivity implements ActivityView {
             setResult(RESULT_OK, booksIntent);
             finish();
         });
-
-        imageButtonCreatorFolder.setOnClickListener(v -> {
-            final AddFolderDialog addFolderDialog =
-                    new AddFolderDialog();
-            final FolderPresenter folderPresenter = new FolderPresenter();
-            addFolderDialog.setFolderPresenter(folderPresenter);
-            folderPresenter.setFolderListPresenter(foldersRecyclerAdapter.getFolderListPresenter());
-            final FragmentManager fragmentManager = getSupportFragmentManager();
-            addFolderDialog.show(fragmentManager, "dialog for adding folder");
-        });
-
+        addClickListenerForCreatorFolder();
     }
 
-    private void createFolderAdapter() {
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this));
-        foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
-        recyclerView.setAdapter(foldersRecyclerAdapter);
+    @Override
+    public void addClickListenerForCreatorFolder() {
+        imageButtonCreatorFolder.setOnClickListener(v -> {
+            final AddingFolderDialog addingFolderDialog =
+                    new AddingFolderDialog();
+            final FolderPresenter folderPresenter = new FolderPresenter();
+            addingFolderDialog.setFolderPresenter(folderPresenter);
+            folderPresenter.setFolderListPresenter(foldersRecyclerAdapter.getFolderListPresenter());
+            final FragmentManager fragmentManager = getSupportFragmentManager();
+            addingFolderDialog.show(fragmentManager, "dialog for adding folder");
+        });
     }
 
     @Override
@@ -106,6 +102,14 @@ public class FoldersActivity extends AppCompatActivity implements ActivityView {
             }
 
         });
+    }
+
+    @Override
+    public void createAdapter() {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this));
+        foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
+        recyclerView.setAdapter(foldersRecyclerAdapter);
     }
 
 }

@@ -4,6 +4,7 @@ public interface StateOwnerProperties {
     void removeDocument();
     void renameDocument();
     void shareDocument();
-    void addToFolderOrNewFolder(final String name);
+    void addToFolder(final String materialName);
+    void addNewFolder(final String name);
     void dismiss();
 }

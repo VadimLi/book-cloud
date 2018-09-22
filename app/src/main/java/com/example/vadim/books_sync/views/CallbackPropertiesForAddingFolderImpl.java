@@ -7,27 +7,27 @@ import android.view.View;
 public class CallbackPropertiesForAddingFolderImpl
         implements CallbacksProperties.CallbacksEditor {
 
-    private final AddFolderDialog addFolderDialog;
+    private final AddingFolderDialog addingFolderDialog;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static CallbackPropertiesForAddingFolderImpl newCallbacksForAddingFolder(
-            AddFolderDialog addFolderDialog) {
-        return new CallbackPropertiesForAddingFolderImpl(addFolderDialog);
+            AddingFolderDialog addingFolderDialog) {
+        return new CallbackPropertiesForAddingFolderImpl(addingFolderDialog);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private CallbackPropertiesForAddingFolderImpl(AddFolderDialog addFolderDialog) {
-        this.addFolderDialog = addFolderDialog;
-        addFolderDialog.folderName.setOnClickListener(onClickEditText());
-        addFolderDialog.applyName.setOnClickListener(onClickApply());
-        addFolderDialog.cancelImageButton.setOnClickListener(onClickCancel());
+    private CallbackPropertiesForAddingFolderImpl(AddingFolderDialog addingFolderDialog) {
+        this.addingFolderDialog = addingFolderDialog;
+        addingFolderDialog.folderName.setOnClickListener(onClickEditText());
+        addingFolderDialog.applyName.setOnClickListener(onClickApply());
+        addingFolderDialog.cancelImageButton.setOnClickListener(onClickCancel());
     }
 
     @Override
     public View.OnClickListener onClickCancel() {
         return v -> {
-            addFolderDialog.hideEditor();
-            addFolderDialog.hideKeyBoard();
+            addingFolderDialog.hideEditor();
+            addingFolderDialog.hideKeyBoard();
         };
     }
 
@@ -35,10 +35,10 @@ public class CallbackPropertiesForAddingFolderImpl
     @Override
     public View.OnClickListener onClickApply() {
         return v -> {
-            final String folderName = String.valueOf(addFolderDialog.folderName.getText());
-            addFolderDialog.getFolderPresenter().addToFolderOrNewFolder(folderName);
-            addFolderDialog.hideEditor();
-            addFolderDialog.hideKeyBoard();
+            final String folderName = String.valueOf(addingFolderDialog.folderName.getText());
+            addingFolderDialog.getFolderPresenter().addNewFolder(folderName);
+            addingFolderDialog.hideEditor();
+            addingFolderDialog.hideKeyBoard();
         };
     }
 

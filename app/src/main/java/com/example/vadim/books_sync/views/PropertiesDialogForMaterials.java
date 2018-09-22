@@ -183,11 +183,17 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     }
 
     @Override
-    public void addToFolderOrNewFolder(String name) {
-        final Intent foldersIntent =
-                new Intent(getActivity(), SelectorFolderActivity.class);
-        startActivityForResult(foldersIntent, 1);
+    public void addToFolder(String name) {
+        final Intent selectorForFoldersIntent =
+                new Intent(getContext(), SelectorFolderActivity.class);
+        selectorForFoldersIntent.putExtra("material",
+                materialPresenter.getMaterial());
+        Objects.requireNonNull(getActivity())
+                .startActivityForResult(selectorForFoldersIntent, 1);
     }
+
+    @Override
+    public void addNewFolder(String name) { }
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

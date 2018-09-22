@@ -79,7 +79,7 @@ public class CallbackPropertiesForMaterialsImpl implements CallbacksProperties {
             final String materialName = String.valueOf(
                     propertiesDialogForMaterials.fileNameEditText.getText());
             propertiesDialogForMaterials.getMaterialPresenter()
-                    .addToFolderOrNewFolder(materialName);
+                    .addToFolder(materialName);
         };
     }
 

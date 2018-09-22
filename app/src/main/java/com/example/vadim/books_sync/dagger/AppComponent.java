@@ -6,9 +6,10 @@ import com.example.vadim.books_sync.app_database.AppDatabase;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
+import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 import com.example.vadim.books_sync.presenters.services.FinderService;
-import com.example.vadim.books_sync.views.AddFolderDialog;
+import com.example.vadim.books_sync.views.AddingFolderDialog;
 import com.example.vadim.books_sync.views.FoldersActivity;
 import com.example.vadim.books_sync.views.MainActivity;
 import com.example.vadim.books_sync.views.MaterialsOfFolderActivity;
@@ -36,7 +37,7 @@ public interface AppComponent {
     void injectDialogFragmentForFolders(
             PropertiesDialogForFolders propertiesDialogForMaterials);
 
-    void injectAddFolderDialog(AddFolderDialog addFolderDialog);
+    void injectAddFolderDialog(AddingFolderDialog addingFolderDialog);
 
     void injectSelectorFolderActivity(SelectorFolderActivity selectorFolderActivity);
 

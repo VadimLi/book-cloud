@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .injectMainActivity(this);
-        createMaterialAdapter();
+        createAdapter();
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList =
                 convertToLinkedMaterialList(materials);
@@ -174,13 +174,6 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
         return newMaterialList;
     }
 
-    private void createMaterialAdapter() {
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this));
-        materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
-        recyclerView.setAdapter(materialsRecyclerAdapter);
-    }
-
     @Override
     public void addQueryTextListener() {
         searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -197,6 +190,14 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
             }
 
         });
+    }
+
+    @Override
+    public void createAdapter() {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this));
+        materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
+        recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
     public class ProgressBarRefresherBaseMaterials implements BaseMaterialsPresenter {

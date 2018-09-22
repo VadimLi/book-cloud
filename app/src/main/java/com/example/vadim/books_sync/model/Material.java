@@ -3,11 +3,13 @@ package com.example.vadim.books_sync.model;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 
 @Entity(indices = {@Index(value = "path",
         unique = true)})
-public class Material {
+public class Material implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -19,6 +21,13 @@ public class Material {
     private String path;
 
     public Material() {}
+
+    public Material(Parcel in){
+        this.id = in.readLong();
+        this.name = in.readString();
+        this.format = in.readString();
+        this.path = in.readString();
+    }
 
     public long getId() {
         return id;
@@ -52,4 +61,28 @@ public class Material {
         this.path = path;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.format);
+        dest.writeString(this.path);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+        public Material createFromParcel(Parcel in) {
+            return new Material(in);
+        }
+
+        public Material[] newArray(int size) {
+            return new Material[size];
+        }
+
+    };
 }

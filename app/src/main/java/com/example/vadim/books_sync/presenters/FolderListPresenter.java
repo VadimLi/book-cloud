@@ -30,7 +30,7 @@ public class FolderListPresenter {
     private final static int START_POSITION_OF_FOLDERS = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void openFolderOrMaterial(View view, int position) {
+    public void openFolder(View view, int position) {
         final Folder folder = folders.get(position);
         final Intent foldersIntent =
                 new Intent(view.getContext(), MaterialsOfFolderActivity.class);
@@ -81,10 +81,6 @@ public class FolderListPresenter {
         this.folders = folders;
     }
 
-    public List<Folder> getFolders() {
-        return folders;
-    }
-
     public List<Folder> getFilterFolders() {
         return filterFolders;
     }
@@ -92,10 +88,6 @@ public class FolderListPresenter {
     public void setMaterialViewHolderAdapter(
             RecyclerView.Adapter<FolderViewHolder> folderViewHolderAdapter) {
         this.folderViewHolderAdapter = folderViewHolderAdapter;
-    }
-
-    public RecyclerView.Adapter<FolderViewHolder> getFolderViewHolderAdapter() {
-        return folderViewHolderAdapter;
     }
 
     public List<FolderPresenter> getFoldersPresenter() {
@@ -118,5 +110,7 @@ public class FolderListPresenter {
         folderViewHolderAdapter.notifyItemMoved(
                 START_POSITION_OF_FOLDERS, folders.size());
     }
+
+
 
 }

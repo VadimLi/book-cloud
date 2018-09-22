@@ -81,7 +81,7 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .injectMaterialsOfFolderActivity(this);
-        createMaterialAdapter();
+        createAdapter();
         final Bundle folderBundle = getIntent().getExtras();
         if (folderBundle != null) {
             final Folder folder = folderBundle.getParcelable("folder");
@@ -106,13 +106,6 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
         materialsUpdaterPresenter.detachView();
     }
 
-    private void createMaterialAdapter() {
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this));
-        materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
-        recyclerView.setAdapter(materialsRecyclerAdapter);
-    }
-
     @Override
     public void addQueryTextListener() {
         searchMaterials.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -129,6 +122,14 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
             }
 
         });
+    }
+
+    @Override
+    public void createAdapter() {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this));
+        materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
+        recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
 }

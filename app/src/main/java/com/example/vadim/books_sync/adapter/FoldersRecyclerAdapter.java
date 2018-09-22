@@ -13,6 +13,7 @@ import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.presenters.FolderListPresenter;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
+import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.views.FolderViewHolder;
 
 import java.util.ArrayList;
@@ -24,6 +25,16 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolde
     private LayoutInflater layoutInflater;
 
     private FolderListPresenter folderListPresenter;
+
+    private MaterialPresenter materialPresenter;
+
+    public MaterialPresenter getMaterialPresenter() {
+        return materialPresenter;
+    }
+
+    public void setMaterialPresenter(MaterialPresenter materialPresenter) {
+        this.materialPresenter = materialPresenter;
+    }
 
     public FolderListPresenter getFolderListPresenter() {
         return folderListPresenter;
@@ -43,7 +54,7 @@ public class FoldersRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolde
     @Override
     public FolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view = layoutInflater.inflate(R.layout.file_system, parent, false);
-        return new FolderViewHolder(view, folderListPresenter);
+        return new FolderViewHolder(view, folderListPresenter, materialPresenter);
     }
 
     @Override

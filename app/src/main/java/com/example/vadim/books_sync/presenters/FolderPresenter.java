@@ -9,6 +9,8 @@ public class FolderPresenter implements StateOwnerProperties {
 
     private FolderListPresenter folderListPresenter;
 
+    private MaterialPresenter materialPresenter;
+
     private Folder folder;
 
     private int folderPosition;
@@ -16,6 +18,14 @@ public class FolderPresenter implements StateOwnerProperties {
     private StateOwnerProperties stateOwnerProperties;
 
     private StateOfDocument.StateOfFolder stateOfFolder;
+
+    public MaterialPresenter getMaterialPresenter() {
+        return materialPresenter;
+    }
+
+    public void setMaterialPresenter(MaterialPresenter materialPresenter) {
+        this.materialPresenter = materialPresenter;
+    }
 
     public void setStateOfFolder(final StateOfDocument.StateOfFolder stateOfFolder) {
         this.stateOfFolder = stateOfFolder;
@@ -87,12 +97,18 @@ public class FolderPresenter implements StateOwnerProperties {
     public void shareDocument() { }
 
     @Override
-    public void addToFolderOrNewFolder(final String folderName) {
+    public void addToFolder(final String materialName) {
+        materialPresenter.setFolderPresenter(this);
+        stateOwnerProperties.addToFolder(materialName);
+    }
+
+    @Override
+    public void addNewFolder(final String folderName) {
         final Folder newFolder = new Folder();
         newFolder.setName(folderName);
         this.setFolder(newFolder);
         folderListPresenter.addNewFolder(this);
-        stateOwnerProperties.addToFolderOrNewFolder(folderName);
+        stateOwnerProperties.addNewFolder(folderName);
     }
 
     @Override
