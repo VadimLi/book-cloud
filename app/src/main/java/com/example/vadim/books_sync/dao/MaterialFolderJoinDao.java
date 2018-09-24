@@ -27,4 +27,9 @@ public interface MaterialFolderJoinDao {
             "material_folder_join.materialId = :materialId")
     List<Folder> getFoldersForMaterials(final int materialId);
 
+    @Query("SELECT * FROM material_folder_join WHERE materialId = :materialId AND " +
+            "folderId = :folderId")
+    MaterialFolderJoin findMaterialsForMaterialAndFolder(final long materialId,
+                                                         final long folderId);
+
 }

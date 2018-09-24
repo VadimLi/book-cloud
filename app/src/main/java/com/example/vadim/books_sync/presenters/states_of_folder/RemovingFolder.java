@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
-import com.example.vadim.books_sync.presenters.Notifications;
+import com.example.vadim.books_sync.presenters.Notification;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 
 public class RemovingFolder implements StateOfDocument.StateOfFolder {
@@ -25,7 +25,7 @@ public class RemovingFolder implements StateOfDocument.StateOfFolder {
 
     @Override
     public String toString() {
-        return Notifications.REMOVE_FOLDER.getNotification();
+        return Notification.REMOVE_FOLDER.getNotification();
     }
 
 }

@@ -27,7 +27,6 @@ import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
-import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
@@ -44,6 +43,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observer;
 import io.reactivex.functions.Function;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -76,6 +76,8 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
 
     private InputMethodManager inputMethodManager;
 
+    private static final String ADDING_FILE_TO_FOLDER = "Добавить в эту папку?";
+
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"InflateParams", "CheckResult", "ResourceAsColor"})
@@ -87,31 +89,27 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         final Context context = viewProperties.getContext();
         ButterKnife.bind(this, viewProperties);
         injectOfDaggerAppComponent();
+        if (getContext() instanceof SelectorFolderActivity) {
+            applyNameImageButton.setVisibility(View.VISIBLE);
+            cancelImageButton.setVisibility(View.VISIBLE);
+            renameImageButton.setVisibility(View.INVISIBLE);
+            trashImageButton.setVisibility(View.INVISIBLE);
+            folderName.setText(ADDING_FILE_TO_FOLDER);
+            folderName.setVisibleCloseButton(false);
+            folderName.setEnabled(false);
+        } else {
+            folderName.setText(folderPresenter.getName());
+            hideEditor();
+        }
         folderPresenter.attachDialog(this);
-        CallbackPropertiesForFoldersImpl
-                .newCallbacksEditorImpl(this)
+        CallbackPropertiesForFolders
+                .newCallbacksEditor(this)
                 .create();
         drawPropertiesDialog(viewProperties);
-        folderName.setText(folderPresenter.getName());
-        hideEditor();
         validateOfNameDocument();
         inputMethodManager =
                 (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         return viewProperties;
-    }
-
-    class AddingToFolderView extends View {
-
-        public AddingToFolderView(Context context) {
-            super(context);
-            injectOfDaggerAppComponent();
-            final AddingFileToFolder addingFileToFolder =
-                    new AddingFileToFolder(materialFolderJoinDao);
-            final MaterialPresenter materialPresenter = folderPresenter.getMaterialPresenter();
-            addingFileToFolder.doStateWithFile(materialPresenter);
-            showToast(folderPresenter.getStateOfFolder());
-        }
-
     }
 
     private void injectOfDaggerAppComponent() {
@@ -171,7 +169,8 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
 
     @Override
     public void showToast(StateOfDocument stateOfDocument) {
-        if (stateOfDocument instanceof StateOfDocument.StateOfFolder) {
+        if ( stateOfDocument instanceof StateOfDocument.StateOfFolder ||
+                stateOfDocument instanceof StateOfDocument.StateOfFile ) {
             final Toast toast = Toast.makeText(getActivity(),
                     stateOfDocument.toString(),
                     LENGTH_SHORT);
@@ -180,15 +179,17 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         }
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void validateOfNameDocument() {
+        final Observer nameDocumentObserver = ObserversForNameDocument
+                .getNameDocumentObserver(applyNameImageButton, folderName);
         CustomEditText.getPublishSubject()
                 .map((Function<String, Object>) s ->
                         folderDao.findByNameWithoutId(s,
                                 folderPresenter.getId()).isEmpty()
                                 && Formats.checkNameOfFormat(s)
-                                && !s.isEmpty()).subscribe(ObserversForNameDocument
-                                .getNameDocumentObserver(applyNameImageButton, folderName));
+                                && !s.isEmpty()).subscribe(nameDocumentObserver);
     }
 
     @RequiresApi(api=Build.VERSION_CODES.M)
@@ -216,7 +217,11 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
 
     @Override
     public void addToFolder(String materialName) {
-        new AddingToFolderView(getDialog().getContext());
+        final AddingFileToFolder addingFileToFolder =
+                new AddingFileToFolder(materialFolderJoinDao);
+        final MaterialPresenter materialPresenter = folderPresenter.getMaterialPresenter();
+        addingFileToFolder.doStateWithFile(materialPresenter);
+        showToast(materialPresenter.getStateOfFile());
     }
 
     @Override

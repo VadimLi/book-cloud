@@ -1,7 +1,6 @@
 package com.example.vadim.books_sync.views;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -15,13 +14,11 @@ import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
-import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.FolderListPresenter;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,23 +60,32 @@ public class FolderViewHolder extends RecyclerView.ViewHolder
         if (view.getContext() instanceof FoldersActivity) {
             folderListPresenter.openFolder(view, position);
         } else {
-
+            final FolderPresenter folderPresenter = folderListPresenter
+                    .getFoldersPresenter().get(position);
+            folderPresenter.setMaterialPresenter(materialPresenter);
+            final PropertiesDialogForFolders propertiesDialogForFolders =
+                    new PropertiesDialogForFolders();
+            propertiesDialogForFolders.setFolderPresenter(folderPresenter);
+            final FragmentManager fragmentManager =
+                    ((FragmentActivity) view.getContext()).getSupportFragmentManager();
+            propertiesDialogForFolders.show(fragmentManager,
+                    "properties dialog for folder");
         }
     }
 
     @SuppressLint({"ResourceAsColor", "ResourceType"})
     @Override
     public boolean onLongClick(View view) {
-        changeBackgroundResource(view);
-        final int position = getAdapterPosition();
-        final FolderPresenter folderPresenter = folderListPresenter
-                .getFoldersPresenter().get(position);
-        final PropertiesDialogForFolders propertiesDialogForFolders =
-                new PropertiesDialogForFolders();
-        folderPresenter.setFolderPosition(position);
-        folderPresenter.setFolderListPresenter(folderListPresenter);
-        propertiesDialogForFolders.setFolderPresenter(folderPresenter);
         if (view.getContext() instanceof FoldersActivity) {
+            final int position = getAdapterPosition();
+            final FolderPresenter folderPresenter = folderListPresenter
+                    .getFoldersPresenter().get(position);
+            final PropertiesDialogForFolders propertiesDialogForFolders =
+                    new PropertiesDialogForFolders();
+            folderPresenter.setFolderPosition(position);
+            folderPresenter.setFolderListPresenter(folderListPresenter);
+            propertiesDialogForFolders.setFolderPresenter(folderPresenter);
+            changeBackgroundResource(view);
             final List<String> formatList =
                     ((FoldersActivity) view.getContext()).materialDao.
                             findDistinctNameByFormat(folderPresenter.getName());
@@ -89,10 +95,6 @@ public class FolderViewHolder extends RecyclerView.ViewHolder
                 propertiesDialogForFolders.show(fragmentManager,
                         "properties dialog for folder");
             }
-        } else {
-            folderPresenter.setMaterialPresenter(materialPresenter);
-            folderPresenter.attachDialog(propertiesDialogForFolders);
-            propertiesDialogForFolders.addToFolder(materialPresenter.getName());
         }
         return false;
     }

@@ -42,6 +42,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observer;
 import io.reactivex.functions.Function;
 
 import static android.app.Activity.RESULT_OK;
@@ -244,12 +245,13 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
 
     @Override
     public void validateOfNameDocument() {
+        final Observer nameDocumentObserver = ObserversForNameDocument
+                .getNameDocumentObserver(applyMaterialName, fileNameEditText);
         CustomEditText.getPublishSubject()
                 .map((Function<String, Object>) s ->
                         materialDao.findByNameAndWithoutId(getFullNameFile(s),
                                 materialPresenter.getId()).isEmpty()
-                                && !s.isEmpty()).subscribe(ObserversForNameDocument
-                .getNameDocumentObserver(applyMaterialName, fileNameEditText));
+                                && !s.isEmpty()).subscribe(nameDocumentObserver);
     }
 
     private String getFullNameFile(String name) {

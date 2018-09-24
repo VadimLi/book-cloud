@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
-import com.example.vadim.books_sync.presenters.Notifications;
+import com.example.vadim.books_sync.presenters.Notification;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 
 import java.io.File;
@@ -32,7 +32,7 @@ public class RemovingFile implements StateOfDocument.StateOfFile {
 
     @Override
     public String toString() {
-        return Notifications.REMOVE_FILE.getNotification();
+        return Notification.REMOVE_FILE.getNotification();
     }
 
 }

@@ -1,6 +1,6 @@
 package com.example.vadim.books_sync.presenters;
 
-public enum Notifications {
+public enum Notification {
 
     REMOVE_FILE("Документ удален"),
 
@@ -8,7 +8,9 @@ public enum Notifications {
 
     SHARE_FILE("Документ отправлен"),
 
-    ADD_TO_FOLDER("Документ добавлен"),
+    ADD_TO_FOLDER("Документ добавлен в папку"),
+
+    FILE_EXISTS("Документ уже существует в папке"),
 
     ADD_NEW_FOLDER("Папка добавлена"),
 
@@ -18,7 +20,7 @@ public enum Notifications {
 
     final String notification;
 
-    Notifications(String notification) {
+    Notification(String notification) {
         this.notification = notification;
     }
 

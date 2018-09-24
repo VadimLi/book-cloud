@@ -7,27 +7,30 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.example.vadim.books_sync.R;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.views.customs.TrashAnimationListener;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
-public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
+public class CallbackPropertiesForFolders implements CallbacksProperties {
 
     private final PropertiesDialogForFolders propertiesDialogForFolders;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static CallbackPropertiesForFoldersImpl.CallbacksEditorImpl newCallbacksEditorImpl(
+    public static CallbackPropertiesForFolders.CallbacksEditorImpl newCallbacksEditor(
             PropertiesDialogForFolders propertiesDialogForFolders) {
-        return new CallbackPropertiesForFoldersImpl(propertiesDialogForFolders)
+        return new CallbackPropertiesForFolders(propertiesDialogForFolders)
                 .new CallbacksEditorImpl();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private CallbackPropertiesForFoldersImpl(
+    private CallbackPropertiesForFolders(
             PropertiesDialogForFolders propertiesDialogForFolders) {
         this.propertiesDialogForFolders = propertiesDialogForFolders;
-        propertiesDialogForFolders.renameImageButton.setOnClickListener(onClickRename());
-        propertiesDialogForFolders.trashImageButton.setOnClickListener(onClickRemove());
-        propertiesDialogForFolders.trashImageButton.setOnLongClickListener(onLongClickRemove());
+        if (propertiesDialogForFolders.getContext() instanceof FoldersActivity) {
+            propertiesDialogForFolders.renameImageButton.setOnClickListener(onClickRename());
+            propertiesDialogForFolders.trashImageButton.setOnClickListener(onClickRemove());
+            propertiesDialogForFolders.trashImageButton.setOnLongClickListener(onLongClickRemove());
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -76,7 +79,15 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
 
     @Override
     public View.OnClickListener onClickAddToFile() {
-        return null;
+        return v -> {
+            final FolderPresenter folderPresenter = propertiesDialogForFolders
+                    .getFolderPresenter();
+            final String materialName = folderPresenter
+                    .getMaterialPresenter()
+                    .getName();
+            propertiesDialogForFolders.getFolderPresenter().addToFolder(materialName);
+            propertiesDialogForFolders.dismiss();
+        };
     }
 
     class CallbacksEditorImpl implements CallbacksProperties.CallbacksEditor {
@@ -84,9 +95,13 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
         @Override
         public View.OnClickListener onClickCancel() {
             return v -> {
-                propertiesDialogForFolders.folderName.setText(
-                        propertiesDialogForFolders.getFolderPresenter().getName());
-                propertiesDialogForFolders.hideEditor();
+                if (propertiesDialogForFolders.getContext() instanceof  FoldersActivity) {
+                    propertiesDialogForFolders.folderName.setText(
+                            propertiesDialogForFolders.getFolderPresenter().getName());
+                    propertiesDialogForFolders.hideEditor();
+                } else {
+                    propertiesDialogForFolders.dismiss();
+                }
             };
         }
 
@@ -94,8 +109,10 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
         @Override
         public View.OnClickListener onClickApply() {
             return v -> {
-                propertiesDialogForFolders.getFolderPresenter().renameDocument();
-                propertiesDialogForFolders.hideEditor();
+                if (propertiesDialogForFolders.getContext() instanceof FoldersActivity) {
+                    propertiesDialogForFolders.getFolderPresenter().renameDocument();
+                    propertiesDialogForFolders.hideEditor();
+                }
             };
         }
 
@@ -105,11 +122,17 @@ public class CallbackPropertiesForFoldersImpl implements CallbacksProperties {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.M)
-        public CallbackPropertiesForFoldersImpl create() {
-            propertiesDialogForFolders.applyNameImageButton.setOnClickListener(onClickApply());
+        public CallbackPropertiesForFolders create() {
             propertiesDialogForFolders.cancelImageButton.setOnClickListener(onClickCancel());
             propertiesDialogForFolders.folderName.setOnClickListener(onClickEditText());
-            return CallbackPropertiesForFoldersImpl.this;
+            if (propertiesDialogForFolders.getContext() instanceof FoldersActivity) {
+                propertiesDialogForFolders.applyNameImageButton
+                        .setOnClickListener(onClickApply());
+            } else {
+                propertiesDialogForFolders.applyNameImageButton
+                        .setOnClickListener(onClickAddToFile());
+            }
+            return CallbackPropertiesForFolders.this;
         }
 
     }

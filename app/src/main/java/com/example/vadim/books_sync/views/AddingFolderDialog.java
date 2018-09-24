@@ -36,6 +36,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observer;
 import io.reactivex.functions.Function;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -134,12 +135,13 @@ public class AddingFolderDialog extends android.support.v4.app.DialogFragment
 
     @Override
     public void validateOfNameDocument() {
+        final Observer nameDocumentObserver = ObserversForNameDocument
+                .getNameDocumentObserver(applyName, folderName);
         CustomEditText.getPublishSubject()
                 .map((Function<String, Object>) s ->
                         folderDao.findByName(s).isEmpty()
                                 && Formats.checkNameOfFormat(s)
-                                && !s.isEmpty()).subscribe(ObserversForNameDocument
-                                .getNameDocumentObserver(applyName, folderName));
+                                && !s.isEmpty()).subscribe(nameDocumentObserver);
     }
 
     @Override

@@ -5,7 +5,7 @@ import android.util.Log;
 import com.example.vadim.books_sync.dao.FolderDao;
 import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.presenters.FolderPresenter;
-import com.example.vadim.books_sync.presenters.Notifications;
+import com.example.vadim.books_sync.presenters.Notification;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 
 public class AddingNewFolder implements StateOfDocument.StateOfFolder {
@@ -31,7 +31,7 @@ public class AddingNewFolder implements StateOfDocument.StateOfFolder {
 
     @Override
     public String toString() {
-        return Notifications.ADD_NEW_FOLDER.getNotification();
+        return Notification.ADD_NEW_FOLDER.getNotification();
     }
 
 }
