@@ -92,8 +92,8 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
         if (getContext() instanceof SelectorFolderActivity) {
             applyNameImageButton.setVisibility(View.VISIBLE);
             cancelImageButton.setVisibility(View.VISIBLE);
-            renameImageButton.setVisibility(View.INVISIBLE);
-            trashImageButton.setVisibility(View.INVISIBLE);
+            renameImageButton.setVisibility(View.GONE);
+            trashImageButton.setVisibility(View.GONE);
             folderName.setText(ADDING_FILE_TO_FOLDER);
             folderName.setVisibleCloseButton(false);
             folderName.setEnabled(false);

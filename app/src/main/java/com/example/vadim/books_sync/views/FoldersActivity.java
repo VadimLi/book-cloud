@@ -71,6 +71,7 @@ public class FoldersActivity extends AppCompatActivity
             finish();
         });
         addClickListenerForCreatorFolder();
+        addQueryTextListener();
     }
 
     @Override

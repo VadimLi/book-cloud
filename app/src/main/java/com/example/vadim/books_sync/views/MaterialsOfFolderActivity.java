@@ -85,7 +85,6 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
         createAdapter();
         final Bundle folderBundle = getIntent().getExtras();
         if (folderBundle != null) {
-
             final Folder folder = folderBundle.getParcelable("folder");
             final FolderPresenter folderPresenter = new FolderPresenter();
             folderPresenter.setFolder(folder);

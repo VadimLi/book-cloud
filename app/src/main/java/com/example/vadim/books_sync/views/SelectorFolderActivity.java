@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.widget.ImageButton;
 
 import com.example.vadim.books_sync.R;
@@ -31,6 +32,9 @@ import butterknife.ButterKnife;
 @SuppressLint("Registered")
 public class SelectorFolderActivity extends AppCompatActivity
         implements ActivityView, ActivityView.ActivityViewForFolders {
+
+    @BindView(R.id.searchFolders)
+    SearchView searchFolders;
 
     @BindView(R.id.btnPropertiesForFile)
     ImageButton btnPropertiesForFile;
@@ -76,6 +80,7 @@ public class SelectorFolderActivity extends AppCompatActivity
             finish();
         });
         addClickListenerForCreatorFolder();
+        addQueryTextListener();
     }
 
     @Override
@@ -92,7 +97,22 @@ public class SelectorFolderActivity extends AppCompatActivity
     }
 
     @Override
-    public void addQueryTextListener() { }
+    public void addQueryTextListener() {
+        searchFolders.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                foldersRecyclerAdapter.getFilter().filter(newText);
+                return false;
+            }
+
+        });
+    }
 
     @Override
     public void createAdapter() {
