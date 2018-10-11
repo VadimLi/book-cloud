@@ -5,7 +5,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
-import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.model.MaterialFolderJoin;
 
@@ -22,14 +21,14 @@ public interface MaterialFolderJoinDao {
             "material_folder_join.folderId = :folderId")
     List<Material> findMaterialsForFolders(final long folderId);
 
-    @Query("SELECT * FROM folder INNER JOIN material_folder_join ON " +
-            "folder.id = material_folder_join.folderId WHERE " +
-            "material_folder_join.materialId = :materialId")
-    List<Folder> getFoldersForMaterials(final int materialId);
-
     @Query("SELECT * FROM material_folder_join WHERE materialId = :materialId AND " +
             "folderId = :folderId")
     MaterialFolderJoin findMaterialsForMaterialAndFolder(final long materialId,
                                                          final long folderId);
+
+    @Query("DELETE FROM material_folder_join WHERE materialId = :materialId AND " +
+            "folderId = :folderId")
+    void deleteMaterialsByMaterialIdAndFolderId(final long materialId,
+                                                final long folderId);
 
 }

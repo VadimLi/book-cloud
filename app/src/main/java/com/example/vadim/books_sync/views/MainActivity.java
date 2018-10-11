@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList =
                 convertToLinkedMaterialList(materials);
-        
+
         setProgressBarLoadMaterials(materialLinkedList);
         moveFolders.setOnClickListener(v -> {
             final Intent foldersIntent =

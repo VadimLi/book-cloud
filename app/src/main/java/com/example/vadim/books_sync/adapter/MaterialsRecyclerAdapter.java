@@ -11,6 +11,7 @@ import android.widget.Filterable;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
 import com.example.vadim.books_sync.views.MaterialViewHolder;
 
@@ -24,6 +25,16 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
 
     private final MaterialListPresenter materialListPresenter;
 
+    private FolderPresenter folderPresenter;
+
+    public FolderPresenter getFolderPresenter() {
+        return folderPresenter;
+    }
+
+    public void setFolderPresenter(FolderPresenter folderPresenter) {
+        this.folderPresenter = folderPresenter;
+    }
+
     public MaterialsRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
         materialListPresenter = new MaterialListPresenter();
@@ -34,7 +45,7 @@ public class MaterialsRecyclerAdapter extends RecyclerView.Adapter<MaterialViewH
     @Override
     public MaterialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view = layoutInflater.inflate(R.layout.material, parent, false);
-        return new MaterialViewHolder(view, materialListPresenter);
+        return new MaterialViewHolder(view, materialListPresenter, folderPresenter);
     }
 
     @Override

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="260dp"
@@ -33,6 +34,7 @@
             android:background="@null"/>
     </LinearLayout>
     <FrameLayout
+        android:id="@+id/propertiesForFile"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,7 +46,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|left"
             android:src="@mipmap/ic_rename_foreground"
-            android:background="@null">
+            android:background="@null"
+            tools:ignore="RtlHardcoded">
         </ImageButton>
 
         <ImageButton

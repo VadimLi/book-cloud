@@ -28,6 +28,7 @@ import com.example.vadim.books_sync.dagger.AppModule;
 import com.example.vadim.books_sync.dagger.DaggerAppComponent;
 import com.example.vadim.books_sync.dagger.RoomModule;
 import com.example.vadim.books_sync.dao.MaterialDao;
+import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.StateOfDocument;
 import com.example.vadim.books_sync.presenters.StateOwnerProperties;
@@ -76,18 +77,27 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     @Inject
     MaterialDao materialDao;
 
+    @Inject
+    MaterialFolderJoinDao materialFolderJoinDao;
+
     private MaterialPresenter materialPresenter;
 
     private InputMethodManager inputMethodManager;
 
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressLint({"InflateParams", "CheckResult", "ResourceAsColor"})
+    @SuppressLint({"InflateParams", "CheckResult", "ResourceAsColor", "RtlHardcoded"})
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        final View viewProperties =
-                    inflater.inflate(R.layout.materials_dialog_properties, null);
+        View viewProperties;
+        if (getContext() instanceof MaterialsOfFolderActivity) {
+            viewProperties =
+                    inflater.inflate(R.layout.materials_dialog_of_folder_properties, null);
+        } else {
+            viewProperties = inflater.inflate(R.layout.materials_dialog_properties, null);
+        }
+
         final Context context = viewProperties.getContext();
         ButterKnife.bind(this, viewProperties);
         DaggerAppComponent.builder()
@@ -98,6 +108,7 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
                 .build()
                 .injectDialogFragmentForMaterials(this);
         materialPresenter.attachDialog(this);
+
 
         fileNameEditText.setText(materialPresenter.getName());
         CallbackPropertiesForMaterialsImpl
@@ -160,7 +171,8 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     @RequiresApi(api=Build.VERSION_CODES.M)
     @Override
     public void removeDocument() {
-        final RemovingFile removingFile = new RemovingFile(materialDao);
+        final RemovingFile removingFile = new RemovingFile(materialDao,
+                materialFolderJoinDao);
         removingFile.doStateWithFile(materialPresenter);
         showToast(materialPresenter.getStateOfFile());
     }
@@ -171,7 +183,8 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
         final String newNameMaterial = fileNameEditText.getText().toString();
         final String fullName = getFullNameFile(newNameMaterial);
         fileNameEditText.setText(fullName);
-        final RenamingFile renamingFile = new RenamingFile(fullName, materialDao);
+        final RenamingFile renamingFile = new RenamingFile(fullName,
+                materialDao, materialFolderJoinDao);
         renamingFile.doStateWithFile(materialPresenter);
         showToast(materialPresenter.getStateOfFile());
     }

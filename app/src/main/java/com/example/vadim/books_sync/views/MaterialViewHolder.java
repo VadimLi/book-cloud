@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.MaterialListPresenter;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 
@@ -33,10 +34,14 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
 
     private final MaterialListPresenter materialListPresenter;
 
-    public MaterialViewHolder(View itemView,
-                              MaterialListPresenter materialListPresenter) {
+    private final FolderPresenter folderPresenter;
+
+    public MaterialViewHolder(final View itemView,
+                              final MaterialListPresenter materialListPresenter,
+                              final FolderPresenter folderPresenter) {
         super(itemView);
         this.materialListPresenter = materialListPresenter;
+        this.folderPresenter = folderPresenter;
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
         ButterKnife.bind(this, itemView);
@@ -59,10 +64,11 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
     public boolean onLongClick(View view) {
         changeBackgroundResource(view);
         final int position = getAdapterPosition();
-        final PropertiesDialogForMaterials propertiesDialogForMaterials =
-                new PropertiesDialogForMaterials();
         final MaterialPresenter materialPresenter = materialListPresenter
                 .getMaterialsPresenter().get(position);
+        final PropertiesDialogForMaterials propertiesDialogForMaterials =
+                new PropertiesDialogForMaterials();
+        materialPresenter.setFolderPresenter(folderPresenter);
         materialPresenter.setMaterialPosition(position);
         materialPresenter.setMaterialListPresenter(materialListPresenter);
         propertiesDialogForMaterials.setMaterialPresenter(materialPresenter);

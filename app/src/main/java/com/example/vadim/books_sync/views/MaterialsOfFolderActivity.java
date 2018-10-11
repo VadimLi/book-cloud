@@ -25,6 +25,7 @@ import com.example.vadim.books_sync.dao.MaterialDao;
 import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
 import com.example.vadim.books_sync.model.Folder;
 import com.example.vadim.books_sync.model.Material;
+import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 
 import java.util.List;
@@ -84,9 +85,14 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
         createAdapter();
         final Bundle folderBundle = getIntent().getExtras();
         if (folderBundle != null) {
+
             final Folder folder = folderBundle.getParcelable("folder");
+            final FolderPresenter folderPresenter = new FolderPresenter();
+            folderPresenter.setFolder(folder);
             final List<Material> materials = materialFolderJoinDao
                     .findMaterialsForFolders(folder.getId());
+
+            materialsRecyclerAdapter.setFolderPresenter(folderPresenter);
             materialsRecyclerAdapter.setListContent(materials);
             recyclerView.setAdapter(materialsRecyclerAdapter);
         }

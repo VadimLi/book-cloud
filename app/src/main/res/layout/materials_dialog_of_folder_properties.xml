@@ -32,7 +32,7 @@
             android:background="@null"/>
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,8 +42,16 @@
             android:id="@+id/renameMaterial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|left"
             android:src="@mipmap/ic_rename_foreground"
+            android:background="@null"
+            android:visibility="gone">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_trash_foreground"
             android:background="@null">
         </ImageButton>
 
@@ -51,31 +59,18 @@
             android:id="@+id/addToFolder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|right"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:src="@mipmap/ic_folders_foreground"
-            android:background="@null"
-            android:layout_marginStart="130dp"
-            android:layout_marginLeft="0dp">
-        </ImageButton>
-
-        <ImageButton
-            android:id="@+id/trash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:src="@mipmap/ic_trash_foreground"
-            android:background="@null"
-            android:layout_marginTop="130dp">
+            android:background="@null">
         </ImageButton>
 
         <ImageButton
             android:id="@+id/share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
             android:src="@mipmap/ic_share_foreground"
             android:background="@null">
         </ImageButton>
 
-    </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -39,10 +39,11 @@ public class MaterialListPresenter {
 
     public void onBindMaterialRowViewAtPosition(@NonNull BaseRowPresenter baseRowPresenter,
                                                 int position) {
-        baseRowPresenter.setName(materials.get(position).getName());
+        final Material material = materials.get(position);
+        baseRowPresenter.setName(material.getName());
         documentService = new DocumentService();
-
-        final String format = materials.get(position).getFormat();
+                      
+        final String format = material.getFormat();
         switch (format) {
             case Formats.PDF:
                 baseRowPresenter.setImageResource(R.mipmap.ic_pdf_foreground);
