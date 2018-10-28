@@ -9,11 +9,23 @@ public class Formats {
 
     public static final String DOCX = "docx";
 
+    public static final String DOC = "doc";
+
+    public static final String DJVU = "djvu";
+
+    public static final String EPUB = "epub";
+
     public enum Format {
 
         PDF(Formats.PDF),
 
-        DOCX(Formats.DOCX);
+        DOCX(Formats.DOCX),
+
+        DOC(Formats.DOC),
+
+        DJVU(Formats.DJVU),
+
+        EPUB(Formats.EPUB);
 
         final String format;
 
@@ -27,7 +39,7 @@ public class Formats {
 
     }
 
-    public static boolean checkNameOfFormat(final String formatName) {
+    public static boolean notCheckNameOfFormat(final String formatName) {
         final List<Format> formats = Arrays.asList(Format.values());
         for (Format format : formats) {
             if ( format.getFormat().equals(formatName) ) {

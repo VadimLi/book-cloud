@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,9 +59,6 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
     @BindView(R.id.swipeContainer)
     SwipeRefreshLayout swipeContainer;
 
-    @BindView(R.id.btnFolders)
-    ImageButton moveFolders;
-
     @Inject
     MaterialDao materialDao;
 
@@ -102,9 +100,12 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList =
                 convertToLinkedMaterialList(materials);
-
         setProgressBarLoadMaterials(materialLinkedList);
-        moveFolders.setOnClickListener(v -> {
+
+        final View actionView = getCustomActionBar();
+        final ImageButton btnFolders =
+                actionView.findViewById(R.id.btnFolders);
+        btnFolders.setOnClickListener(v -> {
             final Intent foldersIntent =
                     new Intent(this, FoldersActivity.class);
             materialsUpdaterPresenter.getUpdaterAdapter().interrupt();
@@ -200,6 +201,15 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
         recyclerView.setAdapter(materialsRecyclerAdapter);
     }
 
+    @Override
+    public View getCustomActionBar() {
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.main_action_bar_layout);
+        return actionBar.getCustomView();
+    }
+
     public class ProgressBarRefresherBaseMaterials implements BaseMaterialsPresenter {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -250,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
         final List<Folder> folders = folderDao.findAll();
         for (final Folder folder : folders) {
             final String folderName = folder.getName();
-            if ( !Formats.checkNameOfFormat(folderName) &&
+            if ( !Formats.notCheckNameOfFormat(folderName) &&
                     !materialsOfFormats.contains(folderName) ) {
                 folderDao.deleteByName(folderName);
             }

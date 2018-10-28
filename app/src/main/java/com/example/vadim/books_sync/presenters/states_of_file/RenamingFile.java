@@ -1,7 +1,6 @@
 package com.example.vadim.books_sync.presenters.states_of_file;
 
 import com.example.vadim.books_sync.dao.MaterialDao;
-import com.example.vadim.books_sync.dao.MaterialFolderJoinDao;
 import com.example.vadim.books_sync.model.Material;
 import com.example.vadim.books_sync.presenters.MaterialPresenter;
 import com.example.vadim.books_sync.presenters.Notification;
@@ -16,14 +15,10 @@ public class RenamingFile implements StateOfDocument.StateOfFile {
 
     private final MaterialDao materialDao;
 
-    private final MaterialFolderJoinDao materialFolderJoinDao;
-
     public RenamingFile(final String fileName,
-                        final MaterialDao materialDao,
-                        final MaterialFolderJoinDao materialFolderJoinDao) {
+                        final MaterialDao materialDao) {
         this.fileName = fileName;
         this.materialDao = materialDao;
-        this.materialFolderJoinDao = materialFolderJoinDao;
     }
 
     @Override
@@ -32,7 +27,7 @@ public class RenamingFile implements StateOfDocument.StateOfFile {
         final Material material = materialPresenter.getMaterial();
 
         final String format = material.getFormat();
-        if ( Formats.checkNameOfFormat(format) ) {
+        if ( !Formats.notCheckNameOfFormat(format) ) {
             if ( file.exists() ) {
                 final String absolutePath = file.getPath();
                 final String filePath =

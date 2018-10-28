@@ -188,7 +188,7 @@ public class PropertiesDialogForFolders extends android.support.v4.app.DialogFra
                 .map((Function<String, Object>) s ->
                         folderDao.findByNameWithoutId(s,
                                 folderPresenter.getId()).isEmpty()
-                                && Formats.checkNameOfFormat(s)
+                                && Formats.notCheckNameOfFormat(s)
                                 && !s.isEmpty()).subscribe(nameDocumentObserver);
     }
 

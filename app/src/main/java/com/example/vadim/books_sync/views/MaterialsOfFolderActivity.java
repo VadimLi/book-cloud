@@ -7,11 +7,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 
@@ -29,6 +31,7 @@ import com.example.vadim.books_sync.presenters.FolderPresenter;
 import com.example.vadim.books_sync.presenters.MaterialsUpdaterPresenter;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -44,9 +47,6 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
 
     @BindView(R.id.searchFiles)
     SearchView searchMaterials;
-
-    @BindView(R.id.btnFilesOfFolder)
-    ImageButton moveFolders;
 
     @Inject
     MaterialDao materialDao;
@@ -95,8 +95,12 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
             materialsRecyclerAdapter.setListContent(materials);
             recyclerView.setAdapter(materialsRecyclerAdapter);
         }
+        final View actionView = getCustomActionBar();
+        final ImageButton moveToFolders = actionView.findViewById(R.id.btnFiles);
+        final ImageButton creatorNewFolder = actionView.findViewById(R.id.btnCreatorFolder);
+        creatorNewFolder.setVisibility(View.GONE);
         addQueryTextListener();
-        moveFolders.setOnClickListener(v -> {
+        moveToFolders.setOnClickListener(v -> {
             final Intent booksIntent = new Intent(this, FoldersActivity.class);
             setResult(RESULT_OK, booksIntent);
             finish();
@@ -135,6 +139,15 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
                 new LinearLayoutManager(this));
         materialsRecyclerAdapter = new MaterialsRecyclerAdapter(this);
         recyclerView.setAdapter(materialsRecyclerAdapter);
+    }
+
+    @Override
+    public View getCustomActionBar() {
+        final ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.folder_or_material_action_bar_layout);
+        return actionBar.getCustomView();
     }
 
 }

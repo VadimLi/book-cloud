@@ -25,7 +25,7 @@ public interface MaterialFolderJoinDao {
             "folderId = :folderId")
     MaterialFolderJoin findMaterialsForMaterialAndFolder(final long materialId,
                                                          final long folderId);
-
+    
     @Query("DELETE FROM material_folder_join WHERE materialId = :materialId AND " +
             "folderId = :folderId")
     void deleteMaterialsByMaterialIdAndFolderId(final long materialId,

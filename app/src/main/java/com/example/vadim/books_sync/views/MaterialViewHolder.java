@@ -90,7 +90,7 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
     }
 
     @SuppressLint("ResourceType")
-    public void changeBackgroundResource(View view) {
+    private void changeBackgroundResource(View view) {
         final int delay = 500;
         view.setBackgroundResource(R.color.colorItemFile);
         new Handler().postDelayed(() ->

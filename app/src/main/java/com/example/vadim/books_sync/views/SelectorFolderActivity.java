@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.View;
 import android.widget.ImageButton;
 
 import com.example.vadim.books_sync.R;
@@ -36,12 +38,6 @@ public class SelectorFolderActivity extends AppCompatActivity
     @BindView(R.id.searchFolders)
     SearchView searchFolders;
 
-    @BindView(R.id.btnPropertiesForFile)
-    ImageButton btnPropertiesForFile;
-
-    @BindView(R.id.btnCreatorFolder)
-    ImageButton imageButtonCreatorFolder;
-
     @BindView(R.id.folder_list)
     RecyclerView recyclerView;
 
@@ -49,6 +45,8 @@ public class SelectorFolderActivity extends AppCompatActivity
     FolderDao folderDao;
 
     private FoldersRecyclerAdapter foldersRecyclerAdapter;
+
+    private View actionView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +71,8 @@ public class SelectorFolderActivity extends AppCompatActivity
             foldersRecyclerAdapter.setListContent(folders);
             recyclerView.setAdapter(foldersRecyclerAdapter);
         }
+        actionView = getCustomActionBar();
+        final ImageButton btnPropertiesForFile = actionView.findViewById(R.id.btnFiles);
         btnPropertiesForFile.setOnClickListener(v -> {
             final Intent booksIntent = new Intent(this,
                     PropertiesDialogForMaterials.class);
@@ -85,12 +85,14 @@ public class SelectorFolderActivity extends AppCompatActivity
 
     @Override
     public void addClickListenerForCreatorFolder() {
-        imageButtonCreatorFolder.setOnClickListener(v -> {
+        final ImageButton creatorFolder = actionView.findViewById(R.id.btnCreatorFolder);
+        creatorFolder.setOnClickListener(v -> {
             final AddingFolderDialog addingFolderDialog =
                     new AddingFolderDialog();
             final FolderPresenter folderPresenter = new FolderPresenter();
             addingFolderDialog.setFolderPresenter(folderPresenter);
-            folderPresenter.setFolderListPresenter(foldersRecyclerAdapter.getFolderListPresenter());
+            folderPresenter.setFolderListPresenter(
+                    foldersRecyclerAdapter.getFolderListPresenter());
             final FragmentManager fragmentManager = getSupportFragmentManager();
             addingFolderDialog.show(fragmentManager, "dialog for adding folder");
         });
@@ -120,6 +122,15 @@ public class SelectorFolderActivity extends AppCompatActivity
                 new LinearLayoutManager(this));
         foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
         recyclerView.setAdapter(foldersRecyclerAdapter);
+    }
+
+    @Override
+    public View getCustomActionBar() {
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.folder_or_material_action_bar_layout);
+        return actionBar.getCustomView();
     }
 
 }

@@ -9,24 +9,6 @@
         android:gravity="top"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:gravity="top"
-            android:background="@color/colorNavigation"
-            android:orientation="horizontal">
-            <ImageButton
-                android:id="@+id/btnFolders"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_gravity="end|top"
-                android:src="@mipmap/ic_move_to_folders_foreground"
-                android:background="@null"
-                tools:ignore="RtlCompat" />
-        </FrameLayout>
-
         <ProgressBar
             android:id="@+id/progressBarLoadMaterials"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"

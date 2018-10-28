@@ -172,7 +172,7 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
     @Override
     public void removeDocument() {
         final RemovingFile removingFile = new RemovingFile(materialDao,
-                materialFolderJoinDao);
+                materialFolderJoinDao, getActivity());
         removingFile.doStateWithFile(materialPresenter);
         showToast(materialPresenter.getStateOfFile());
     }
@@ -183,8 +183,7 @@ public class PropertiesDialogForMaterials extends android.support.v4.app.DialogF
         final String newNameMaterial = fileNameEditText.getText().toString();
         final String fullName = getFullNameFile(newNameMaterial);
         fileNameEditText.setText(fullName);
-        final RenamingFile renamingFile = new RenamingFile(fullName,
-                materialDao, materialFolderJoinDao);
+        final RenamingFile renamingFile = new RenamingFile(fullName, materialDao);
         renamingFile.doStateWithFile(materialPresenter);
         showToast(materialPresenter.getStateOfFile());
     }

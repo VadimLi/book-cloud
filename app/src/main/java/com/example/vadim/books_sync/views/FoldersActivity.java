@@ -3,10 +3,12 @@ package com.example.vadim.books_sync.views;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.View;
 import android.widget.ImageButton;
 
 import com.example.vadim.books_sync.R;
@@ -29,12 +31,6 @@ import butterknife.ButterKnife;
 public class FoldersActivity extends AppCompatActivity
         implements ActivityView, ActivityView.ActivityViewForFolders {
 
-    @BindView(R.id.btnCreatorFolder)
-    ImageButton imageButtonCreatorFolder;
-
-    @BindView(R.id.btnFiles)
-    ImageButton imageButtonFiles;
-
     @BindView(R.id.searchFolders)
     SearchView searchFolders;
 
@@ -48,6 +44,8 @@ public class FoldersActivity extends AppCompatActivity
     MaterialDao materialDao;
 
     private FoldersRecyclerAdapter foldersRecyclerAdapter;
+
+    private View actionView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +63,8 @@ public class FoldersActivity extends AppCompatActivity
         foldersRecyclerAdapter.setListContent(folders);
         recyclerView.setAdapter(foldersRecyclerAdapter);
 
+        actionView = getCustomActionBar();
+        final ImageButton imageButtonFiles = actionView.findViewById(R.id.btnFiles);
         imageButtonFiles.setOnClickListener(v -> {
             final Intent booksIntent = new Intent(this, MainActivity.class);
             setResult(RESULT_OK, booksIntent);
@@ -76,6 +76,8 @@ public class FoldersActivity extends AppCompatActivity
 
     @Override
     public void addClickListenerForCreatorFolder() {
+        final ImageButton imageButtonCreatorFolder =
+                actionView.findViewById(R.id.btnCreatorFolder);
         imageButtonCreatorFolder.setOnClickListener(v -> {
             final AddingFolderDialog addingFolderDialog =
                     new AddingFolderDialog();
@@ -111,6 +113,15 @@ public class FoldersActivity extends AppCompatActivity
                 new LinearLayoutManager(this));
         foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
         recyclerView.setAdapter(foldersRecyclerAdapter);
+    }
+
+    @Override
+    public View getCustomActionBar() {
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.folder_or_material_action_bar_layout);
+        return actionBar.getCustomView();
     }
 
 }

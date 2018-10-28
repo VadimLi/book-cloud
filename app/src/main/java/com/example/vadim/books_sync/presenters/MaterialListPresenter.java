@@ -49,9 +49,19 @@ public class MaterialListPresenter {
                 baseRowPresenter.setImageResource(R.mipmap.ic_pdf_foreground);
                 break;
             case Formats.DOCX : {
-                baseRowPresenter.setImageResource(R.mipmap.ic_word_foreground);
+                baseRowPresenter.setImageResource(R.mipmap.ic_docx_foreground);
                 break;
             }
+            case Formats.DOC:
+                baseRowPresenter.setImageResource(R.mipmap.ic_doc_foreground);
+                break;
+            case Formats.DJVU : {
+                baseRowPresenter.setImageResource(R.mipmap.ic_djvu_foreground);
+                break;
+            }
+            case Formats.EPUB:
+                baseRowPresenter.setImageResource(R.mipmap.ic_epub_foreground);
+                break;
         }
     }
 

@@ -140,7 +140,7 @@ public class AddingFolderDialog extends android.support.v4.app.DialogFragment
         CustomEditText.getPublishSubject()
                 .map((Function<String, Object>) s ->
                         folderDao.findByName(s).isEmpty()
-                                && Formats.checkNameOfFormat(s)
+                                && Formats.notCheckNameOfFormat(s)
                                 && !s.isEmpty()).subscribe(nameDocumentObserver);
     }
 

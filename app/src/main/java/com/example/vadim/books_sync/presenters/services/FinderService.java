@@ -84,9 +84,9 @@ public class FinderService extends Application {
         }
     }
 
-    private boolean checkFormat(String format) {
-        for (Formats.Format f : Formats.Format.values()) {
-            if (format.equals(f.getFormat())) {
+    private boolean checkFormat(String inputFormat) {
+        for (Formats.Format format : Formats.Format.values()) {
+            if (inputFormat.equals(format.getFormat())) {
                 return true;
             }
         }
