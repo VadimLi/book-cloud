@@ -11,6 +11,7 @@ import android.view.View;
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.basePresenters.BaseRowPresenter;
 import com.example.vadim.books_sync.model.Folder;
+import com.example.vadim.books_sync.presenters.services.Formats;
 import com.example.vadim.books_sync.views.FolderViewHolder;
 import com.example.vadim.books_sync.views.MaterialsOfFolderActivity;
 
@@ -42,8 +43,14 @@ public class FolderListPresenter {
                                                 int position) {
         final String nameFolder = folders.get(position).getName();
         baseRowPresenter.setName(nameFolder);
-        baseRowPresenter.setImageResource(
-                R.mipmap.ic_move_to_folders_foreground);
+
+        if ( Formats.notCheckNameOfFormat(nameFolder) ) {
+            baseRowPresenter.setImageResource(
+                    R.mipmap.ic_folder_foreground);
+        } else {
+            baseRowPresenter.setImageResource(
+                    R.mipmap.ic_folder_of_expansion_foreground);
+        }
     }
 
     public int getFoldersSize() {
@@ -110,7 +117,5 @@ public class FolderListPresenter {
         folderViewHolderAdapter.notifyItemMoved(
                 START_POSITION_OF_FOLDERS, folders.size());
     }
-
-
 
 }

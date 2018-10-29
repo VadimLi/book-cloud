@@ -1,12 +1,10 @@
 package com.example.vadim.books_sync.views;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,8 +38,6 @@ import butterknife.ButterKnife;
 
 public class MaterialsOfFolderActivity extends AppCompatActivity implements ActivityView {
 
-    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
-
     @BindView(R.id.material_list_of_folder)
     RecyclerView recyclerView;
 
@@ -71,10 +67,6 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
 
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        ActivityCompat.requestPermissions(this,
-                new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
-                REQUEST_WRITE_EXTERNAL_STORAGE);
 
         ButterKnife.bind(this);
         DaggerAppComponent.builder()

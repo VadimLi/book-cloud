@@ -6,6 +6,7 @@ import android.arch.persistence.room.Transaction;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -82,26 +83,36 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
         this.savedInstanceState = savedInstanceState;
         super.onCreate(this.savedInstanceState);
         setContentView(R.layout.activity_main);
-
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        ActivityCompat.requestPermissions(this,
-                new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
-                REQUEST_WRITE_EXTERNAL_STORAGE);
-
         ButterKnife.bind(this);
         DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
                 .roomModule(new RoomModule(getApplication()))
                 .build()
                 .injectMainActivity(this);
-        createAdapter();
+        ActivityCompat.requestPermissions(this,
+                new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                REQUEST_WRITE_EXTERNAL_STORAGE);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         final List<Material> materials = materialDao.findAll();
         final LinkedList<Material> materialLinkedList =
                 convertToLinkedMaterialList(materials);
         setProgressBarLoadMaterials(materialLinkedList);
+        createAdapter();
+        addOnClickListenerForButtonFolders();
+        addQueryTextListener();
+        addRefresherListener(materialLinkedList);
+    }
 
+    private void addOnClickListenerForButtonFolders() {
         final View actionView = getCustomActionBar();
         final ImageButton btnFolders =
                 actionView.findViewById(R.id.btnFolders);
@@ -112,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
             swipeContainer.setRefreshing(false);
             startActivityForResult(foldersIntent, 1);
         });
-        addQueryTextListener();
-        addRefresherListener(materialLinkedList);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
