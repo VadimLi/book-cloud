@@ -1,0 +1,41 @@
+package com.lipakov.vadim.booksDocs.dao;
+
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
+import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
+
+import com.lipakov.vadim.booksDocs.model.Folder;
+
+import java.util.List;
+
+@Dao
+public interface FolderDao {
+
+    @Insert
+    long insert(Folder folder);
+
+    @Update
+    void update(Folder folder);
+
+    @Query("DELETE FROM folder")
+    void deleteAll();
+
+    @Query("SELECT *FROM folder WHERE name IN (:name)")
+    List<Folder> findByName(final String name);
+
+    @Query("SELECT *FROM folder WHERE name IN (:name) AND id NOT IN (:id)")
+    List<Folder> findByNameWithoutId(final String name,
+                                     final long id);
+
+    @Query("DELETE FROM folder WHERE name IN (:name)")
+    void deleteByName(final String name);
+
+    @Query("SELECT *FROM folder")
+    List<Folder> findAll();
+
+    @Query("SELECT *FROM folder WHERE name NOT IN (SELECT DISTINCT format FROM material)")
+    List<Folder> findAllWithoutFormats();
+
+}

@@ -6,7 +6,7 @@
     android:background="@drawable/properties_dialog_bg"
     android:orientation="vertical"
     android:padding="15dp">
-    <com.example.vadim.books_sync.views.CustomEditText
+    <com.lipakov.vadim.booksDocs.views.CustomEditText
         android:id="@+id/folderName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
