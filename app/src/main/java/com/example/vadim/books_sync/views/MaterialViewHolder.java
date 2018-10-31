@@ -2,6 +2,7 @@ package com.example.vadim.books_sync.views;
 
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -47,6 +48,7 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder
         ButterKnife.bind(this, itemView);
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     @SuppressLint({"ResourceAsColor", "ResourceType"})
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override

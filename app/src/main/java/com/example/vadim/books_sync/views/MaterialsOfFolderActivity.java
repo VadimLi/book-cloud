@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.adapter.MaterialsRecyclerAdapter;
@@ -76,8 +77,9 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
                 .injectMaterialsOfFolderActivity(this);
         createAdapter();
         final Bundle folderBundle = getIntent().getExtras();
+        Folder folder = null;
         if (folderBundle != null) {
-            final Folder folder = folderBundle.getParcelable("folder");
+            folder = folderBundle.getParcelable("folder");
             final FolderPresenter folderPresenter = new FolderPresenter();
             folderPresenter.setFolder(folder);
             final List<Material> materials = materialFolderJoinDao
@@ -91,6 +93,8 @@ public class MaterialsOfFolderActivity extends AppCompatActivity implements Acti
         final ImageButton moveToFolders = actionView.findViewById(R.id.btnFiles);
         final ImageButton creatorNewFolder = actionView.findViewById(R.id.btnCreatorFolder);
         creatorNewFolder.setVisibility(View.GONE);
+        final TextView folderName = actionView.findViewById(R.id.titleFolder);
+        folderName.setText(folder.getName());
         addQueryTextListener();
         moveToFolders.setOnClickListener(v -> {
             final Intent booksIntent = new Intent(this, FoldersActivity.class);

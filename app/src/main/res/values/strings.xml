@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">books_sync</string>
+    <string name="app_name">книги-доки</string>
     <bool name="atMostJellyBeanMR2">true</bool>
 </resources>

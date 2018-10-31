@@ -13,6 +13,17 @@
         android:src="@mipmap/ic_back_to_files_foreground"
         android:background="@null"
         tools:ignore="RtlCompat" />
+    <TextView
+        android:id="@+id/titleFolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:textColor="@color/colorOfFolder"
+        android:textSize="25dp"
+        android:fontFamily="Italic"
+        android:background="@null"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_marginRight="10dp" />
     <ImageButton
         android:id="@+id/btnCreatorFolder"
         android:layout_width="60dp"

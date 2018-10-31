@@ -8,7 +8,6 @@
         android:layout_height="match_parent"
         android:gravity="top"
         android:orientation="vertical">
-
         <ProgressBar
             android:id="@+id/progressBarLoadMaterials"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -20,7 +19,7 @@
             android:id="@+id/searchMaterials"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="search..."
+            android:hint="поиск..."
             android:textColor="@color/textColorSearch"
             android:inputType="textVisiblePassword"/>
         <android.support.v4.widget.SwipeRefreshLayout
@@ -35,6 +34,5 @@
                 android:layout_width="match_parent">
             </android.support.v7.widget.RecyclerView>
         </android.support.v4.widget.SwipeRefreshLayout>
-
     </LinearLayout>
 </FrameLayout>

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.vadim.books_sync.R;
 import com.example.vadim.books_sync.adapter.FoldersRecyclerAdapter;
@@ -70,8 +71,29 @@ public class FoldersActivity extends AppCompatActivity
             setResult(RESULT_OK, booksIntent);
             finish();
         });
+
+        final TextView folderName = actionView.findViewById(R.id.titleFolder);
+        folderName.setVisibility(View.GONE);
+
         addClickListenerForCreatorFolder();
         addQueryTextListener();
+    }
+
+    @Override
+    public void createAdapter() {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this));
+        foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
+        recyclerView.setAdapter(foldersRecyclerAdapter);
+    }
+
+    @Override
+    public View getCustomActionBar() {
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.folder_or_material_action_bar_layout);
+        return actionBar.getCustomView();
     }
 
     @Override
@@ -105,23 +127,6 @@ public class FoldersActivity extends AppCompatActivity
             }
 
         });
-    }
-
-    @Override
-    public void createAdapter() {
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this));
-        foldersRecyclerAdapter = new FoldersRecyclerAdapter(this);
-        recyclerView.setAdapter(foldersRecyclerAdapter);
-    }
-
-    @Override
-    public View getCustomActionBar() {
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setCustomView(R.layout.folder_or_material_action_bar_layout);
-        return actionBar.getCustomView();
     }
 
 }

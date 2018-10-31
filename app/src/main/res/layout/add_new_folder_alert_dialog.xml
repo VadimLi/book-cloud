@@ -10,7 +10,7 @@
         android:id="@+id/folderName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="folder name"
+        android:hint="Название папки"
         android:backgroundTint="@color/enabledColorEditRename"
         android:textColor="@drawable/edit_text_rename" />
 
